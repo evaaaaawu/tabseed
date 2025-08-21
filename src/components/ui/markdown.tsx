@@ -1,8 +1,8 @@
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import rehypeSanitize from 'rehype-sanitize';
-import rehypeExternalLinks from 'rehype-external-links';
 import { cn } from '@/lib/utils';
+import ReactMarkdown from 'react-markdown';
+import rehypeExternalLinks from 'rehype-external-links';
+import rehypeSanitize from 'rehype-sanitize';
+import remarkGfm from 'remark-gfm';
 
 interface MarkdownProps {
   content: string;
