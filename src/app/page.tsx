@@ -1,9 +1,10 @@
 'use client';
 
+import { useState } from 'react';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Markdown } from '@/components/ui/markdown';
-import { useState } from 'react';
 
 export default function Home() {
   const [isDark, setIsDark] = useState(false);
@@ -40,13 +41,11 @@ console.log(greeting);
   return (
     <div className={isDark ? 'dark' : ''}>
       <div className="min-h-screen bg-background text-foreground">
-        <div className="container mx-auto p-8 space-y-8">
+        <div className="container mx-auto space-y-8 p-8">
           {/* Header */}
-          <header className="text-center space-y-4">
+          <header className="space-y-4 text-center">
             <h1 className="text-4xl font-bold text-primary">TabSeed</h1>
-            <p className="text-muted-foreground">
-              Design System & Tailwind Configuration Test
-            </p>
+            <p className="text-muted-foreground">Design System & Tailwind Configuration Test</p>
           </header>
 
           {/* Controls */}
@@ -59,46 +58,46 @@ console.log(greeting);
           </div>
 
           {/* Input Test */}
-          <div className="max-w-md mx-auto space-y-2">
+          <div className="mx-auto max-w-md space-y-2">
             <label className="block text-sm font-medium">Input Component Test</label>
             <Input placeholder="Type something..." />
           </div>
 
           {/* Color Palette */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
+          <div className="mx-auto grid max-w-2xl grid-cols-2 gap-4 md:grid-cols-4">
             <div className="space-y-2">
-              <div className="h-16 bg-primary rounded border" />
-              <p className="text-xs text-center">Primary</p>
+              <div className="h-16 rounded border bg-primary" />
+              <p className="text-center text-xs">Primary</p>
             </div>
             <div className="space-y-2">
-              <div className="h-16 bg-secondary rounded border" />
-              <p className="text-xs text-center">Secondary</p>
+              <div className="h-16 rounded border bg-secondary" />
+              <p className="text-center text-xs">Secondary</p>
             </div>
             <div className="space-y-2">
-              <div className="h-16 bg-accent rounded border" />
-              <p className="text-xs text-center">Accent</p>
+              <div className="h-16 rounded border bg-accent" />
+              <p className="text-center text-xs">Accent</p>
             </div>
             <div className="space-y-2">
-              <div className="h-16 bg-muted rounded border" />
-              <p className="text-xs text-center">Muted</p>
+              <div className="h-16 rounded border bg-muted" />
+              <p className="text-center text-xs">Muted</p>
             </div>
           </div>
 
           {/* Markdown Test */}
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl font-semibold mb-4">Markdown Rendering Test</h2>
-            <div className="grid md:grid-cols-2 gap-6">
+          <div className="mx-auto max-w-4xl">
+            <h2 className="mb-4 text-2xl font-semibold">Markdown Rendering Test</h2>
+            <div className="grid gap-6 md:grid-cols-2">
               <div>
-                <h3 className="text-lg font-medium mb-2">Source</h3>
+                <h3 className="mb-2 text-lg font-medium">Source</h3>
                 <textarea
                   value={markdownContent}
                   onChange={(e) => setMarkdownContent(e.target.value)}
-                  className="w-full h-64 p-3 border rounded-md resize-none font-mono text-sm bg-background"
+                  className="h-64 w-full resize-none rounded-md border bg-background p-3 font-mono text-sm"
                 />
               </div>
               <div>
-                <h3 className="text-lg font-medium mb-2">Rendered</h3>
-                <div className="border rounded-md p-3 h-64 overflow-auto">
+                <h3 className="mb-2 text-lg font-medium">Rendered</h3>
+                <div className="h-64 overflow-auto rounded-md border p-3">
                   <Markdown content={markdownContent} />
                 </div>
               </div>
@@ -106,7 +105,7 @@ console.log(greeting);
           </div>
 
           {/* Footer */}
-          <footer className="text-center text-sm text-muted-foreground pt-8 border-t">
+          <footer className="border-t pt-8 text-center text-sm text-muted-foreground">
             TabSeed - Built with Next.js, Tailwind CSS, and shadcn/ui
           </footer>
         </div>

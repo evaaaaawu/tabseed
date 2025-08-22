@@ -75,4 +75,4 @@ module.exports = {
     require('@tailwindcss/container-queries'),
     require('tailwind-scrollbar')({ nocompatible: true }),
   ],
-}
+};

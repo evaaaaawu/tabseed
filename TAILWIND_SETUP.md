@@ -7,21 +7,25 @@
 ## 已安裝套件
 
 ### 核心 Tailwind 插件
+
 - `@tailwindcss/typography` - Markdown 內容樣式
 - `@tailwindcss/container-queries` - 容器查詢支援
 - `tailwindcss-animate` - 動畫系統
 - `tailwind-scrollbar` - 自訂滾動條
 
 ### 開發工具
+
 - `prettier-plugin-tailwindcss` - 自動排序 class 名稱
 - `eslint-plugin-tailwindcss` - Tailwind 語法檢查
 
 ### 實用工具
+
 - `clsx` + `tailwind-merge` - 條件式 class 合併
 - `class-variance-authority` - 元件變體系統
 - `lucide-react` - 圖示庫
 
 ### Markdown 渲染
+
 - `react-markdown` - React Markdown 渲染器
 - `remark-gfm` - GitHub Flavored Markdown
 - `rehype-sanitize` - XSS 防護
@@ -30,16 +34,20 @@
 ## 設計系統
 
 ### 品牌色彩
+
 - **Primary**: `#86C166` (綠色) - HSL(99 42% 58%)
 - **Secondary**: `#FAD689` (黃色) - HSL(41 92% 76%)
 
 ### 設計代幣
+
 採用 HSL CSS 變數系統，支援：
+
 - 完整色彩調色盤 (background, foreground, muted, accent, etc.)
 - 一致的 border-radius 變數
 - 深色/亮色主題切換
 
 ### 深色模式
+
 - 使用 `class` 策略 (`darkMode: 'class'`)
 - 透過 `.dark` class 控制
 - 所有設計代幣都有深色版本
@@ -71,6 +79,7 @@ src/
 ## 使用方式
 
 ### 基本元件
+
 ```tsx
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -81,13 +90,15 @@ import { Input } from '@/components/ui/input';
 ```
 
 ### Markdown 渲染
+
 ```tsx
 import { Markdown } from '@/components/ui/markdown';
 
-<Markdown content="# Hello **World**!" />
+<Markdown content="# Hello **World**!" />;
 ```
 
 ### 深色模式切換
+
 ```tsx
 const toggleDark = () => {
   document.documentElement.classList.toggle('dark');
@@ -95,10 +106,11 @@ const toggleDark = () => {
 ```
 
 ### Class 合併
+
 ```tsx
 import { cn } from '@/lib/utils';
 
-<div className={cn('base-classes', condition && 'conditional-classes')} />
+<div className={cn('base-classes', condition && 'conditional-classes')} />;
 ```
 
 ## 驗證
@@ -131,6 +143,7 @@ pnpm tsc --noEmit
 ## 未來擴展
 
 ### 可以輕鬆加入的元件
+
 - Dialog/Modal 系統
 - Dropdown Menu
 - Tooltip
@@ -139,6 +152,7 @@ pnpm tsc --noEmit
 - Card 容器
 
 ### 設計系統進階功能
+
 - 多主題支援 (運行時切換)
 - 動態色彩生成
 - 容器查詢響應式

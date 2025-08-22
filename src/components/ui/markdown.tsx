@@ -1,8 +1,9 @@
-import { cn } from '@/lib/utils';
 import ReactMarkdown from 'react-markdown';
 import rehypeExternalLinks from 'rehype-external-links';
 import rehypeSanitize from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm';
+
+import { cn } from '@/lib/utils';
 
 interface MarkdownProps {
   content: string;
@@ -11,7 +12,7 @@ interface MarkdownProps {
 
 export function Markdown({ content, className }: MarkdownProps) {
   return (
-    <article className={cn('prose dark:prose-invert max-w-none', className)}>
+    <article className={cn('prose max-w-none dark:prose-invert', className)}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[
