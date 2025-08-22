@@ -12,16 +12,16 @@ const compat = new FlatCompat({
 const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   ...compat.config({
-    plugins: ['tailwindcss'],
-    extends: ['plugin:tailwindcss/recommended'],
+    plugins: ["tailwindcss"],
+    extends: ["plugin:tailwindcss/recommended"],
     settings: {
       tailwindcss: {
-        callees: ['cn'],
-        config: './tailwind.config.js',
+        callees: ["cn"],
+        config: "./tailwind.config.js",
       },
     },
     rules: {
-      'tailwindcss/no-custom-classname': 'off',
+      "tailwindcss/no-custom-classname": "off",
     },
   }),
   {
@@ -31,6 +31,7 @@ const eslintConfig = [
       "out/**",
       "build/**",
       "next-env.d.ts",
+      "**/*.css",
     ],
   },
 ];
