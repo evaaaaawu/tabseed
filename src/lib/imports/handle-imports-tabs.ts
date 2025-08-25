@@ -1,6 +1,9 @@
 import { store, type ImportResult } from '@/lib/data/store';
 import { normalizeUrl } from '@/lib/url/normalize-url';
 import { z } from 'zod';
+import type { TabsRepository } from '@/lib/data/repository';
+import { DbTabsRepository } from '@/lib/data/repository';
+import { db } from '@/lib/db/client';
 
 export const ImportsTabsBodySchema = z.object({
   tabs: z
@@ -30,7 +33,10 @@ export interface HandleImportsTabsInput {
   readonly body: ImportsTabsBody;
 }
 
-export function handleImportsTabs(input: HandleImportsTabsInput): ImportResult {
+export async function handleImportsTabsAsync(
+  input: HandleImportsTabsInput,
+  repo?: TabsRepository
+): Promise<ImportResult> {
   const { idempotencyKey, ownerId, body } = input;
 
   if (idempotencyKey) {
@@ -40,6 +46,7 @@ export function handleImportsTabs(input: HandleImportsTabsInput): ImportResult {
     }
   }
 
+  const repository: TabsRepository = repo ?? new DbTabsRepository(db);
   const seenNormalized = new Set<string>();
   const created: ImportResult['created'] = [];
   const reused: ImportResult['reused'] = [];
@@ -54,14 +61,14 @@ export function handleImportsTabs(input: HandleImportsTabsInput): ImportResult {
     seenNormalized.add(normalized);
 
     if (body.dedupeMode !== 'forceNew') {
-      const existing = store.findByOwnerAndUrl(ownerId, normalized);
+      const existing = await repository.findByOwnerAndUrl(ownerId, normalized);
       if (existing) {
         reused.push(existing);
         continue;
       }
     }
 
-    const createdTab = store.upsertTab(ownerId, normalized, { title: tab.title });
+    const createdTab = await repository.upsertTab(ownerId, normalized, { title: tab.title });
     created.push(createdTab);
   }
 

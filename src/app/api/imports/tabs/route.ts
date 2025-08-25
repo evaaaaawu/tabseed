@@ -1,4 +1,5 @@
-import { ImportsTabsBodySchema, handleImportsTabs } from '@/lib/imports/handle-imports-tabs';
+import { ImportsTabsBodySchema, handleImportsTabsAsync } from '@/lib/imports/handle-imports-tabs';
+import { getSessionOrNull } from '@/lib/session';
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 
@@ -54,10 +55,16 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // TODO: replace with actual session user when auth is wired
-  const ownerId = 'user_dev_placeholder';
-  const result = handleImportsTabs({
-    ownerId,
+  const session = await getSessionOrNull(req);
+  if (!session) {
+    return new Response(
+      JSON.stringify({ error: { code: 'unauthorized', message: 'login required' } }),
+      { status: 401, headers: { 'Content-Type': 'application/json' } },
+    );
+  }
+
+  const result = await handleImportsTabsAsync({
+    ownerId: session.userId,
     idempotencyKey: headers.data.idempotencyKey,
     body: bodyParse.data,
   });
