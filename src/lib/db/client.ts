@@ -1,5 +1,5 @@
-import 'dotenv/config';
 import { neon } from '@neondatabase/serverless';
+import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/neon-http';
 import * as schema from './schema';
 
@@ -13,5 +13,3 @@ export const db = drizzle(client, { schema });
 
 export type DbClient = typeof db;
 export { schema };
-
-

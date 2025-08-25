@@ -2,7 +2,7 @@ import type { DbClient } from '@/lib/db/client';
 import { schema } from '@/lib/db/client';
 import { eq } from 'drizzle-orm';
 import { ulid } from 'ulid';
-import type { ImportResult, TabSeedTab } from './store';
+import type { TabSeedTab } from './store';
 
 export interface TabsRepository {
   findByOwnerAndUrl(ownerId: string, normalizedUrl: string): Promise<TabSeedTab | undefined>;
@@ -77,5 +77,3 @@ export class DbTabsRepository implements TabsRepository {
     } satisfies TabSeedTab;
   }
 }
-
-
