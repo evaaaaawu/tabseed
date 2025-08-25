@@ -1,6 +1,6 @@
-import { z } from 'zod';
-import { normalizeUrl } from '@/lib/url/normalize-url';
 import { store, type ImportResult } from '@/lib/data/store';
+import { normalizeUrl } from '@/lib/url/normalize-url';
+import { z } from 'zod';
 
 export const ImportsTabsBodySchema = z.object({
   tabs: z
@@ -8,7 +8,7 @@ export const ImportsTabsBodySchema = z.object({
       z.object({
         url: z.string().min(1),
         title: z.string().optional(),
-      })
+      }),
     )
     .min(1),
   target: z
@@ -71,5 +71,3 @@ export function handleImportsTabs(input: HandleImportsTabsInput): ImportResult {
   }
   return result;
 }
-
-
