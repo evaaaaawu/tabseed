@@ -54,7 +54,7 @@ export function normalizeUrl(input: string): string {
     try {
       url = new URL(`https://${input}`);
     } catch {
-      return input; // Return as-is for invalid; caller can validate separately
+      return input.trim(); // Return as-is (trimmed) for invalid; caller validates
     }
   }
 
@@ -70,9 +70,13 @@ export function normalizeUrl(input: string): string {
   // Remove default ports
   stripDefaultPorts(url);
 
-  // Normalize pathname: collapse multiple slashes, remove trailing slash except root
+  // Normalize pathname: decode then collapse multiple slashes, remove trailing slash except root
   if (url.pathname) {
-    // Collapse multiple slashes (excluding protocol part)
+    try {
+      url.pathname = decodeURI(url.pathname);
+    } catch {
+      // ignore decode errors, keep as-is
+    }
     url.pathname = url.pathname.replace(/\/{2,}/g, '/');
   }
   if (url.pathname !== '/') {
