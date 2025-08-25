@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean, uniqueIndex } from 'drizzle-orm/pg-core';
+import { boolean, pgTable, text, timestamp, uniqueIndex } from 'drizzle-orm/pg-core';
 
 export const tabs = pgTable(
   'tabs',
@@ -15,7 +15,5 @@ export const tabs = pgTable(
   },
   (t) => ({
     ownerUrlIdx: uniqueIndex('uniq_owner_url').on(t.ownerId, t.url),
-  })
+  }),
 );
-
-
