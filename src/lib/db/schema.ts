@@ -17,3 +17,14 @@ export const tabs = pgTable(
     ownerUrlIdx: uniqueIndex('uniq_owner_url').on(t.ownerId, t.url),
   }),
 );
+
+export const idempotencyRecords = pgTable(
+  'idempotency_records',
+  {
+    id: text('id').primaryKey(),
+    key: text('key').notNull().unique(),
+    response: text('response').notNull(), // JSON string of ImportResult
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+    expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(), // TTL for cleanup
+  },
+);

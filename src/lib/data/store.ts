@@ -1,4 +1,5 @@
 import { ulid } from 'ulid';
+import type { IdempotencyRepository } from './idempotency-repository';
 
 export interface TabSeedTab {
   readonly id: string;
@@ -31,24 +32,56 @@ export interface IdempotencyRecord<T> {
 }
 
 /**
- * Simple in-memory store for MVP. Replace with Drizzle/Neon later.
+ * Hybrid store that uses DB for idempotency when available, falls back to in-memory.
  */
-class InMemoryStore {
+class HybridStore {
   private readonly tabs: Map<string, TabSeedTab> = new Map();
   private readonly byOwnerAndUrl: Map<string, string> = new Map();
-  private readonly idempotency: Map<string, IdempotencyRecord<ImportResult>> = new Map();
+  private readonly memoryIdempotency: Map<string, IdempotencyRecord<ImportResult>> = new Map();
+  private dbIdempotencyRepo: IdempotencyRepository | null = null;
 
-  public getIdempotentResult(key: string): IdempotencyRecord<ImportResult> | undefined {
-    return this.idempotency.get(key);
+  public setIdempotencyRepository(repo: IdempotencyRepository): void {
+    this.dbIdempotencyRepo = repo;
   }
 
-  public saveIdempotentResult(key: string, result: ImportResult): IdempotencyRecord<ImportResult> {
+  public async getIdempotentResult(key: string): Promise<IdempotencyRecord<ImportResult> | undefined> {
+    if (this.dbIdempotencyRepo) {
+      try {
+        const result = await this.dbIdempotencyRepo.get(key);
+        if (result) {
+          return {
+            key,
+            createdAt: new Date().toISOString(), // We don't store this in DB, use current time
+            response: result,
+          };
+        }
+      } catch {
+        // Fall back to memory if DB fails
+      }
+    }
+
+    // Fall back to memory
+    return this.memoryIdempotency.get(key);
+  }
+
+  public async saveIdempotentResult(key: string, result: ImportResult): Promise<IdempotencyRecord<ImportResult>> {
     const record: IdempotencyRecord<ImportResult> = {
       key,
       createdAt: new Date().toISOString(),
       response: result,
     };
-    this.idempotency.set(key, record);
+
+    if (this.dbIdempotencyRepo) {
+      try {
+        await this.dbIdempotencyRepo.save(key, result);
+        return record;
+      } catch {
+        // Fall back to memory if DB fails
+      }
+    }
+
+    // Fall back to memory
+    this.memoryIdempotency.set(key, record);
     return record;
   }
 
@@ -88,4 +121,4 @@ class InMemoryStore {
   }
 }
 
-export const store = new InMemoryStore();
+export const store = new HybridStore();
