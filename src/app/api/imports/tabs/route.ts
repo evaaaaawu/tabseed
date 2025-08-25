@@ -1,4 +1,4 @@
-import { ImportsTabsBodySchema, handleImportsTabsAsync } from '@/lib/imports/handle-imports-tabs';
+import { ImportsTabsBodySchema, handleImportsTabs } from '@/lib/imports/handle-imports-tabs';
 import { getSessionOrNull } from '@/lib/session';
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const result = await handleImportsTabsAsync({
+  const result = await handleImportsTabs({
     ownerId: session.userId,
     idempotencyKey: headers.data.idempotencyKey,
     body: bodyParse.data,

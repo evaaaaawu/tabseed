@@ -1,6 +1,19 @@
 import { store, type ImportResult } from '@/lib/data/store';
 import { normalizeUrl } from '@/lib/url/normalize-url';
 import { z } from 'zod';
+import type { TabsRepository } from '@/lib/data/repository';
+import { DbTabsRepository } from '@/lib/data/repository';
+import type { IdempotencyRepository } from '@/lib/data/idempotency-repository';
+import { DbIdempotencyRepository } from '@/lib/data/idempotency-repository';
+import { db } from '@/lib/db/client';
+
+// Initialize DB idempotency repository if possible
+try {
+  const idempotencyRepo = new DbIdempotencyRepository(db);
+  store.setIdempotencyRepository(idempotencyRepo);
+} catch {
+  // Fall back to memory idempotency if DB is not available
+}
 
 export const ImportsTabsBodySchema = z.object({
   tabs: z
@@ -30,11 +43,11 @@ export interface HandleImportsTabsInput {
   readonly body: ImportsTabsBody;
 }
 
-export function handleImportsTabs(input: HandleImportsTabsInput): ImportResult {
+export async function handleImportsTabs(input: HandleImportsTabsInput): Promise<ImportResult> {
   const { idempotencyKey, ownerId, body } = input;
 
   if (idempotencyKey) {
-    const cached = store.getIdempotentResult(idempotencyKey);
+    const cached = await store.getIdempotentResult(idempotencyKey);
     if (cached) {
       return cached.response;
     }
@@ -67,7 +80,7 @@ export function handleImportsTabs(input: HandleImportsTabsInput): ImportResult {
 
   const result: ImportResult = { created, reused, ignored };
   if (idempotencyKey) {
-    store.saveIdempotentResult(idempotencyKey, result);
+    await store.saveIdempotentResult(idempotencyKey, result);
   }
   return result;
 }
