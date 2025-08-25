@@ -1,6 +1,6 @@
-import { describe, expect, it, beforeEach } from 'vitest';
-import { handleImportsTabs, ImportsTabsBodySchema } from './handle-imports-tabs';
 import { store } from '@/lib/data/store';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { handleImportsTabs, ImportsTabsBodySchema } from './handle-imports-tabs';
 
 describe('handleImportsTabs', () => {
   beforeEach(() => {
@@ -19,7 +19,9 @@ describe('handleImportsTabs', () => {
 
   it('creates new tabs and reuses duplicates by default (auto)', () => {
     const ownerId = 'u1';
-    const body = { tabs: [{ url: 'https://example.com?utm_source=x' }, { url: 'https://example.com/' }] };
+    const body = {
+      tabs: [{ url: 'https://example.com?utm_source=x' }, { url: 'https://example.com/' }],
+    };
     const res1 = handleImportsTabs({ ownerId, body });
     expect(res1.created.length).toBe(1);
     expect(res1.reused.length).toBe(0);
@@ -47,5 +49,3 @@ describe('handleImportsTabs', () => {
     expect(b).toEqual(a);
   });
 });
-
-
