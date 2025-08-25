@@ -5,6 +5,66 @@ import { isDuplicate, normalizeUrl } from './normalize-url';
 const n = (u: string) => normalizeUrl(u);
 
 describe('normalizeUrl', () => {
+  it('resolves dot-segments per WHATWG URL', () => {
+    expect(n('https://example.com/a/../b')).toBe('https://example.com/b');
+  });
+
+  it('removes http default port 80 in presence of query/hash', () => {
+    expect(n('http://example.com:80/?a=1#x')).toBe('http://example.com/?a=1#x');
+  });
+
+  it('removes https default port 443 in presence of path', () => {
+    expect(n('https://example.com:443/a')).toBe('https://example.com/a');
+  });
+
+  it('keeps non-empty hash', () => {
+    expect(n('https://example.com/#section')).toBe('https://example.com/#section');
+  });
+
+  it('handles duplicate query keys with different casing (case-sensitive)', () => {
+    expect(n('https://example.com?a=1&A=2')).toBe('https://example.com/?A=2&a=1');
+  });
+
+  it('drops only known trackers and keeps others starting with utm-like but different', () => {
+    expect(n('https://example.com?utmx=1&utm_source=2')).toBe('https://example.com/?utmx=1');
+  });
+
+  it('removes trailing slash after path segments but not root', () => {
+    expect(n('https://example.com/a/')).toBe('https://example.com/a');
+  });
+
+  it('normalizes spaces in query to + (URLSearchParams)', () => {
+    expect(n('https://example.com?a=%2F%2F&b=%20')).toBe('https://example.com/?a=%2F%2F&b=+');
+  });
+
+  it('sorts query values when keys equal', () => {
+    expect(n('https://example.com?a=2&a=1&a=10')).toBe('https://example.com/?a=1&a=10&a=2');
+  });
+
+  it('keeps order of identical duplicates', () => {
+    expect(n('https://example.com?a=1&a=1&a=1')).toBe('https://example.com/?a=1&a=1&a=1');
+  });
+
+  it('handles empty query string gracefully', () => {
+    expect(n('https://example.com?')).toBe('https://example.com/');
+  });
+
+  it('handles query param without value', () => {
+    expect(n('https://example.com?a&b=')).toBe('https://example.com/?a=&b=');
+  });
+
+  it('preserves subdomains and lowercases only host', () => {
+    expect(n('https://WWW.Sub.EXAMPLE.com/')).toBe('https://www.sub.example.com/');
+  });
+
+  it('does not change path case', () => {
+    expect(n('https://example.com/Case/Path')).toBe('https://example.com/Case/Path');
+  });
+
+  it('collapses multiple slashes between segments only', () => {
+    expect(n('https://example.com/a//b///c')).toBe('https://example.com/a/b/c');
+  });
+
   it('lowercases host and strips default ports', () => {
     expect(n('HTTP://Example.COM:80')).toBe('http://example.com/');
     expect(n('https://Example.COM:443/Path/')).toBe('https://example.com/Path');
