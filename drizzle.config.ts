@@ -1,5 +1,5 @@
-import { defineConfig } from 'drizzle-kit';
 import { config } from 'dotenv';
+import { defineConfig } from 'drizzle-kit';
 
 // Load environment variables from .env.local
 config({ path: '.env.local' });
@@ -9,6 +9,11 @@ export default defineConfig({
   out: './drizzle',
   dialect: 'postgresql',
   dbCredentials: {
-    url: process.env.DATABASE_URL ?? '',
+    host: 'localhost',
+    port: 5432,
+    user: 'tabseed',
+    password: 'tabseed',
+    database: 'tabseed',
+    ssl: false,
   },
 });
