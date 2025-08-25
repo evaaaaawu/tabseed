@@ -1,6 +1,16 @@
 import { defineConfig } from 'vitest/config';
+import { fileURLToPath } from 'node:url';
+import { resolve } from 'node:path';
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '@/lib': resolve(fileURLToPath(new URL('./src', import.meta.url)), 'lib'),
+      '@/components': resolve(fileURLToPath(new URL('./src', import.meta.url)), 'components'),
+      '@/hooks': resolve(fileURLToPath(new URL('./src', import.meta.url)), 'hooks'),
+    },
+  },
   test: {
     environment: 'jsdom',
     globals: true,
