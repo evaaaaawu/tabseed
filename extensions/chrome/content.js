@@ -21,12 +21,29 @@
       }
       case 'CAPTURE_TABS': {
         const closeImported = !!(payload && payload.closeImported);
-        chrome.runtime.sendMessage(
-          { type: 'capture-tabs', closeImported },
-          (response) => {
-            window.postMessage({ source: SRC_EXT, type: 'CAPTURE_TABS_RESULT', payload: response }, '*');
-          },
-        );
+        try {
+          if (!chrome || !chrome.runtime || typeof chrome.runtime.sendMessage !== 'function') {
+            throw new Error('runtime_unavailable');
+          }
+          chrome.runtime.sendMessage({ type: 'capture-tabs', closeImported }, (response) => {
+            try {
+              // lastError indicates background unavailable or other runtime errors
+              // eslint-disable-next-line no-unused-expressions
+              chrome.runtime.lastError; // access to trigger potential errors visibility in devtools
+            } catch (_) {
+              // ignore
+            }
+            window.postMessage(
+              { source: SRC_EXT, type: 'CAPTURE_TABS_RESULT', payload: response || { ok: false } },
+              '*',
+            );
+          });
+        } catch (e) {
+          window.postMessage(
+            { source: SRC_EXT, type: 'CAPTURE_TABS_RESULT', payload: { ok: false, error: String(e && e.message ? e.message : e) } },
+            '*',
+          );
+        }
         break;
       }
       default:
