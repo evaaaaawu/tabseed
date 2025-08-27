@@ -7,7 +7,8 @@ export type CaptureOptions = {
 };
 
 export function isExtensionAvailable(): boolean {
-  return typeof window !== 'undefined' && typeof (window as any).chrome?.runtime?.id !== 'undefined';
+  const w = typeof window !== 'undefined' ? (window as unknown as { chrome?: { runtime?: { id?: string } } }) : undefined;
+  return !!w?.chrome?.runtime?.id;
 }
 
 export async function captureOpenTabs(options?: CaptureOptions): Promise<CapturedTab[]> {
@@ -15,12 +16,24 @@ export async function captureOpenTabs(options?: CaptureOptions): Promise<Capture
     return [{ url: window.location.href, title: document.title }];
   }
 
-  return await new Promise<CapturedTab[]>((resolve, reject) => {
+  return await new Promise<CapturedTab[]>((resolve) => {
     try {
-      (window as any).chrome.runtime.sendMessage(
+      const w = window as unknown as {
+        chrome?: {
+          runtime?: {
+            sendMessage?: (
+              msg: { type: 'capture-tabs'; closeImported: boolean },
+              cb: (resp: { ok?: boolean; tabs?: CapturedTab[] } | undefined) => void,
+            ) => void;
+            lastError?: unknown;
+          };
+        };
+      };
+
+      w.chrome?.runtime?.sendMessage?.(
         { type: 'capture-tabs', closeImported: options?.closeImported ?? false },
-        (response: any) => {
-          if ((window as any).chrome.runtime.lastError) {
+        (response) => {
+          if (w.chrome?.runtime?.lastError) {
             resolve([{ url: window.location.href, title: document.title }]);
             return;
           }
@@ -28,10 +41,10 @@ export async function captureOpenTabs(options?: CaptureOptions): Promise<Capture
             resolve([{ url: window.location.href, title: document.title }]);
             return;
           }
-          resolve(response.tabs as CapturedTab[]);
+          resolve(response.tabs ?? []);
         },
       );
-    } catch (err) {
+    } catch {
       resolve([{ url: window.location.href, title: document.title }]);
     }
   });
