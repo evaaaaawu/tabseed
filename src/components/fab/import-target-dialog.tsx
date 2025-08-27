@@ -1,7 +1,7 @@
 "use client";
 
-import { Fragment, useState } from 'react';
 import { ChevronDown, Inbox, Layout, Loader2 } from 'lucide-react';
+import { Fragment, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -49,7 +49,7 @@ export function ImportTargetDialog({ open, onOpenChange, onConfirm }: ImportTarg
 						)}
 						onClick={() => setTarget({ type: 'inbox' })}
 					>
-						<Inbox className="h-5 w-5" />
+						<Inbox className="size-5" />
 						<div>
 							<div className="font-medium">Inbox</div>
 							<div className="text-xs text-muted-foreground">匯入到收件匣</div>
@@ -64,13 +64,13 @@ export function ImportTargetDialog({ open, onOpenChange, onConfirm }: ImportTarg
 						onClick={() => setTarget({ type: 'kanban' })}
 					>
 						<span className="inline-flex items-center gap-3">
-							<Layout className="h-5 w-5" />
+							<Layout className="size-5" />
 							<span>
 								<div className="font-medium">Kanban</div>
 								<div className="text-xs text-muted-foreground">匯入到指定看板</div>
 							</span>
 						</span>
-						<ChevronDown className="h-4 w-4 opacity-60" />
+						<ChevronDown className="size-4 opacity-60" />
 					</button>
 
 					{target.type === 'kanban' ? (
@@ -105,7 +105,7 @@ export function ImportTargetDialog({ open, onOpenChange, onConfirm }: ImportTarg
 					<Button onClick={handleConfirm} disabled={isLoading}>
 						{isLoading ? (
 							<Fragment>
-								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+								<Loader2 className="mr-2 size-4 animate-spin" />
 								匯入中
 							</Fragment>
 						) : (

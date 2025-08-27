@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 import { Fab } from '@/components/fab/fab';
-import { ImportTargetDialog, type ImportTarget } from '@/components/fab/import-target-dialog';
+import { type ImportTarget,ImportTargetDialog } from '@/components/fab/import-target-dialog';
 import { postImportsTabs } from '@/lib/api/imports-client';
 
 export default function KanbanIndexPage() {
