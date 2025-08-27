@@ -36,5 +36,3 @@ export async function captureOpenTabs(options?: CaptureOptions): Promise<Capture
     }
   });
 }
-
-
