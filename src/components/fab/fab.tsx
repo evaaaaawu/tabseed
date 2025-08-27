@@ -20,8 +20,8 @@ export const Fab = forwardRef<HTMLButtonElement, FabProps>(function Fab(
 			)}
 			{...props}
 		>
-			<Plus className="h-5 w-5" />
-			<span className="hidden sm:inline text-sm font-medium">{label}</span>
+			<Plus className="size-5" />
+			<span className="hidden text-sm font-medium sm:inline">{label}</span>
 		</button>
 	);
 });
