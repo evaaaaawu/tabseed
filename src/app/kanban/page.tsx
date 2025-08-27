@@ -6,18 +6,19 @@ import { Fab } from '@/components/fab/fab';
 import { type ImportTarget,ImportTargetDialog } from '@/components/fab/import-target-dialog';
 import { ApiError } from '@/lib/api/errors';
 import { postImportsTabs } from '@/lib/api/imports-client';
+import { captureOpenTabs } from '@/lib/extension/bridge';
 
 export default function KanbanIndexPage() {
 	const [open, setOpen] = useState(false);
 
-	const handleConfirm = async (target: ImportTarget) => {
+	const handleConfirm = async (target: ImportTarget, options: { closeImported: boolean }) => {
 		try {
-			const tabs = [{ url: window.location.href, title: document.title }];
+			const tabs = await captureOpenTabs({ closeImported: options.closeImported });
 			await postImportsTabs(
 				{
 					tabs,
 					target: target.type === 'inbox' ? { inbox: true } : { boardId: target.boardId },
-					closeImported: false,
+					closeImported: options.closeImported,
 				},
 				{ idempotencyKey: crypto.randomUUID() },
 			);

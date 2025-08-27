@@ -13,17 +13,18 @@ export type ImportTarget =
 interface ImportTargetDialogProps {
 	readonly open: boolean;
 	readonly onOpenChange: (open: boolean) => void;
-	readonly onConfirm: (target: ImportTarget) => Promise<void> | void;
+	readonly onConfirm: (target: ImportTarget, options: { closeImported: boolean }) => Promise<void> | void;
 }
 
 export function ImportTargetDialog({ open, onOpenChange, onConfirm }: ImportTargetDialogProps) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [target, setTarget] = useState<ImportTarget>({ type: 'inbox' });
+	const [closeImported, setCloseImported] = useState(false);
 
 	const handleConfirm = async () => {
 		try {
 			setIsLoading(true);
-			await onConfirm(target);
+			await onConfirm(target, { closeImported });
 			onOpenChange(false);
 		} finally {
 			setIsLoading(false);
@@ -96,6 +97,17 @@ export function ImportTargetDialog({ open, onOpenChange, onConfirm }: ImportTarg
 							</div>
 						</div>
 					) : null}
+
+					<div className="mt-2 rounded-md border p-3">
+						<label className="inline-flex items-center gap-2 text-sm">
+							<input
+								type="checkbox"
+								checked={closeImported}
+								onChange={(e) => setCloseImported(e.target.checked)}
+							/>
+							匯入後關閉已擷取的分頁
+						</label>
+					</div>
 				</div>
 
 				<div className="mt-4 flex justify-end gap-2">
