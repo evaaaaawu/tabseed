@@ -20,7 +20,33 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
+## Observability
+
+- Metrics endpoint: `GET /api/metrics` (Prometheus format)
+- Web Vitals: automatically collected on client and POST to `/api/telemetry/web-vitals`
+- Client error reporting: POST to `/api/telemetry/client-error`
+
+### Local Prometheus + Grafana
+
+```
+pnpm dev
+docker compose up -d prometheus grafana
+```
+
+- Prometheus UI: `http://localhost:9090`
+- Grafana UI: `http://localhost:3001` (admin/admin)
+- Prometheus scrapes Next at `http://host.docker.internal:3000/api/metrics`
+
+### Grafana Dashboard import
+
+1. 打開 Grafana → Dashboards → New → Import
+2. 上傳 `ops/grafana/tabseed-dashboard.json`
+3. 選擇 Prometheus data source → Import
+4. 你會看到 4 個核心面板（RPS、Error Rate、p95、LCP p75）
+
+### Env
+
+Copy `ENV_EXAMPLE.txt` to `.env.local` and adjust.
 
 To learn more about Next.js, take a look at the following resources:
 
@@ -29,7 +55,7 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## Learn More
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
