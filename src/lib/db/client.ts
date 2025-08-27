@@ -1,8 +1,8 @@
 import 'dotenv/config';
 
+import { getOrCreateGauge, getOrCreateHistogram } from '@/lib/observability/metrics';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
-import { getOrCreateGauge, getOrCreateHistogram } from '@/lib/observability/metrics';
 
 import * as schema from './schema';
 
