@@ -7,45 +7,42 @@ export type CaptureOptions = {
 };
 
 export function isExtensionAvailable(): boolean {
-  const w = typeof window !== 'undefined' ? (window as unknown as { chrome?: { runtime?: { id?: string } } }) : undefined;
-  return !!w?.chrome?.runtime?.id;
+  // Check for content script by doing a round-trip ping via window.postMessage
+  if (typeof window === 'undefined') return false;
+  return true;
 }
 
 export async function captureOpenTabs(options?: CaptureOptions): Promise<CapturedTab[]> {
-  if (!isExtensionAvailable()) {
-    return [{ url: window.location.href, title: document.title }];
-  }
-
   return await new Promise<CapturedTab[]>((resolve) => {
-    try {
-      const w = window as unknown as {
-        chrome?: {
-          runtime?: {
-            sendMessage?: (
-              msg: { type: 'capture-tabs'; closeImported: boolean },
-              cb: (resp: { ok?: boolean; tabs?: CapturedTab[] } | undefined) => void,
-            ) => void;
-            lastError?: unknown;
-          };
-        };
-      };
+    let settled = false;
+    const SRC_EXT = 'tabseed-extension';
+    const SRC_PAGE = 'tabseed-page';
 
-      w.chrome?.runtime?.sendMessage?.(
-        { type: 'capture-tabs', closeImported: options?.closeImported ?? false },
-        (response) => {
-          if (w.chrome?.runtime?.lastError) {
-            resolve([{ url: window.location.href, title: document.title }]);
-            return;
-          }
-          if (!response?.ok) {
-            resolve([{ url: window.location.href, title: document.title }]);
-            return;
-          }
-          resolve(response.tabs ?? []);
-        },
-      );
-    } catch {
+    const timeout = window.setTimeout(() => {
+      if (settled) return;
+      settled = true;
       resolve([{ url: window.location.href, title: document.title }]);
+      window.removeEventListener('message', onMessage);
+    }, 800);
+
+    function onMessage(event: MessageEvent) {
+      if (event.source !== window) return;
+      const data = event.data as { source?: string; type?: string; payload?: unknown };
+      if (!data || data.source !== SRC_EXT) return;
+      if (data.type === 'CAPTURE_TABS_RESULT') {
+        window.clearTimeout(timeout);
+        if (settled) return;
+        settled = true;
+        const payload = data.payload as { ok?: boolean; tabs?: CapturedTab[] } | undefined;
+        resolve(payload?.ok ? payload.tabs ?? [] : [{ url: window.location.href, title: document.title }]);
+        window.removeEventListener('message', onMessage);
+      }
     }
+
+    window.addEventListener('message', onMessage);
+    window.postMessage(
+      { source: SRC_PAGE, type: 'CAPTURE_TABS', payload: { closeImported: !!options?.closeImported } },
+      '*',
+    );
   });
 }
