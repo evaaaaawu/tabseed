@@ -1,3 +1,5 @@
+# TabSeed
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
@@ -60,3 +62,15 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Chrome Extension (development)
+
+1. Build is not required. Load as unpacked directly:
+   - Open Chrome → Extensions → Enable Developer mode
+   - Click "Load unpacked"
+   - Select `extensions/chrome`
+2. Verify the service worker is running; click the extension details → Service worker.
+3. From the app (Inbox/Kanban), click the "匯入分頁" FAB → choose target and optionally enable "匯入後關閉已擷取的分頁".
+4. Without the extension installed, the app falls back to capturing only the current tab.
+
+> Files: `extensions/chrome/manifest.json`, `background.js`, `content.js`.
