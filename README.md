@@ -37,6 +37,13 @@ docker compose up -d prometheus grafana
 - Grafana UI: `http://localhost:3001` (admin/admin)
 - Prometheus scrapes Next at `http://host.docker.internal:3000/api/metrics`
 
+### Grafana Dashboard import
+
+1. 打開 Grafana → Dashboards → New → Import
+2. 上傳 `ops/grafana/tabseed-dashboard.json`
+3. 選擇 Prometheus data source → Import
+4. 你會看到 4 個核心面板（RPS、Error Rate、p95、LCP p75）
+
 ### Env
 
 Copy `ENV_EXAMPLE.txt` to `.env.local` and adjust.
