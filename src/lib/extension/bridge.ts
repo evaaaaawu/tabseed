@@ -12,6 +12,38 @@ export function isExtensionAvailable(): boolean {
   return true;
 }
 
+export async function pingExtension(timeoutMs = 500): Promise<boolean> {
+  if (typeof window === 'undefined') return false;
+  return await new Promise<boolean>((resolve) => {
+    let settled = false;
+    const SRC_EXT = 'tabseed-extension';
+    const SRC_PAGE = 'tabseed-page';
+
+    const timeout = window.setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      resolve(false);
+      window.removeEventListener('message', onMessage as EventListener);
+    }, timeoutMs);
+
+    function onMessage(event: MessageEvent) {
+      if (event.source !== window) return;
+      const data = event.data as { source?: string; type?: string };
+      if (!data || data.source !== SRC_EXT) return;
+      if (data.type === 'PONG') {
+        window.clearTimeout(timeout);
+        if (settled) return;
+        settled = true;
+        resolve(true);
+        window.removeEventListener('message', onMessage as EventListener);
+      }
+    }
+
+    window.addEventListener('message', onMessage as EventListener);
+    window.postMessage({ source: SRC_PAGE, type: 'PING' }, '*');
+  });
+}
+
 export async function captureOpenTabs(options?: CaptureOptions): Promise<CapturedTab[]> {
   return await new Promise<CapturedTab[]>((resolve) => {
     let settled = false;
