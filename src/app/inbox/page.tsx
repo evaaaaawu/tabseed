@@ -3,11 +3,11 @@
 import { useState } from 'react';
 
 import { Fab } from '@/components/fab/fab';
-import { type ImportTarget,ImportTargetDialog } from '@/components/fab/import-target-dialog';
+import { type ImportTarget, ImportTargetDialog } from '@/components/fab/import-target-dialog';
+import { useExtensionStatus } from '@/hooks/use-extension-status';
 import { ApiError } from '@/lib/api/errors';
 import { postImportsTabs } from '@/lib/api/imports-client';
 import { captureOpenTabs } from '@/lib/extension/bridge';
-import { useExtensionStatus } from '@/hooks/use-extension-status';
 
 export default function InboxPage() {
 	const [open, setOpen] = useState(false);
@@ -38,7 +38,7 @@ export default function InboxPage() {
 	return (
 		<div className="min-h-[60svh] p-6">
 			<h1 className="mb-4 text-2xl font-bold">Inbox</h1>
-			<p className="text-muted-foreground">這裡會顯示匯入的分頁清單（MVP 先放置佔位）。</p>
+			<p className="text-muted-foreground">這裡是 Inbox 頁面。</p>
 			<div className="mt-2 text-xs text-muted-foreground">
 				擴充狀態：{extStatus === 'unknown' ? '檢測中…' : extStatus === 'available' ? '可用' : '未偵測到（將採用單頁擷取）'}
 			</div>
