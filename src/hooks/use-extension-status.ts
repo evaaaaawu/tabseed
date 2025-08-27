@@ -21,5 +21,3 @@ export function useExtensionStatus(): ExtensionStatus {
 
   return status;
 }
-
-
