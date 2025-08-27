@@ -1,14 +1,17 @@
-import { store } from '@/lib/data/store';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { beforeEach, describe, expect, it } from 'vitest';
+
+import { store } from '@/lib/data/store';
+
 import { handleImportsTabs, ImportsTabsBodySchema } from './handle-imports-tabs';
 
 describe('handleImportsTabs', () => {
   beforeEach(() => {
-    // @ts-expect-error access private for resetting in tests via any
+    // @ts-expect-error testing: access private store internals to reset state between tests
     (store as any).tabs?.clear?.();
-    // @ts-expect-error
+    // @ts-expect-error testing: access private store internals to reset state between tests
     (store as any).byOwnerAndUrl?.clear?.();
-    // @ts-expect-error
+    // @ts-expect-error testing: access private store internals to reset state between tests
     (store as any).idempotency?.clear?.();
   });
 
