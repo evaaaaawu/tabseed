@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: tabseed_pg
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: tabseed
+      POSTGRES_PASSWORD: tabseed
+      POSTGRES_DB: tabseed
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:
