@@ -1,6 +1,6 @@
+import { reportWebVitals } from '@/lib/observability/web-vitals-reporter';
 import type { Metadata } from 'next';
 import './globals.css';
-import { reportWebVitals } from '@/lib/observability/web-vitals-reporter';
 
 export const metadata: Metadata = {
   title: 'TabSeed',
@@ -12,11 +12,7 @@ export function reportWebVitalsNext(metric: any) {
   reportWebVitals(metric);
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>{children}</body>
@@ -26,7 +22,6 @@ export default function RootLayout({
 
 import './globals.css';
 
-import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 
 const geistSans = Geist({

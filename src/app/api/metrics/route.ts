@@ -1,5 +1,5 @@
-import { NextRequest } from 'next/server';
 import { getMetrics } from '@/lib/observability/metrics';
+import { NextRequest } from 'next/server';
 
 export const runtime = 'nodejs';
 
@@ -14,5 +14,3 @@ export async function GET(_req: NextRequest): Promise<Response> {
     },
   });
 }
-
-

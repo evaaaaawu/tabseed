@@ -1,5 +1,5 @@
-import pino from 'pino';
 import { nanoid } from 'nanoid';
+import pino from 'pino';
 
 declare global {
   // eslint-disable-next-line no-var
@@ -30,5 +30,3 @@ export const bindRequestId = (headers: Headers): string => {
   if (existing) return existing;
   return `req_${nanoid(12)}`;
 };
-
-
