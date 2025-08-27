@@ -99,7 +99,7 @@ export async function handleImportsTabsAsync(
   const { idempotencyKey, ownerId, body } = input;
 
   if (idempotencyKey) {
-    const cached = store.getIdempotentResult(idempotencyKey);
+    const cached = await store.getIdempotentResult(idempotencyKey);
     if (cached) return cached.response;
   }
 

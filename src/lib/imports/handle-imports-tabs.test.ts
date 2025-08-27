@@ -7,12 +7,9 @@ import { handleImportsTabs, ImportsTabsBodySchema } from './handle-imports-tabs'
 
 describe('handleImportsTabs', () => {
   beforeEach(() => {
-    // @ts-expect-error testing: access private store internals to reset state between tests
     (store as any).tabs?.clear?.();
-    // @ts-expect-error testing: access private store internals to reset state between tests
     (store as any).byOwnerAndUrl?.clear?.();
-    // @ts-expect-error testing: access private store internals to reset state between tests
-    (store as any).idempotency?.clear?.();
+    (store as any).memoryIdempotency?.clear?.();
   });
 
   it('validates body schema', () => {

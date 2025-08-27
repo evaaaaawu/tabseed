@@ -1,5 +1,6 @@
 "use client";
 
+import Link from 'next/link';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -40,9 +41,9 @@ export default function LoginPage() {
 					<Button type="submit" disabled={isLoading}>
 						{isLoading ? "登入中..." : "登入"}
 					</Button>
-					<a className="text-sm text-primary underline" href="/">
+					<Link className="text-sm text-primary underline" href="/">
 						回首頁
-					</a>
+					</Link>
 				</div>
 				{error ? <div className="text-sm text-destructive">{error}</div> : null}
 			</form>

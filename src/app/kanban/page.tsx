@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 import { Fab } from '@/components/fab/fab';
 import { type ImportTarget,ImportTargetDialog } from '@/components/fab/import-target-dialog';
+import { ApiError } from '@/lib/api/errors';
 import { postImportsTabs } from '@/lib/api/imports-client';
 
 export default function KanbanIndexPage() {
@@ -21,12 +22,11 @@ export default function KanbanIndexPage() {
 				{ idempotencyKey: crypto.randomUUID() },
 			);
 		} catch (err) {
-			// @ts-expect-error check unauthorized flag from client
-			if ((err as any)?.isUnauthorized) {
+			if (err instanceof ApiError && err.isUnauthorized) {
 				window.location.href = '/login';
 				return;
 			}
-			throw err;
+			throw err as Error;
 		}
 	};
 
