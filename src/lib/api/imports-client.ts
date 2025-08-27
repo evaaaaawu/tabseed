@@ -1,5 +1,6 @@
 "use client";
 
+import { ApiError } from '@/lib/api/errors';
 import type { ImportsTabsBody } from '@/lib/imports/handle-imports-tabs';
 
 const API_VERSION = '2025-08-19';
@@ -27,11 +28,7 @@ export async function postImportsTabs(
 
 	if (!res.ok) {
 		const errText = await res.text();
-		const err = new Error(`POST /api/imports/tabs failed: ${res.status} ${errText}`);
-		// 在呼叫端可依據此旗標導向登入頁
-		// @ts-expect-error mark auth error for caller
-		(err as any).isUnauthorized = res.status === 401;
-		throw err;
+		throw new ApiError(`POST /api/imports/tabs failed`, res.status, errText);
 	}
 	return (await res.json()) as ImportsTabsResponse;
 }
