@@ -27,7 +27,11 @@ export async function postImportsTabs(
 
 	if (!res.ok) {
 		const errText = await res.text();
-		throw new Error(`POST /api/imports/tabs failed: ${res.status} ${errText}`);
+		const err = new Error(`POST /api/imports/tabs failed: ${res.status} ${errText}`);
+		// 在呼叫端可依據此旗標導向登入頁
+		// @ts-expect-error mark auth error for caller
+		(err as any).isUnauthorized = res.status === 401;
+		throw err;
 	}
 	return (await res.json()) as ImportsTabsResponse;
 }

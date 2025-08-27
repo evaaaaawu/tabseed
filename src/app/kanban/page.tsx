@@ -10,15 +10,24 @@ export default function KanbanIndexPage() {
 	const [open, setOpen] = useState(false);
 
 	const handleConfirm = async (target: ImportTarget) => {
-		const tabs = [{ url: window.location.href, title: document.title }];
-		await postImportsTabs(
-			{
-				tabs,
-				target: target.type === 'inbox' ? { inbox: true } : { boardId: target.boardId },
-				closeImported: false,
-			},
-			{ idempotencyKey: crypto.randomUUID() },
-		);
+		try {
+			const tabs = [{ url: window.location.href, title: document.title }];
+			await postImportsTabs(
+				{
+					tabs,
+					target: target.type === 'inbox' ? { inbox: true } : { boardId: target.boardId },
+					closeImported: false,
+				},
+				{ idempotencyKey: crypto.randomUUID() },
+			);
+		} catch (err) {
+			// @ts-expect-error check unauthorized flag from client
+			if ((err as any)?.isUnauthorized) {
+				window.location.href = '/login';
+				return;
+			}
+			throw err;
+		}
 	};
 
 	return (
