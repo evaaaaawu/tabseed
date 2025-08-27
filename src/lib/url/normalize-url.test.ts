@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { isDuplicate, normalizeUrl } from './normalize-url';
 
 // Helper

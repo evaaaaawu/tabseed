@@ -1,7 +1,9 @@
-import type { DbClient } from '@/lib/db/client';
-import { schema } from '@/lib/db/client';
 import { eq } from 'drizzle-orm';
 import { ulid } from 'ulid';
+
+import type { DbClient } from '@/lib/db/client';
+import { schema } from '@/lib/db/client';
+
 import type { TabSeedTab } from './store';
 
 export interface TabsRepository {
