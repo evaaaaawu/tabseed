@@ -4,13 +4,21 @@ import { useState } from 'react';
 
 import { Fab } from '@/components/fab/fab';
 import { ImportTargetDialog, type ImportTarget } from '@/components/fab/import-target-dialog';
+import { postImportsTabs } from '@/lib/api/imports-client';
 
 export default function KanbanIndexPage() {
 	const [open, setOpen] = useState(false);
 
-	const handleConfirm = async (_target: ImportTarget) => {
-		// 後續會呼叫 imports API，這步先佔位
-		await new Promise((r) => setTimeout(r, 300));
+	const handleConfirm = async (target: ImportTarget) => {
+		const tabs = [{ url: window.location.href, title: document.title }];
+		await postImportsTabs(
+			{
+				tabs,
+				target: target.type === 'inbox' ? { inbox: true } : { boardId: target.boardId },
+				closeImported: false,
+			},
+			{ idempotencyKey: crypto.randomUUID() },
+		);
 	};
 
 	return (
