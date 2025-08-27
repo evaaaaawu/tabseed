@@ -1,4 +1,4 @@
-import { collectDefaultMetrics, Counter, Histogram, Registry } from 'prom-client';
+import { collectDefaultMetrics, Counter, Gauge, Histogram, Registry } from 'prom-client';
 
 declare global {
   // eslint-disable-next-line no-var
@@ -87,4 +87,54 @@ export const measureApiHandler = async <T extends Response | Promise<Response>>(
       .observe(Date.now() - start);
     throw error;
   }
+};
+
+// Generic helpers to avoid "metric already registered" under HMR
+export const getOrCreateHistogram = (
+  name: string,
+  help: string,
+  options?: { labelNames?: string[]; buckets?: number[] },
+): Histogram<string> => {
+  const { register } = getMetrics();
+  const existing = register.getSingleMetric(name) as Histogram<string> | undefined;
+  if (existing) return existing;
+  return new Histogram({
+    name,
+    help,
+    labelNames: options?.labelNames ?? [],
+    buckets: options?.buckets,
+    registers: [register],
+  });
+};
+
+export const getOrCreateCounter = (
+  name: string,
+  help: string,
+  options?: { labelNames?: string[] },
+): Counter<string> => {
+  const { register } = getMetrics();
+  const existing = register.getSingleMetric(name) as Counter<string> | undefined;
+  if (existing) return existing;
+  return new Counter({
+    name,
+    help,
+    labelNames: options?.labelNames ?? [],
+    registers: [register],
+  });
+};
+
+export const getOrCreateGauge = (
+  name: string,
+  help: string,
+  options?: { labelNames?: string[] },
+): Gauge<string> => {
+  const { register } = getMetrics();
+  const existing = register.getSingleMetric(name) as Gauge<string> | undefined;
+  if (existing) return existing;
+  return new Gauge({
+    name,
+    help,
+    labelNames: options?.labelNames ?? [],
+    registers: [register],
+  });
 };
