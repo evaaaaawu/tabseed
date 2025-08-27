@@ -78,6 +78,9 @@ importers:
       '@types/node':
         specifier: ^20
         version: 20.19.11
+      '@types/pg':
+        specifier: ^8.15.5
+        version: 8.15.5
       '@types/react':
         specifier: ^19
         version: 19.1.10
@@ -4159,7 +4162,6 @@ snapshots:
       '@types/node': 20.19.11
       pg-protocol: 1.10.3
       pg-types: 2.2.0
-    optional: true
 
   '@types/react-dom@19.1.7(@types/react@19.1.10)':
     dependencies:
