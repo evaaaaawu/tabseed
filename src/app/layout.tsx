@@ -1,3 +1,29 @@
+import type { Metadata } from 'next';
+import './globals.css';
+import { reportWebVitals } from '@/lib/observability/web-vitals-reporter';
+
+export const metadata: Metadata = {
+  title: 'TabSeed',
+  description: 'Manage tabs frictionlessly',
+};
+
+export function reportWebVitalsNext(metric: any) {
+  // Next.js calls this on the client
+  reportWebVitals(metric);
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  );
+}
+
 import './globals.css';
 
 import type { Metadata } from 'next';
