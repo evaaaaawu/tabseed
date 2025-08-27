@@ -1,5 +1,5 @@
-import { NextRequest } from 'next/server';
 import { getLogger } from '@/lib/observability/logger';
+import { NextRequest } from 'next/server';
 
 export const runtime = 'nodejs';
 
@@ -12,5 +12,3 @@ export async function GET(req: NextRequest): Promise<Response> {
     headers: { 'Content-Type': 'application/json' },
   });
 }
-
-

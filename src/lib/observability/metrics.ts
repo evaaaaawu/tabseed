@@ -88,5 +88,3 @@ export const measureApiHandler = async <T extends Response | Promise<Response>>(
     throw error;
   }
 };
-
-

@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { bindRequestId } from '@/lib/observability/logger';
+import { NextRequest, NextResponse } from 'next/server';
 
 export function middleware(req: NextRequest) {
   const requestId = bindRequestId(req.headers);
@@ -11,5 +11,3 @@ export function middleware(req: NextRequest) {
 export const config = {
   matcher: ['/((?!_next|static|favicon.ico).*)'],
 };
-
-

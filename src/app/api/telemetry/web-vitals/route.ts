@@ -1,6 +1,6 @@
-import { NextRequest } from 'next/server';
 import { getLogger } from '@/lib/observability/logger';
 import { getMetrics } from '@/lib/observability/metrics';
+import { NextRequest } from 'next/server';
 
 export const runtime = 'nodejs';
 
@@ -19,9 +19,7 @@ export async function POST(req: NextRequest): Promise<Response> {
     const payload = (await req.json()) as WebVitalsPayload;
     logger.info({ type: 'web-vitals', payload });
     // Simple count per metric name
-    httpRequestCounter
-      .labels('POST', '/api/telemetry/web-vitals', '200')
-      .inc(1);
+    httpRequestCounter.labels('POST', '/api/telemetry/web-vitals', '200').inc(1);
     return new Response(JSON.stringify({ ok: true }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
@@ -34,5 +32,3 @@ export async function POST(req: NextRequest): Promise<Response> {
     });
   }
 }
-
-

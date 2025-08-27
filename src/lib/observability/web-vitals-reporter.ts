@@ -1,4 +1,4 @@
-import type { ReportCallback, Metric } from 'web-vitals';
+import type { Metric, ReportCallback } from 'web-vitals';
 
 export const reportWebVitals: ReportCallback = async (metric: Metric) => {
   try {
@@ -20,5 +20,3 @@ export const reportWebVitals: ReportCallback = async (metric: Metric) => {
     // swallow
   }
 };
-
-
