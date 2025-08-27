@@ -1,6 +1,7 @@
-import { clearSession, getSessionOrNull, setSession } from '@/lib/session';
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
+
+import { clearSession, getSessionOrNull, setSession } from '@/lib/session';
 
 const Body = z.object({ code: z.string().min(1) });
 
