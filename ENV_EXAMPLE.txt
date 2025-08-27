@@ -1,3 +1,4 @@
 # Copy to .env.local and adjust as needed
 DATABASE_URL=postgresql://tabseed:tabseed@localhost:5432/tabseed
 TEST_LOGIN_CODES=dev123,dev456
+LOG_LEVEL=debug
