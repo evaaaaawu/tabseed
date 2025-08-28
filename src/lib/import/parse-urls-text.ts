@@ -3,7 +3,7 @@ import type { CapturedTab } from '@/lib/extension/bridge';
 /**
  * Parse text containing URLs (one per line) and extract tab data.
  * Each line can contain a URL optionally followed by a title.
- * 
+ *
  * @param input - Raw text input with URLs
  * @returns Array of captured tabs
  */

@@ -3,17 +3,17 @@ import type { CapturedTab } from '@/lib/extension/bridge';
 /**
  * Parse a Netscape Bookmark HTML file and extract tab data.
  * Supports standard bookmark export format from major browsers.
- * 
+ *
  * @param file - The bookmark HTML file
  * @returns Promise resolving to array of captured tabs
  */
 export async function parseBookmarksHtml(file: File): Promise<CapturedTab[]> {
   const text = await file.text();
   const doc = new DOMParser().parseFromString(text, 'text/html');
-  
+
   // Find all anchor elements with href attributes
   const anchors = Array.from(doc.querySelectorAll('a[href]'));
-  
+
   const tabs = anchors
     .map(a => {
       const url = a.getAttribute('href');
