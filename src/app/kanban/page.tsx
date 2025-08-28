@@ -36,21 +36,29 @@ export default function KanbanIndexPage() {
 	};
 
 	return (
-		<div className="min-h-[60svh] p-6">
-			<h1 className="mb-4 text-2xl font-bold">Kanban</h1>
-			<p className="text-muted-foreground">This is the Kanban entry point.</p>
-			<div className="mt-2 text-xs text-muted-foreground">
-				Extension status: {extStatus === 'unknown' ? 'Detecting...' : extStatus === 'available' ? 'Available' : 'Not detected (single tab capture will be used)'}
-			</div>
-			{lastResult ? (
-				<div className="mt-3 rounded-md border p-3 text-sm">
-					<div className="font-medium">Latest import result</div>
-					<div className="mt-1 text-muted-foreground">created: {lastResult.created}, reused: {lastResult.reused}, ignored: {lastResult.ignored}</div>
-				</div>
-			) : null}
+    <div className="min-h-[60svh] p-6">
+      <h1 className="mb-4 text-2xl font-bold">Kanban</h1>
+      <p className="text-muted-foreground">This is the Kanban entry point.</p>
+      <div className="mt-2 text-xs text-muted-foreground">
+        Extension status:{' '}
+        {extStatus === 'unknown'
+          ? 'Detecting...'
+          : extStatus === 'available'
+            ? 'Available'
+            : 'Not detected (single tab capture will be used)'}
+      </div>
+      {lastResult ? (
+        <div className="mt-3 rounded-md border p-3 text-sm">
+          <div className="font-medium">Latest import result</div>
+          <div className="mt-1 text-muted-foreground">
+            created: {lastResult.created}, reused: {lastResult.reused}, ignored:{' '}
+            {lastResult.ignored}
+          </div>
+        </div>
+      ) : null}
 
-			<Fab label="Import Tabs" onClick={() => setOpen(true)} />
-			<ImportTargetDialog open={open} onOpenChange={setOpen} onConfirm={handleConfirm} />
-		</div>
-	);
+      <Fab label="Import Tabs" onClick={() => setOpen(true)} />
+      <ImportTargetDialog open={open} onOpenChange={setOpen} onConfirm={handleConfirm} />
+    </div>
+  );
 }
