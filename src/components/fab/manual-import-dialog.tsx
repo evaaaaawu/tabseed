@@ -1,7 +1,7 @@
 "use client";
 
 import { BookOpen, Download, Link, Loader2, Upload, X } from 'lucide-react';
-import { Fragment, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import type { CapturedTab } from '@/lib/extension/bridge';
@@ -16,11 +16,33 @@ interface ManualImportDialogProps {
 
 type ImportMethod = 'bookmarks' | 'urls' | 'guide';
 
+function isMobileOrTablet(): boolean {
+	if (typeof navigator === 'undefined') return false;
+	return /Mobi|Android|iPhone|iPad|iPod|Mobile|Tablet/i.test(navigator.userAgent);
+}
+
+function isChromeBasedDesktop(): boolean {
+	if (typeof navigator === 'undefined') return false;
+	const ua = navigator.userAgent;
+	const isDesktop = !/Mobi|Android|iPhone|iPad|iPod|Mobile|Tablet/i.test(ua);
+	const isChromeFamily = /(Chrome|Chromium|Edg|OPR|Brave)/i.test(ua);
+	return isDesktop && isChromeFamily;
+}
+
 export function ManualImportDialog({ open, onOpenChange, onSubmit }: ManualImportDialogProps) {
 	const [method, setMethod] = useState<ImportMethod>('guide');
 	const [isLoading, setIsLoading] = useState(false);
 	const [urlsText, setUrlsText] = useState('');
 	const fileInputRef = useRef<HTMLInputElement>(null);
+
+	// Reset state on each open to avoid remembering previous state
+	useEffect(() => {
+		if (open) {
+			setMethod('guide');
+			setUrlsText('');
+			setIsLoading(false);
+		}
+	}, [open]);
 
 	const handleBookmarkUpload = async (file: File) => {
 		try {
@@ -83,19 +105,20 @@ export function ManualImportDialog({ open, onOpenChange, onSubmit }: ManualImpor
               Choose how you'd like to import your tabs:
             </p>
 
-            <button
-              className="flex w-full items-center gap-3 rounded-md border p-3 text-left hover:bg-accent"
-              onClick={() => setMethod('bookmarks')}
-            >
-              <BookOpen className="size-5 text-primary" />
-              <div>
-                <div className="font-medium">Import from Bookmarks</div>
-                <div className="text-xs text-muted-foreground">
-                  Recommended: Upload a bookmark HTML file
+            {/* 1) Recommend installing extension (desktop Chrome-based only) */}
+            {!isMobileOrTablet() && isChromeBasedDesktop() ? (
+              <div className="rounded-md border border-amber-200 bg-amber-50 p-3 dark:border-amber-800 dark:bg-amber-950">
+                <div className="flex items-start gap-2">
+                  <Download className="mt-0.5 size-4 text-amber-600" />
+                  <div className="text-xs text-amber-800 dark:text-amber-200">
+                    <p className="font-medium">TabSeed Helper extension recommended</p>
+                    <p>Install the extension for automatic tab capture and closing.</p>
+                  </div>
                 </div>
               </div>
-            </button>
+            ) : null}
 
+            {/* 2) Paste URLs */}
             <button
               className="flex w-full items-center gap-3 rounded-md border p-3 text-left hover:bg-accent"
               onClick={() => setMethod('urls')}
@@ -109,15 +132,26 @@ export function ManualImportDialog({ open, onOpenChange, onSubmit }: ManualImpor
               </div>
             </button>
 
-            <div className="rounded-md border border-amber-200 bg-amber-50 p-3 dark:border-amber-800 dark:bg-amber-950">
-              <div className="flex items-start gap-2">
-                <Download className="mt-0.5 size-4 text-amber-600" />
-                <div className="text-xs text-amber-800 dark:text-amber-200">
-                  <p className="font-medium">Extension recommended</p>
-                  <p>Install the TabSeed extension for automatic tab capture and closing.</p>
+            {/* 3) Import from Bookmarks */}
+            <button
+              className="flex w-full items-center gap-3 rounded-md border p-3 text-left hover:bg-accent"
+              onClick={() => setMethod('bookmarks')}
+            >
+              <BookOpen className="size-5 text-primary" />
+              <div>
+                <div className="font-medium">Import from Bookmarks</div>
+                <div className="text-xs text-muted-foreground">
+                  Upload a bookmark HTML file
                 </div>
               </div>
-            </div>
+            </button>
+
+            {/* Non-Chrome-based desktop notice */}
+            {!isMobileOrTablet() && !isChromeBasedDesktop() ? (
+              <div className="rounded-md border border-red-200 bg-red-50 p-3 text-xs text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-200">
+                For best experience, we recommend a Chrome-based desktop browser (Chrome, Edge, Brave, Opera) with the TabSeed Helper extension.
+              </div>
+            ) : null}
           </div>
         )}
 

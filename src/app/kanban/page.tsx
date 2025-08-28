@@ -84,7 +84,8 @@ export default function KanbanIndexPage() {
         </div>
       ) : null}
 
-      <Fab label="Import Tabs" onClick={() => setOpen(true)} />
+      <Fab label="Import Tabs" onClick={() => setOpenManual(true)} />
+      {/* Extension flow intentionally bypassed when manual import is opened directly */}
       <ImportTargetDialog open={open} onOpenChange={setOpen} onConfirm={handleConfirm} />
       <ManualImportDialog
         open={openManual}
