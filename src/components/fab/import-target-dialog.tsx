@@ -41,7 +41,7 @@ export function ImportTargetDialog({ open, onOpenChange, onConfirm }: ImportTarg
 				aria-hidden
 			/>
 			<div className="relative z-10 w-full max-w-md rounded-lg border bg-background p-4 shadow-2xl">
-				<h2 className="mb-3 text-lg font-semibold">匯入目標</h2>
+				<h2 className="mb-3 text-lg font-semibold">Import Target</h2>
 				<div className="space-y-2">
 					<button
 						className={cn(
@@ -53,7 +53,7 @@ export function ImportTargetDialog({ open, onOpenChange, onConfirm }: ImportTarg
 						<Inbox className="size-5" />
 						<div>
 							<div className="font-medium">Inbox</div>
-							<div className="text-xs text-muted-foreground">匯入到收件匣</div>
+							<div className="text-xs text-muted-foreground">Import to inbox</div>
 						</div>
 					</button>
 
@@ -68,7 +68,7 @@ export function ImportTargetDialog({ open, onOpenChange, onConfirm }: ImportTarg
 							<Layout className="size-5" />
 							<span>
 								<div className="font-medium">Kanban</div>
-								<div className="text-xs text-muted-foreground">匯入到指定看板</div>
+								<div className="text-xs text-muted-foreground">Import to specific board</div>
 							</span>
 						</span>
 						<ChevronDown className="size-4 opacity-60" />
@@ -76,7 +76,7 @@ export function ImportTargetDialog({ open, onOpenChange, onConfirm }: ImportTarg
 
 					{target.type === 'kanban' ? (
 						<div className="rounded-md border p-3">
-							<label className="mb-1 block text-xs text-muted-foreground">選擇看板（MVP 先以假資料）</label>
+							<label className="mb-1 block text-xs text-muted-foreground">Select board (MVP uses mock data)</label>
 							<div className="grid grid-cols-2 gap-2">
 								{[
 									{ id: 'board-1', name: 'Product' },
@@ -105,23 +105,23 @@ export function ImportTargetDialog({ open, onOpenChange, onConfirm }: ImportTarg
 								checked={closeImported}
 								onChange={(e) => setCloseImported(e.target.checked)}
 							/>
-							匯入後關閉已擷取的分頁
+							Close imported tabs after import
 						</label>
 					</div>
 				</div>
 
 				<div className="mt-4 flex justify-end gap-2">
 					<Button variant="secondary" onClick={() => onOpenChange(false)} disabled={isLoading}>
-						取消
+						Cancel
 					</Button>
 					<Button onClick={handleConfirm} disabled={isLoading}>
 						{isLoading ? (
 							<Fragment>
 								<Loader2 className="mr-2 size-4 animate-spin" />
-								匯入中
+								Importing
 							</Fragment>
 						) : (
-							'確認'
+							'Confirm'
 						)}
 					</Button>
 				</div>
