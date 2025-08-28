@@ -8,6 +8,7 @@ import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
 import { useExtensionStatus } from '@/hooks/use-extension-status';
 import { ApiError } from '@/lib/api/errors';
 import { importTabsAndSyncLocal } from '@/lib/data/import-tabs';
+import { useToast } from '@/components/ui/toast';
 import { captureOpenTabs, type CapturedTab } from '@/lib/extension/bridge';
 
 export default function KanbanIndexPage() {
@@ -19,6 +20,7 @@ export default function KanbanIndexPage() {
     ignored: number;
   } | null>(null);
   const extStatus = useExtensionStatus();
+  const { addToast } = useToast();
 
   const handleConfirm = async (target: ImportTarget, options: { closeImported: boolean }) => {
     try {
@@ -32,11 +34,13 @@ export default function KanbanIndexPage() {
       }
 
       await submitTabs(tabs, target, options.closeImported);
+      addToast({ variant: 'success', title: 'Import completed', description: 'Tabs imported to target.' });
     } catch (err) {
       if (err instanceof ApiError && err.isUnauthorized) {
         window.location.href = '/login';
         return;
       }
+      addToast({ variant: 'error', title: 'Import failed', description: (err as Error).message });
       throw err as Error;
     }
   };
@@ -44,6 +48,7 @@ export default function KanbanIndexPage() {
   const handleManualSubmit = async (tabs: CapturedTab[]) => {
     // Default to inbox for manual import on kanban page
     await submitTabs(tabs, { type: 'inbox' }, false);
+    addToast({ variant: 'success', title: 'Import completed', description: 'Tabs have been imported.' });
   };
 
   const submitTabs = async (tabs: CapturedTab[], target: ImportTarget, closeImported: boolean) => {
