@@ -38,18 +38,18 @@ export default function KanbanIndexPage() {
 	return (
 		<div className="min-h-[60svh] p-6">
 			<h1 className="mb-4 text-2xl font-bold">Kanban</h1>
-			<p className="text-muted-foreground">這裡是 Kanban 的入口。</p>
+			<p className="text-muted-foreground">This is the Kanban entry point.</p>
 			<div className="mt-2 text-xs text-muted-foreground">
-				擴充狀態：{extStatus === 'unknown' ? '檢測中…' : extStatus === 'available' ? '可用' : '未偵測到（將採用單頁擷取）'}
+				Extension status: {extStatus === 'unknown' ? 'Detecting...' : extStatus === 'available' ? 'Available' : 'Not detected (single tab capture will be used)'}
 			</div>
 			{lastResult ? (
 				<div className="mt-3 rounded-md border p-3 text-sm">
-					<div className="font-medium">最近一次匯入結果</div>
-					<div className="mt-1 text-muted-foreground">created: {lastResult.created}、reused: {lastResult.reused}、ignored: {lastResult.ignored}</div>
+					<div className="font-medium">Latest import result</div>
+					<div className="mt-1 text-muted-foreground">created: {lastResult.created}, reused: {lastResult.reused}, ignored: {lastResult.ignored}</div>
 				</div>
 			) : null}
 
-			<Fab label="匯入分頁" onClick={() => setOpen(true)} />
+			<Fab label="Import Tabs" onClick={() => setOpen(true)} />
 			<ImportTargetDialog open={open} onOpenChange={setOpen} onConfirm={handleConfirm} />
 		</div>
 	);
