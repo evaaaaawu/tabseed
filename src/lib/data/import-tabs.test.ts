@@ -1,10 +1,10 @@
 import 'fake-indexeddb/auto';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import * as api from '@/lib/api/imports-client';
-import { importTabsAndSyncLocal } from './import-tabs';
 import { resetDb } from '@/lib/idb/db';
 import { listAllTabs } from '@/lib/idb/tabs-repo';
+import { importTabsAndSyncLocal } from './import-tabs';
 
 describe('importTabsAndSyncLocal', () => {
   beforeEach(async () => {
@@ -33,5 +33,3 @@ describe('importTabsAndSyncLocal', () => {
     expect(all.map((t) => t.id).sort()).toEqual(['t1', 't2', 't3']);
   });
 });
-
-
