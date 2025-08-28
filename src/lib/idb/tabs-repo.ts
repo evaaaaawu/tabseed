@@ -1,5 +1,5 @@
-import type { TabUpsertInput, TabRecord } from './types';
 import { getDb } from './db';
+import type { TabRecord, TabUpsertInput } from './types';
 
 /**
  * Bulk upsert tabs into IndexedDB using Dexie.
@@ -33,5 +33,3 @@ export async function listAllTabs(): Promise<readonly TabRecord[]> {
   const db = getDb();
   return db.tabs.orderBy('id').toArray();
 }
-
-
