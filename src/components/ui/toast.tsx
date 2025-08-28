@@ -108,5 +108,3 @@ function Toaster({ toasts, onClose }: { readonly toasts: readonly Toast[]; reado
     </div>
   );
 }
-
-

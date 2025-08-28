@@ -1,5 +1,5 @@
-import { TooltipProvider } from '@/components/ui/tooltip';
 import { ToastProvider } from '@/components/ui/toast';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { reportWebVitals as _report } from '@/lib/observability/web-vitals-reporter';
 import Metadata from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
