@@ -111,7 +111,7 @@ export function ImportTargetDialog({ open, onOpenChange, onConfirm }: ImportTarg
 				</div>
 
 				<div className="mt-4 flex justify-end gap-2">
-					<Button variant="secondary" onClick={() => onOpenChange(false)} disabled={isLoading}>
+					<Button variant="ghost" onClick={() => onOpenChange(false)} disabled={isLoading}>
 						Cancel
 					</Button>
 					<Button onClick={handleConfirm} disabled={isLoading}>
