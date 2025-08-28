@@ -58,7 +58,7 @@ export default function InboxPage() {
 			<h1 className="mb-4 text-2xl font-bold">Inbox</h1>
 			<p className="text-muted-foreground">This is the Inbox page.</p>
 			<div className="mt-2 text-xs text-muted-foreground">
-				Extension status: {extStatus === 'unknown' ? 'Detecting...' : extStatus === 'available' ? 'Available' : 'Not detected (single tab capture will be used)'}
+				Extension status: {extStatus === 'unknown' ? 'Detecting...' : extStatus === 'available' ? 'Available' : 'Not detected (manual import will be available)'}
 			</div>
 			{lastResult ? (
 				<div className="mt-3 rounded-md border p-3 text-sm">
