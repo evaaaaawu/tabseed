@@ -3,6 +3,7 @@
 import { postImportsTabs } from '@/lib/api/imports-client';
 import { bulkUpsertTabs } from '@/lib/idb/tabs-repo';
 import type { TabUpsertInput } from '@/lib/idb/types';
+import type { ImportsTabsBody } from '@/lib/imports/handle-imports-tabs';
 
 type OpenTab = { url: string; title?: string };
 
@@ -11,13 +12,21 @@ type OpenTab = { url: string; title?: string };
  */
 export async function importTabsAndSyncLocal(
   openTabs: ReadonlyArray<OpenTab>,
-  options?: { idempotencyKey?: string },
+  input?: {
+    idempotencyKey?: string;
+    target?: ImportsTabsBody['target'];
+    closeImported?: boolean;
+  },
 ): Promise<{ created: number; reused: number; ignored: number }> {
   if (openTabs.length === 0) return { created: 0, reused: 0, ignored: 0 };
 
   const res = await postImportsTabs(
-    { tabs: openTabs.map((t) => ({ url: t.url, title: t.title })) },
-    { idempotencyKey: options?.idempotencyKey },
+    {
+      tabs: openTabs.map((t) => ({ url: t.url, title: t.title })),
+      target: input?.target,
+      closeImported: input?.closeImported,
+    },
+    { idempotencyKey: input?.idempotencyKey },
   );
 
   const toUpsert: TabUpsertInput = [...res.created, ...res.reused].map((t) => ({
