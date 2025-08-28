@@ -84,7 +84,12 @@ export default function InboxPage() {
       ) : null}
 
       <Fab label="Import Tabs" onClick={() => (extStatus === 'available' ? setOpen(true) : setOpenManual(true))} />
-      <ImportTargetDialog open={open} onOpenChange={setOpen} onConfirm={handleConfirm} />
+      <ImportTargetDialog
+        open={open}
+        onOpenChange={setOpen}
+        onConfirm={handleConfirm}
+        onSwitchToManual={() => setOpenManual(true)}
+      />
       <ManualImportDialog
         open={openManual}
         onOpenChange={setOpenManual}
