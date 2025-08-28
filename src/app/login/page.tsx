@@ -28,21 +28,21 @@ export default function LoginPage() {
 
 	return (
 		<div className="mx-auto max-w-md p-6">
-			<h1 className="mb-4 text-2xl font-bold">登入</h1>
-			<p className="mb-4 text-sm text-muted-foreground">輸入測試碼以登入 TabSeed。</p>
+			<h1 className="mb-4 text-2xl font-bold">Login</h1>
+			<p className="mb-4 text-sm text-muted-foreground">Enter test code to log in to TabSeed.</p>
 			<form onSubmit={handleSubmit} className="space-y-3">
 				<Input
-					placeholder="輸入測試碼"
+					placeholder="Enter test code"
 					value={code}
 					onChange={(e) => setCode(e.target.value)}
 					required
 				/>
 				<div className="flex items-center gap-2">
 					<Button type="submit" disabled={isLoading}>
-						{isLoading ? "登入中..." : "登入"}
+						{isLoading ? "Logging in..." : "Login"}
 					</Button>
 					<Link className="text-sm text-primary underline" href="/">
-						回首頁
+						Back to Home
 					</Link>
 				</div>
 				{error ? <div className="text-sm text-destructive">{error}</div> : null}
