@@ -53,7 +53,7 @@ export async function captureOpenTabs(options?: CaptureOptions): Promise<Capture
     const timeout = window.setTimeout(() => {
       if (settled) return;
       settled = true;
-      resolve([{ url: window.location.href, title: document.title }]);
+      resolve([]);
       window.removeEventListener('message', onMessage);
     }, 800);
 
@@ -66,7 +66,7 @@ export async function captureOpenTabs(options?: CaptureOptions): Promise<Capture
         if (settled) return;
         settled = true;
         const payload = data.payload as { ok?: boolean; tabs?: CapturedTab[] } | undefined;
-        resolve(payload?.ok ? payload.tabs ?? [] : [{ url: window.location.href, title: document.title }]);
+        resolve(payload?.ok ? payload.tabs ?? [] : []);
         window.removeEventListener('message', onMessage);
       }
     }
