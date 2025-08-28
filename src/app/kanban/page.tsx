@@ -5,11 +5,12 @@ import { useState } from 'react';
 import { Fab } from '@/components/fab/fab';
 import { ImportTargetDialog, type ImportTarget } from '@/components/fab/import-target-dialog';
 import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
+import { useToast } from '@/components/ui/toast';
 import { useExtensionStatus } from '@/hooks/use-extension-status';
 import { ApiError } from '@/lib/api/errors';
 import { importTabsAndSyncLocal } from '@/lib/data/import-tabs';
-import { useToast } from '@/components/ui/toast';
 import { captureOpenTabs, type CapturedTab } from '@/lib/extension/bridge';
+import { useAllTabs } from '@/lib/idb/hooks';
 
 export default function KanbanIndexPage() {
   const [open, setOpen] = useState(false);
@@ -21,6 +22,7 @@ export default function KanbanIndexPage() {
   } | null>(null);
   const extStatus = useExtensionStatus();
   const { addToast } = useToast();
+  const { tabs: localTabs, loading } = useAllTabs();
 
   const handleConfirm = async (target: ImportTarget, options: { closeImported: boolean }) => {
     try {
@@ -97,6 +99,25 @@ export default function KanbanIndexPage() {
         onOpenChange={setOpenManual}
         onSubmit={handleManualSubmit}
       />
+
+      <div className="mt-6">
+        <div className="mb-2 text-sm font-medium">Local tabs (IndexedDB)</div>
+        {loading ? (
+          <div className="text-xs text-muted-foreground">Loading...</div>
+        ) : localTabs.length === 0 ? (
+          <div className="text-xs text-muted-foreground">No tabs imported yet.</div>
+        ) : (
+          <ul className="space-y-2">
+            {localTabs.map((t) => (
+              <li key={t.id} className="truncate rounded-md border p-2 text-sm">
+                <a href={t.url} target="_blank" rel="noreferrer" className="underline">
+                  {t.title ?? t.url}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }
