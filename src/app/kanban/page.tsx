@@ -7,7 +7,7 @@ import { ImportTargetDialog, type ImportTarget } from '@/components/fab/import-t
 import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
 import { useExtensionStatus } from '@/hooks/use-extension-status';
 import { ApiError } from '@/lib/api/errors';
-import { postImportsTabs } from '@/lib/api/imports-client';
+import { importTabsAndSyncLocal } from '@/lib/data/import-tabs';
 import { captureOpenTabs, type CapturedTab } from '@/lib/extension/bridge';
 
 export default function KanbanIndexPage() {
@@ -47,19 +47,15 @@ export default function KanbanIndexPage() {
   };
 
   const submitTabs = async (tabs: CapturedTab[], target: ImportTarget, closeImported: boolean) => {
-    const res = await postImportsTabs(
+    const result = await importTabsAndSyncLocal(
+      tabs.map((t) => ({ url: t.url, title: t.title })),
       {
-        tabs,
+        idempotencyKey: crypto.randomUUID(),
         target: target.type === 'inbox' ? { inbox: true } : { boardId: target.boardId },
         closeImported,
       },
-      { idempotencyKey: crypto.randomUUID() },
     );
-    setLastResult({
-      created: res.created.length,
-      reused: res.reused.length,
-      ignored: res.ignored.length,
-    });
+    setLastResult(result);
   };
 
   return (
