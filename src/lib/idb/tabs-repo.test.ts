@@ -1,5 +1,5 @@
 import 'fake-indexeddb/auto';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { resetDb } from './db';
 import { bulkUpsertTabs, listAllTabs } from './tabs-repo';
@@ -30,5 +30,3 @@ describe('tabs-repo bulk upsert', () => {
     expect(t2?.title).toBe('B updated');
   });
 });
-
-
