@@ -8,6 +8,7 @@ import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
 import { useExtensionStatus } from '@/hooks/use-extension-status';
 import { ApiError } from '@/lib/api/errors';
 import { importTabsAndSyncLocal } from '@/lib/data/import-tabs';
+import { useToast } from '@/components/ui/toast';
 import { captureOpenTabs, type CapturedTab } from '@/lib/extension/bridge';
 
 export default function InboxPage() {
@@ -19,6 +20,7 @@ export default function InboxPage() {
     ignored: number;
   } | null>(null);
   const extStatus = useExtensionStatus();
+  const { addToast } = useToast();
 
   const handleConfirm = async (target: ImportTarget, options: { closeImported: boolean }) => {
     try {
@@ -32,17 +34,24 @@ export default function InboxPage() {
       }
 
       await submitTabs(tabs, target, options.closeImported);
+      addToast({
+        variant: 'success',
+        title: 'Import completed',
+        description: 'Tabs have been imported and synced locally.',
+      });
     } catch (err) {
       if (err instanceof ApiError && err.isUnauthorized) {
         window.location.href = '/login';
         return;
       }
+      addToast({ variant: 'error', title: 'Import failed', description: (err as Error).message });
       throw err as Error;
     }
   };
 
   const handleManualSubmit = async (tabs: CapturedTab[]) => {
     await submitTabs(tabs, { type: 'inbox' }, false);
+    addToast({ variant: 'success', title: 'Import completed', description: 'Tabs have been imported.' });
   };
 
   const submitTabs = async (tabs: CapturedTab[], target: ImportTarget, closeImported: boolean) => {

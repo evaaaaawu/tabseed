@@ -1,4 +1,5 @@
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { ToastProvider } from '@/components/ui/toast';
 import { reportWebVitals as _report } from '@/lib/observability/web-vitals-reporter';
 import Metadata from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
@@ -32,7 +33,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <TooltipProvider>{children}</TooltipProvider>
+        <TooltipProvider>
+          <ToastProvider>{children}</ToastProvider>
+        </TooltipProvider>
       </body>
     </html>
   );
