@@ -14,9 +14,10 @@ interface ImportTargetDialogProps {
 	readonly open: boolean;
 	readonly onOpenChange: (open: boolean) => void;
 	readonly onConfirm: (target: ImportTarget, options: { closeImported: boolean }) => Promise<void> | void;
+	readonly onSwitchToManual?: () => void;
 }
 
-export function ImportTargetDialog({ open, onOpenChange, onConfirm }: ImportTargetDialogProps) {
+export function ImportTargetDialog({ open, onOpenChange, onConfirm, onSwitchToManual }: ImportTargetDialogProps) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [target, setTarget] = useState<ImportTarget>({ type: 'inbox' });
 	const [closeImported, setCloseImported] = useState(false);
@@ -110,20 +111,35 @@ export function ImportTargetDialog({ open, onOpenChange, onConfirm }: ImportTarg
 					</div>
 				</div>
 
-				<div className="mt-4 flex justify-end gap-2">
-					<Button variant="ghost" onClick={() => onOpenChange(false)} disabled={isLoading}>
-						Cancel
-					</Button>
-					<Button onClick={handleConfirm} disabled={isLoading}>
-						{isLoading ? (
-							<Fragment>
-								<Loader2 className="mr-2 size-4 animate-spin" />
-								Importing
-							</Fragment>
-						) : (
-							'Confirm'
-						)}
-					</Button>
+				<div className="mt-4 flex justify-between items-center gap-2">
+					{onSwitchToManual ? (
+						<button
+							onClick={() => {
+								onOpenChange(false);
+								onSwitchToManual();
+							}}
+							className="text-sm text-muted-foreground hover:text-foreground underline"
+							disabled={isLoading}
+						>
+							Want to use manual import?
+						</button>
+					) : null}
+
+					<div className="flex gap-2">
+						<Button variant="ghost" onClick={() => onOpenChange(false)} disabled={isLoading}>
+							Cancel
+						</Button>
+						<Button onClick={handleConfirm} disabled={isLoading}>
+							{isLoading ? (
+								<Fragment>
+									<Loader2 className="mr-2 size-4 animate-spin" />
+									Importing
+								</Fragment>
+							) : (
+								'Confirm'
+							)}
+						</Button>
+					</div>
 				</div>
 			</div>
 		</div>
