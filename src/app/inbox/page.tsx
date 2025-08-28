@@ -83,8 +83,7 @@ export default function InboxPage() {
         </div>
       ) : null}
 
-      <Fab label="Import Tabs" onClick={() => setOpenManual(true)} />
-      {/* Extension flow intentionally bypassed when manual import is opened directly */}
+      <Fab label="Import Tabs" onClick={() => (extStatus === 'available' ? setOpen(true) : setOpenManual(true))} />
       <ImportTargetDialog open={open} onOpenChange={setOpen} onConfirm={handleConfirm} />
       <ManualImportDialog
         open={openManual}
