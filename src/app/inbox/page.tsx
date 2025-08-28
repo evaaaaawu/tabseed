@@ -4,28 +4,30 @@ import { useState } from 'react';
 
 import { Fab } from '@/components/fab/fab';
 import { type ImportTarget, ImportTargetDialog } from '@/components/fab/import-target-dialog';
+import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
 import { useExtensionStatus } from '@/hooks/use-extension-status';
 import { ApiError } from '@/lib/api/errors';
 import { postImportsTabs } from '@/lib/api/imports-client';
-import { captureOpenTabs } from '@/lib/extension/bridge';
+import { captureOpenTabs, type CapturedTab } from '@/lib/extension/bridge';
 
 export default function InboxPage() {
 	const [open, setOpen] = useState(false);
+	const [openManual, setOpenManual] = useState(false);
 	const [lastResult, setLastResult] = useState<{ created: number; reused: number; ignored: number } | null>(null);
 	const extStatus = useExtensionStatus();
 
 	const handleConfirm = async (target: ImportTarget, options: { closeImported: boolean }) => {
 		try {
 			const tabs = await captureOpenTabs({ closeImported: options.closeImported });
-			const res = await postImportsTabs(
-				{
-					tabs,
-					target: target.type === 'inbox' ? { inbox: true } : { boardId: target.boardId },
-					closeImported: options.closeImported,
-				},
-				{ idempotencyKey: crypto.randomUUID() },
-			);
-			setLastResult({ created: res.created.length, reused: res.reused.length, ignored: res.ignored.length });
+			
+			// If no tabs captured (extension unavailable), open manual import dialog
+			if (tabs.length === 0) {
+				setOpen(false);
+				setOpenManual(true);
+				return;
+			}
+
+			await submitTabs(tabs, target, options.closeImported);
 		} catch (err) {
 			if (err instanceof ApiError && err.isUnauthorized) {
 				window.location.href = '/login';
@@ -33,6 +35,22 @@ export default function InboxPage() {
 			}
 			throw err as Error;
 		}
+	};
+
+	const handleManualSubmit = async (tabs: CapturedTab[]) => {
+		await submitTabs(tabs, { type: 'inbox' }, false);
+	};
+
+	const submitTabs = async (tabs: CapturedTab[], target: ImportTarget, closeImported: boolean) => {
+		const res = await postImportsTabs(
+			{
+				tabs,
+				target: target.type === 'inbox' ? { inbox: true } : { boardId: target.boardId },
+				closeImported,
+			},
+			{ idempotencyKey: crypto.randomUUID() },
+		);
+		setLastResult({ created: res.created.length, reused: res.reused.length, ignored: res.ignored.length });
 	};
 
 	return (
@@ -51,6 +69,7 @@ export default function InboxPage() {
 
 			<Fab label="Import Tabs" onClick={() => setOpen(true)} />
 			<ImportTargetDialog open={open} onOpenChange={setOpen} onConfirm={handleConfirm} />
+			<ManualImportDialog open={openManual} onOpenChange={setOpenManual} onSubmit={handleManualSubmit} />
 		</div>
 	);
 }
