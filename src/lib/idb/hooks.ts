@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from 'react';
 import { liveQuery } from 'dexie';
+import { useEffect, useState } from 'react';
 
-import type { TabRecord } from './types';
 import { getDb } from './db';
+import type { TabRecord } from './types';
 
 export function useAllTabs(): { readonly tabs: readonly TabRecord[]; readonly loading: boolean } {
   const [tabs, setTabs] = useState<readonly TabRecord[]>([]);
@@ -26,5 +26,3 @@ export function useAllTabs(): { readonly tabs: readonly TabRecord[]; readonly lo
 
   return { tabs, loading };
 }
-
-

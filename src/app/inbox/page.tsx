@@ -6,11 +6,11 @@ import { Fab } from '@/components/fab/fab';
 import { ImportTargetDialog, type ImportTarget } from '@/components/fab/import-target-dialog';
 import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
 import { useToast } from '@/components/ui/toast';
-import { useAllTabs } from '@/lib/idb/hooks';
 import { useExtensionStatus } from '@/hooks/use-extension-status';
 import { ApiError } from '@/lib/api/errors';
 import { importTabsAndSyncLocal } from '@/lib/data/import-tabs';
 import { captureOpenTabs, type CapturedTab } from '@/lib/extension/bridge';
+import { useAllTabs } from '@/lib/idb/hooks';
 
 export default function InboxPage() {
   const [open, setOpen] = useState(false);
