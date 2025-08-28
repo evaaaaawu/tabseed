@@ -22,4 +22,13 @@ export function getDb(): TabSeedIDB {
   return dbSingleton;
 }
 
-
+export async function resetDb(): Promise<void> {
+  if (dbSingleton) {
+    // delete() also closes connections
+    await dbSingleton.delete();
+    try {
+      dbSingleton.close();
+    } catch {}
+    dbSingleton = null;
+  }
+}

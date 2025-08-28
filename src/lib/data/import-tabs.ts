@@ -30,5 +30,3 @@ export async function importTabsAndSyncLocal(
   await bulkUpsertTabs(toUpsert);
   return { created: res.created.length, reused: res.reused.length, ignored: res.ignored.length };
 }
-
-

@@ -14,5 +14,3 @@ export type TabUpsertInput = ReadonlyArray<
   Pick<TabRecord, 'id' | 'url' | 'etag'> &
     Partial<Pick<TabRecord, 'title' | 'color' | 'createdAt' | 'updatedAt' | 'isDeleted'>>
 >;
-
-
