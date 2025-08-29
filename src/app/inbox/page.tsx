@@ -8,6 +8,7 @@ import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
 // ImportResultBanner removed per new UX; details live in /import/result via toast link
 import { useToast } from '@/components/ui/toast';
 import { Heading, Text } from '@/components/ui/typography';
+import { Surface } from '@/components/ui/surface';
 import { useExtensionStatus } from '@/hooks/use-extension-status';
 import { ApiError } from '@/lib/api/errors';
 import { importTabsAndSyncLocalWithRaw } from '@/lib/data/import-tabs';
@@ -140,13 +141,12 @@ export default function InboxPage() {
             : 'Not detected (manual import will be available)'}
       </div>
       {lastResult ? (
-        <div className="mt-3 rounded-md border p-3 text-sm">
+        <Surface className="mt-3 p-3 text-sm">
           <div className="font-medium">Latest import result</div>
           <div className="mt-1 text-muted-foreground">
-            created: {lastResult.created}, reused: {lastResult.reused}, ignored:{' '}
-            {lastResult.ignored}
+            created: {lastResult.created}, reused: {lastResult.reused}, ignored: {lastResult.ignored}
           </div>
-        </div>
+        </Surface>
       ) : null}
 
       {/* ImportResultBanner removed per UX update */}
