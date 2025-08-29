@@ -18,7 +18,11 @@ export async function importTabsAndSyncLocalWithRaw(
     closeImported?: boolean;
   },
 ): Promise<{ counts: { created: number; reused: number; ignored: number }; raw: Awaited<ReturnType<typeof postImportsTabs>> }> {
-  if (openTabs.length === 0) return { counts: { created: 0, reused: 0, ignored: 0 }, raw: { created: [], reused: [], ignored: [] } as any };
+  if (openTabs.length === 0)
+    return {
+      counts: { created: 0, reused: 0, ignored: 0 },
+      raw: { created: [], reused: [], ignored: [] } as unknown as Awaited<ReturnType<typeof postImportsTabs>>,
+    };
 
   const res = await postImportsTabs(
     {

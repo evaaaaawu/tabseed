@@ -100,7 +100,7 @@ export function ManualImportDialog({ open, onOpenChange, onSubmit }: ManualImpor
         {method === 'guide' && (
           <div className="space-y-3">
             <Text size="sm" muted>
-              Choose how you'd like to import your tabs:
+              Choose how you&apos;d like to import your tabs:
             </Text>
 
             {/* 1) Recommend installing extension (desktop Chrome-based only) */}
@@ -175,7 +175,7 @@ export function ManualImportDialog({ open, onOpenChange, onSubmit }: ManualImpor
             <div className="rounded-md bg-muted p-3 text-xs">
               <p className="mb-1 font-medium">How to export bookmarks:</p>
               <ol className="list-inside list-decimal space-y-1 text-muted-foreground">
-                <li>Open your browser's bookmark manager</li>
+                <li>Open your browser&apos;s bookmark manager</li>
                 <li>Find "Export bookmarks" or "Export" option</li>
                 <li>Save as HTML file</li>
                 <li>Upload the file here</li>

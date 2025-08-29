@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 import { Fab } from '@/components/fab/fab';
-import { ImportTargetDialog, type ImportTarget } from '@/components/fab/import-target-dialog';
+import { type ImportTarget,ImportTargetDialog } from '@/components/fab/import-target-dialog';
 import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
 // ImportResultBanner removed per new UX; details live in /import/result via toast link
 import { Surface } from '@/components/ui/surface';
@@ -12,7 +12,7 @@ import { Heading, Text } from '@/components/ui/typography';
 import { useExtensionStatus } from '@/hooks/use-extension-status';
 import { ApiError } from '@/lib/api/errors';
 import { importTabsAndSyncLocalWithRaw } from '@/lib/data/import-tabs';
-import { captureOpenTabs, type CapturedTab } from '@/lib/extension/bridge';
+import { type CapturedTab,captureOpenTabs } from '@/lib/extension/bridge';
 import { useAllTabs } from '@/lib/idb/hooks';
 
 export default function KanbanIndexPage() {

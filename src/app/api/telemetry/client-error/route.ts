@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server';
+
 import { getLogger } from '@/lib/observability/logger';
 
 export const runtime = 'nodejs';

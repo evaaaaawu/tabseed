@@ -1,12 +1,13 @@
 "use client";
 
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { cn } from '@/lib/utils';
 import { BookMarked, Inbox, LayoutDashboard, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
+
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
 
 const STORAGE_KEY = "tabseed.sidebar.collapsed";
 
@@ -54,7 +55,7 @@ export function AppSidebar() {
               )}
               aria-current={props.active ? "page" : undefined}
             >
-              <span className="inline-flex h-5 w-5 items-center justify-center">{props.icon}</span>
+              <span className="inline-flex size-5 items-center justify-center">{props.icon}</span>
               {!collapsed && <span className="truncate">{props.label}</span>}
             </Link>
           </TooltipTrigger>
@@ -77,30 +78,30 @@ export function AppSidebar() {
         {!collapsed && <span className="text-sm font-medium">TabSeed</span>}
         <button
           type="button"
-          className="inline-flex h-8 w-8 items-center justify-center rounded-md border hover:bg-accent"
+          className="inline-flex size-8 items-center justify-center rounded-md border hover:bg-accent"
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           onClick={() => setCollapsed((v) => !v)}
         >
-          {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
+          {collapsed ? <PanelLeftOpen className="size-4" /> : <PanelLeftClose className="size-4" />}
         </button>
       </div>
-      <nav className="flex-1 space-y-1 px-2 py-2">
+      <nav className="flex-1 space-y-1 p-2">
         <NavItem
           href="/inbox"
           label="Inbox"
-          icon={<Inbox className="h-5 w-5" />}
+          icon={<Inbox className="size-5" />}
           active={pathname?.startsWith("/inbox") ?? false}
         />
         <NavItem
           href="/kanban"
           label="Kanban"
-          icon={<LayoutDashboard className="h-5 w-5" />}
+          icon={<LayoutDashboard className="size-5" />}
           active={pathname?.startsWith("/kanban") ?? false}
         />
         <NavItem
           href="/library"
           label="Library"
-          icon={<BookMarked className="h-5 w-5" />}
+          icon={<BookMarked className="size-5" />}
           active={pathname?.startsWith("/library") ?? false}
         />
       </nav>

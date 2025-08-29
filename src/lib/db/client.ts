@@ -1,8 +1,9 @@
 import 'dotenv/config';
 
-import { getOrCreateGauge, getOrCreateHistogram } from '@/lib/observability/metrics';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
+
+import { getOrCreateGauge, getOrCreateHistogram } from '@/lib/observability/metrics';
 
 import * as schema from './schema';
 
@@ -23,9 +24,10 @@ try {
   });
 
   // monkey patch acquire to measure wait time
-  const origConnect = (pool as any).acquire;
+  type PoolPatched = Pool & { acquire?: (...args: unknown[]) => Promise<unknown> };
+  const origConnect = (pool as unknown as PoolPatched).acquire;
   if (typeof origConnect === 'function') {
-    (pool as any).acquire = async function (...args: unknown[]) {
+    (pool as unknown as PoolPatched).acquire = async function (...args: unknown[]) {
       const start = Date.now();
       try {
         return await origConnect.apply(this, args);
@@ -36,10 +38,10 @@ try {
   }
 
   setInterval(() => {
-    const anyPool = pool as any;
-    poolTotal.set(anyPool.totalCount ?? 0);
-    poolIdle.set(anyPool.idleCount ?? 0);
-    poolWaiting.set(anyPool.waitingCount ?? 0);
+    const p = pool as unknown as Pool & { totalCount?: number; idleCount?: number; waitingCount?: number };
+    poolTotal.set(p.totalCount ?? 0);
+    poolIdle.set(p.idleCount ?? 0);
+    poolWaiting.set(p.waitingCount ?? 0);
   }, 5000).unref?.();
 } catch {
   // metrics are best-effort; ignore if registry not ready in tests

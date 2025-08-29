@@ -1,7 +1,7 @@
 import { collectDefaultMetrics, Counter, Gauge, Histogram, Registry } from 'prom-client';
 
 declare global {
-  // eslint-disable-next-line no-var
+   
   var __tabseedMetrics:
     | {
         register: Registry;

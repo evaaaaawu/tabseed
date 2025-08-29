@@ -1,12 +1,15 @@
+import './globals.css';
+
+import type { Metadata } from 'next';
+import { Geist, Geist_Mono } from 'next/font/google';
+import localFont from 'next/font/local';
+
 import { ThemeProvider } from '@/components/providers/theme-provider';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { ToastProvider } from '@/components/ui/toast';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { reportWebVitals as _report } from '@/lib/observability/web-vitals-reporter';
-import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
-import localFont from 'next/font/local';
-import './globals.css';
+import type { Metric } from 'web-vitals';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -34,8 +37,8 @@ export const metadata: Metadata = {
 };
 
 // Next.js will call this on the client in production
-export function reportWebVitals(metric: unknown) {
-  _report(metric as any);
+export function reportWebVitals(metric: Metric) {
+  _report(metric);
 }
 
 export default function RootLayout({

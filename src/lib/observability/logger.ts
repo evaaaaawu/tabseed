@@ -2,7 +2,7 @@ import { nanoid } from 'nanoid';
 import pino from 'pino';
 
 declare global {
-  // eslint-disable-next-line no-var
+   
   var __tabseedLogger: pino.Logger | undefined;
 }
 

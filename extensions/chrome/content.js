@@ -28,7 +28,7 @@
           chrome.runtime.sendMessage({ type: 'capture-tabs', closeImported }, (response) => {
             try {
               // lastError indicates background unavailable or other runtime errors
-              // eslint-disable-next-line no-unused-expressions
+               
               chrome.runtime.lastError; // access to trigger potential errors visibility in devtools
             } catch (_) {
               // ignore

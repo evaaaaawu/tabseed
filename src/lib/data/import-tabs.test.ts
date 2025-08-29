@@ -1,9 +1,11 @@
 import 'fake-indexeddb/auto';
+
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import * as api from '@/lib/api/imports-client';
 import { resetDb } from '@/lib/idb/db';
 import { listAllTabs } from '@/lib/idb/tabs-repo';
+
 import { importTabsAndSyncLocal } from './import-tabs';
 
 describe('importTabsAndSyncLocal', () => {

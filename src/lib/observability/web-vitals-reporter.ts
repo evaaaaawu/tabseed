@@ -11,8 +11,9 @@ export const reportWebVitals: ReportCallback = async (metric: Metric) => {
         name: metric.name,
         id: metric.id,
         value: metric.value,
-        delta: (metric as any).delta ?? undefined,
-        label: (metric as any).label ?? undefined,
+        // web-vitals Metric has optional delta/label on specific metric subtypes
+        delta: (metric as Partial<Metric> & { delta?: number }).delta,
+        label: (metric as Partial<Metric> & { label?: string }).label,
       }),
       keepalive: true,
     });

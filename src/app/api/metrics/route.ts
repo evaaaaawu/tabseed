@@ -1,5 +1,6 @@
-import { getMetrics } from '@/lib/observability/metrics';
 import { NextRequest } from 'next/server';
+
+import { getMetrics } from '@/lib/observability/metrics';
 
 export const runtime = 'nodejs';
 

@@ -14,14 +14,14 @@ export function Heading(
   props: React.HTMLAttributes<HTMLHeadingElement> & { as?: 'display' | 'h1' | 'h2' | 'h3' },
 ) {
   const { as = 'h1', className, ...rest } = props;
-  const Comp = (as === 'display' ? 'h1' : as) as keyof JSX.IntrinsicElements;
+  const Comp = (as === 'display' ? 'h1' : as) as 'h1' | 'h2' | 'h3';
   const map = {
     display: 'text-4xl leading-10 font-bold tracking-tight', // 36/40
     h1: 'text-3xl leading-9 font-bold tracking-tight', // 30/36
     h2: 'text-2xl leading-8 font-bold tracking-tight', // 24/32
     h3: 'text-xl leading-7 font-semibold tracking-tight', // 20/28
   } as const;
-  return <Comp className={cn(map[as], className)} {...(rest as any)} />;
+  return <Comp className={cn(map[as], className)} {...rest} />;
 }
 
 export function Text(

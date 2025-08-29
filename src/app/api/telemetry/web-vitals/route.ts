@@ -1,6 +1,7 @@
+import { NextRequest } from 'next/server';
+
 import { getLogger } from '@/lib/observability/logger';
 import { getMetrics, getOrCreateHistogram } from '@/lib/observability/metrics';
-import { NextRequest } from 'next/server';
 
 export const runtime = 'nodejs';
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-import { readLastImportResult, type ImportResultPayload } from '@/lib/import/result-storage';
+import { type ImportResultPayload,readLastImportResult } from '@/lib/import/result-storage';
 
 export default function ImportResultPage() {
   const [data, setData] = useState<ImportResultPayload | null>(null);
