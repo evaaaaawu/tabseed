@@ -47,7 +47,7 @@ export function ToastProvider({ children }: { readonly children: React.ReactNode
         title: opts.title ?? '',
         description: opts.description ?? '',
         variant: opts.variant ?? 'default',
-        durationMs: opts.durationMs ?? 3000,
+        durationMs: opts.durationMs ?? 6000,
       };
       setToasts((prev) => [...prev, toast]);
       const h = window.setTimeout(() => removeToast(id), toast.durationMs);
