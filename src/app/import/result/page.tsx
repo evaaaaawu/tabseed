@@ -52,5 +52,3 @@ function FullList({ title, items }: { readonly title: string; readonly items: Re
     </div>
   );
 }
-
-

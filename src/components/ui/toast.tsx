@@ -8,11 +8,16 @@ export interface ToastOptions {
   readonly title?: string;
   readonly description?: string;
   readonly variant?: ToastVariant;
-  readonly durationMs?: number;
+  readonly durationMs?: number; // If undefined, persists until closed
+  readonly linkHref?: string;
+  readonly linkLabel?: string;
 }
 
-export interface Toast extends Required<ToastOptions> {
+export interface Toast extends Required<Omit<ToastOptions, 'durationMs' | 'linkHref' | 'linkLabel'>> {
   readonly id: string;
+  readonly durationMs?: number;
+  readonly linkHref?: string;
+  readonly linkLabel?: string;
 }
 
 interface ToastContextValue {
@@ -47,11 +52,15 @@ export function ToastProvider({ children }: { readonly children: React.ReactNode
         title: opts.title ?? '',
         description: opts.description ?? '',
         variant: opts.variant ?? 'default',
-        durationMs: opts.durationMs ?? 6000,
+        durationMs: opts.durationMs,
+        linkHref: opts.linkHref,
+        linkLabel: opts.linkLabel,
       };
       setToasts((prev) => [...prev, toast]);
-      const h = window.setTimeout(() => removeToast(id), toast.durationMs);
-      timers.current.set(id, h);
+      if (typeof toast.durationMs === 'number' && toast.durationMs > 0) {
+        const h = window.setTimeout(() => removeToast(id), toast.durationMs);
+        timers.current.set(id, h);
+      }
     },
     [removeToast],
   );
@@ -96,12 +105,22 @@ function Toaster({ toasts, onClose }: { readonly toasts: readonly Toast[]; reado
                 <div className="mt-0.5 truncate text-xs opacity-80">{t.description}</div>
               ) : null}
             </div>
-            <button
-              className="rounded-md border px-2 py-1 text-xs opacity-80 hover:opacity-100"
-              onClick={() => onClose(t.id)}
-            >
-              Close
-            </button>
+            <div className="flex items-center gap-2">
+              {t.linkHref ? (
+                <a
+                  href={t.linkHref}
+                  className="rounded-md border px-2 py-1 text-xs opacity-80 hover:opacity-100"
+                >
+                  {t.linkLabel ?? 'View'}
+                </a>
+              ) : null}
+              <button
+                className="rounded-md border px-2 py-1 text-xs opacity-80 hover:opacity-100"
+                onClick={() => onClose(t.id)}
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       ))}

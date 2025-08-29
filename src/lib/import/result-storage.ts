@@ -25,5 +25,3 @@ export function readLastImportResult(): ImportResultPayload | null {
     return null;
   }
 }
-
-
