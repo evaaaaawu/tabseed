@@ -4,11 +4,13 @@ import { ChevronDown, Inbox, Layout, Loader2 } from 'lucide-react';
 import { Fragment, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { Surface } from '@/components/ui/surface';
+import { Heading, Text } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 
 export type ImportTarget =
-	| { type: 'inbox' }
-	| { type: 'kanban'; boardId?: string };
+  | { type: 'inbox' }
+  | { type: 'kanban'; boardId?: string };
 
 interface ImportTargetDialogProps {
   readonly open: boolean;
@@ -44,17 +46,15 @@ export function ImportTargetDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
-      <div
-        className="absolute inset-0 bg-black/40"
-        onClick={() => onOpenChange(false)}
-        aria-hidden
-      />
-      <div className="relative z-10 w-full max-w-md rounded-lg border bg-background p-4 shadow-2xl">
-        <h2 className="mb-3 text-lg font-semibold">Import Target</h2>
+      <div className="absolute inset-0 bg-black/40" onClick={() => onOpenChange(false)} aria-hidden />
+      <Surface className="relative z-10 w-full max-w-md p-4 shadow-elev-3">
+        <Heading as="h3" className="mb-3">
+          Import Target
+        </Heading>
         <div className="space-y-2">
           <button
             className={cn(
-              'flex w-full items-center gap-3 rounded-md border p-3 text-left hover:bg-accent',
+              'flex w-full items-center gap-3 rounded-md border p-3 text-left transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
               target.type === 'inbox' && 'border-primary bg-primary/5',
             )}
             onClick={() => setTarget({ type: 'inbox' })}
@@ -62,13 +62,15 @@ export function ImportTargetDialog({
             <Inbox className="size-5" />
             <div>
               <div className="font-medium">Inbox</div>
-              <div className="text-xs text-muted-foreground">Import to inbox</div>
+              <Text size="xs" muted>
+                Import to inbox
+              </Text>
             </div>
           </button>
 
           <button
             className={cn(
-              'flex w-full items-center justify-between rounded-md border p-3 text-left hover:bg-accent',
+              'flex w-full items-center justify-between rounded-md border p-3 text-left transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
               target.type === 'kanban' && 'border-primary bg-primary/5',
             )}
             onClick={() => setTarget({ type: 'kanban' })}
@@ -77,7 +79,9 @@ export function ImportTargetDialog({
               <Layout className="size-5" />
               <span>
                 <div className="font-medium">Kanban</div>
-                <div className="text-xs text-muted-foreground">Import to specific board</div>
+                <Text size="xs" muted>
+                  Import to specific board
+                </Text>
               </span>
             </span>
             <ChevronDown className="size-4 opacity-60" />
@@ -85,9 +89,7 @@ export function ImportTargetDialog({
 
           {target.type === 'kanban' ? (
             <div className="rounded-md border p-3">
-              <label className="mb-1 block text-xs text-muted-foreground">
-                Select board (MVP uses mock data)
-              </label>
+              <label className="mb-1 block text-xs text-muted-foreground">Select board (MVP uses mock data)</label>
               <div className="grid grid-cols-2 gap-2">
                 {[
                   { id: 'board-1', name: 'Product' },
@@ -97,7 +99,7 @@ export function ImportTargetDialog({
                   <button
                     key={b.id}
                     className={cn(
-                      'rounded-md border p-2 text-sm hover:bg-accent',
+                      'rounded-md border p-2 text-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
                       target.type === 'kanban' &&
                         target.boardId === b.id &&
                         'border-primary bg-primary/5',
@@ -153,7 +155,7 @@ export function ImportTargetDialog({
             </Button>
           </div>
         </div>
-      </div>
+      </Surface>
     </div>
   );
 }
