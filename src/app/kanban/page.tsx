@@ -129,9 +129,13 @@ export default function KanbanIndexPage() {
       <div className="mt-6">
         <div className="mb-2 text-sm font-medium">Local tabs (IndexedDB)</div>
         {loading ? (
-          <div className="text-xs text-muted-foreground">Loading...</div>
+          <Text size="sm" muted>
+            Loading...
+          </Text>
         ) : localTabs.length === 0 ? (
-          <div className="text-xs text-muted-foreground">No tabs imported yet.</div>
+          <Text size="sm" muted>
+            No tabs imported yet.
+          </Text>
         ) : (
           <ul className="space-y-2">
             {localTabs.map((t) => (
