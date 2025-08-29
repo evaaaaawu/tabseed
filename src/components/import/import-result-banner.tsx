@@ -1,6 +1,8 @@
 "use client";
 
 import { useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { saveLastImportResult } from '@/lib/import/result-storage';
 
 type Item = { readonly id: string; readonly url: string; readonly title?: string };
 
@@ -12,6 +14,7 @@ interface ImportResultBannerProps {
 
 export function ImportResultBanner({ created, reused, ignored }: ImportResultBannerProps) {
   const [open, setOpen] = useState(true);
+  const router = useRouter();
   const createdCount = created.length;
   const reusedCount = reused.length;
   const ignoredCount = ignored.length;
@@ -34,6 +37,15 @@ export function ImportResultBanner({ created, reused, ignored }: ImportResultBan
           <div className="mt-1 text-xs text-muted-foreground">{summary || 'No changes'}</div>
         </div>
         <div className="flex gap-2">
+          <button
+            className="rounded-md border px-2 py-1 text-xs"
+            onClick={() => {
+              saveLastImportResult({ created: [...created], reused: [...reused], ignored: [...ignored] });
+              router.push('/import/result');
+            }}
+          >
+            View details
+          </button>
           <button className="rounded-md border px-2 py-1 text-xs" onClick={() => setOpen(false)}>
             Close
           </button>
