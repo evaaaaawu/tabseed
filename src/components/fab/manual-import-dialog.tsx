@@ -176,7 +176,7 @@ export function ManualImportDialog({ open, onOpenChange, onSubmit }: ManualImpor
               <p className="mb-1 font-medium">How to export bookmarks:</p>
               <ol className="list-inside list-decimal space-y-1 text-muted-foreground">
                 <li>Open your browser&apos;s bookmark manager</li>
-                <li>Find "Export bookmarks" or "Export" option</li>
+                <li>Find &quot;Export bookmarks&quot; or &quot;Export&quot; option</li>
                 <li>Save as HTML file</li>
                 <li>Upload the file here</li>
               </ol>

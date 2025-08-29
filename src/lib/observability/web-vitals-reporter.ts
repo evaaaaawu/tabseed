@@ -17,7 +17,7 @@ export const reportWebVitals: ReportCallback = async (metric: Metric) => {
       }),
       keepalive: true,
     });
-  } catch (_) {
+  } catch {
     // swallow
   }
 };

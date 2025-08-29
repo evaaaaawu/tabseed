@@ -9,5 +9,3 @@ describe('GET /api/metrics', () => {
     expect(res.headers.get('content-type')?.includes('text/plain')).toBe(true);
   });
 });
-
-
