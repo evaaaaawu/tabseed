@@ -78,11 +78,29 @@ export default function InboxPage() {
   const handleManualSubmit = async (tabs: CapturedTab[]) => {
     const r = await submitTabs(tabs, { type: 'inbox' }, false);
     if (r.created > 0 && r.reused === 0) {
-      addToast({ variant: 'success', title: 'Imported', description: `${r.created} new added`, linkHref: '/import/result', linkLabel: 'View details' });
+      addToast({
+        variant: 'success',
+        title: 'Imported',
+        description: `${r.created} new added`,
+        linkHref: '/import/result',
+        linkLabel: 'View details',
+      });
     } else if (r.created > 0 && r.reused > 0) {
-      addToast({ variant: 'warning', title: 'Partially imported', description: `${r.created} new, ${r.reused} exist`, linkHref: '/import/result', linkLabel: 'View details' });
+      addToast({
+        variant: 'warning',
+        title: 'Partially imported',
+        description: `${r.created} new, ${r.reused} exist`,
+        linkHref: '/import/result',
+        linkLabel: 'View details',
+      });
     } else if (r.created === 0 && r.reused > 0) {
-      addToast({ variant: 'warning', title: 'All duplicates', description: `${r.reused} already exist`, linkHref: '/import/result', linkLabel: 'View details' });
+      addToast({
+        variant: 'warning',
+        title: 'All duplicates',
+        description: `${r.reused} already exist`,
+        linkHref: '/import/result',
+        linkLabel: 'View details',
+      });
     } else {
       addToast({ variant: 'default', title: 'Nothing imported' });
     }
@@ -100,7 +118,10 @@ export default function InboxPage() {
     setLastResult(result.counts);
     // Persist raw for details page
     try {
-      sessionStorage.setItem('tabseed:lastImportResult', JSON.stringify({ ...result.raw, savedAt: Date.now() }));
+      sessionStorage.setItem(
+        'tabseed:lastImportResult',
+        JSON.stringify({ ...result.raw, savedAt: Date.now() }),
+      );
     } catch {}
     return result.counts;
   };

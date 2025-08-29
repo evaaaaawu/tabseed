@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 
-import { ImportResultBanner } from '@/components/import/import-result-banner';
 import { readLastImportResult, type ImportResultPayload } from '@/lib/import/result-storage';
 
 export default function ImportResultPage() {
@@ -15,9 +14,7 @@ export default function ImportResultPage() {
   return (
     <div className="min-h-[60svh] p-6">
       <h1 className="mb-4 text-2xl font-bold">Import Result</h1>
-      {data ? (
-        <ImportResultBanner created={data.created} reused={data.reused} ignored={data.ignored} />
-      ) : (
+      {data ? null : (
         <div className="text-sm text-muted-foreground">No import result found.</div>
       )}
 
