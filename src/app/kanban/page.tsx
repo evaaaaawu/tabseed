@@ -13,6 +13,7 @@ import { importTabsAndSyncLocalWithRaw } from '@/lib/data/import-tabs';
 import { captureOpenTabs, type CapturedTab } from '@/lib/extension/bridge';
 import { useAllTabs } from '@/lib/idb/hooks';
 import { Heading, Text } from '@/components/ui/typography';
+import { Surface } from '@/components/ui/surface';
 
 export default function KanbanIndexPage() {
   const [open, setOpen] = useState(false);
@@ -102,12 +103,12 @@ export default function KanbanIndexPage() {
             : 'Not detected (manual import will be available)'}
       </div>
       {lastResult ? (
-        <div className="mt-3 rounded-md border p-3 text-sm">
+        <Surface className="mt-3 p-3 text-sm">
           <div className="font-medium">Latest import result</div>
           <div className="mt-1 text-muted-foreground">
             created: {lastResult.created}, reused: {lastResult.reused}, ignored: {lastResult.ignored}
           </div>
-        </div>
+        </Surface>
       ) : null}
 
       <Fab label="Import Tabs" onClick={() => (extStatus === 'available' ? setOpen(true) : setOpenManual(true))} />
