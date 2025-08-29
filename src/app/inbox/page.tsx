@@ -7,12 +7,12 @@ import { ImportTargetDialog, type ImportTarget } from '@/components/fab/import-t
 import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
 // ImportResultBanner removed per new UX; details live in /import/result via toast link
 import { useToast } from '@/components/ui/toast';
+import { Heading, Text } from '@/components/ui/typography';
 import { useExtensionStatus } from '@/hooks/use-extension-status';
 import { ApiError } from '@/lib/api/errors';
 import { importTabsAndSyncLocalWithRaw } from '@/lib/data/import-tabs';
 import { captureOpenTabs, type CapturedTab } from '@/lib/extension/bridge';
 import { useAllTabs } from '@/lib/idb/hooks';
-import { Heading, Text } from '@/components/ui/typography';
 
 export default function InboxPage() {
   const [open, setOpen] = useState(false);

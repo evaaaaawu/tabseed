@@ -12,6 +12,7 @@ import { ApiError } from '@/lib/api/errors';
 import { importTabsAndSyncLocalWithRaw } from '@/lib/data/import-tabs';
 import { captureOpenTabs, type CapturedTab } from '@/lib/extension/bridge';
 import { useAllTabs } from '@/lib/idb/hooks';
+import { Heading, Text } from '@/components/ui/typography';
 
 export default function KanbanIndexPage() {
   const [open, setOpen] = useState(false);
@@ -90,8 +91,8 @@ export default function KanbanIndexPage() {
 
   return (
     <div className="min-h-[60svh] p-6">
-      <h1 className="mb-4 text-2xl font-bold">Kanban</h1>
-      <p className="text-muted-foreground">This is the Kanban entry point.</p>
+      <Heading as="h1" className="mb-4">Kanban</Heading>
+      <Text muted>This is the Kanban entry point.</Text>
       <div className="mt-2 text-xs text-muted-foreground">
         Extension status:{' '}
         {extStatus === 'unknown'
@@ -104,8 +105,7 @@ export default function KanbanIndexPage() {
         <div className="mt-3 rounded-md border p-3 text-sm">
           <div className="font-medium">Latest import result</div>
           <div className="mt-1 text-muted-foreground">
-            created: {lastResult.created}, reused: {lastResult.reused}, ignored:{' '}
-            {lastResult.ignored}
+            created: {lastResult.created}, reused: {lastResult.reused}, ignored: {lastResult.ignored}
           </div>
         </div>
       ) : null}
