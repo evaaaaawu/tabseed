@@ -6,9 +6,9 @@ import { Fab } from '@/components/fab/fab';
 import { ImportTargetDialog, type ImportTarget } from '@/components/fab/import-target-dialog';
 import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
 // ImportResultBanner removed per new UX; details live in /import/result via toast link
+import { Surface } from '@/components/ui/surface';
 import { useToast } from '@/components/ui/toast';
 import { Heading, Text } from '@/components/ui/typography';
-import { Surface } from '@/components/ui/surface';
 import { useExtensionStatus } from '@/hooks/use-extension-status';
 import { ApiError } from '@/lib/api/errors';
 import { importTabsAndSyncLocalWithRaw } from '@/lib/data/import-tabs';
