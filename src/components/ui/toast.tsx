@@ -81,11 +81,11 @@ function variantClasses(variant: ToastVariant): string {
 
 function Toaster({ toasts, onClose }: { readonly toasts: readonly Toast[]; readonly onClose: (id: string) => void }) {
   return (
-    <div className="pointer-events-none fixed right-3 top-3 z-[100] flex w-80 flex-col gap-2">
+    <div className="pointer-events-none fixed left-1/2 top-4 z-[100] flex w-full max-w-lg -translate-x-1/2 flex-col items-center gap-2 px-3">
       {toasts.map((t) => (
         <div
           key={t.id}
-          className={`pointer-events-auto rounded-md border p-3 shadow-lg ${variantClasses(t.variant)}`}
+          className={`pointer-events-auto w-full max-w-lg rounded-md border p-3 shadow-lg ${variantClasses(t.variant)}`}
           role="status"
           aria-live="polite"
         >
