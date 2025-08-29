@@ -68,11 +68,13 @@ export default function DesignSystemPage() {
       <section className="space-y-4">
         <Heading as="h2">Typography</Heading>
         <div className="space-y-3">
+          <Heading as="display">Display (700)</Heading>
           <Heading as="h1">H1 Heading (700)</Heading>
           <Heading as="h2">H2 Heading (700)</Heading>
           <Heading as="h3">H3 Heading (600)</Heading>
-          <Text>Body text default (400)</Text>
+          <Text>Body md (400)</Text>
           <Text size="sm">Small text (400)</Text>
+          <Text size="xs">Tiny text (400)</Text>
           <Text muted>
             Muted text (400) — Lorem ipsum dolor sit amet, consectetur adipisicing elit.
           </Text>
