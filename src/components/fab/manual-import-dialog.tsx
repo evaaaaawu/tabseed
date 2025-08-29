@@ -4,6 +4,8 @@ import { BookOpen, Download, Link, Loader2, Upload, X } from 'lucide-react';
 import { Fragment, useEffect, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { Surface } from '@/components/ui/surface';
+import { Heading, Text } from '@/components/ui/typography';
 import type { CapturedTab } from '@/lib/extension/bridge';
 import { parseBookmarksHtml } from '@/lib/import/parse-bookmarks-html';
 import { parseUrlsFromText } from '@/lib/import/parse-urls-text';
@@ -86,14 +88,10 @@ export function ManualImportDialog({ open, onOpenChange, onSubmit }: ManualImpor
 
 	return (
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
-      <div
-        className="absolute inset-0 bg-black/40"
-        onClick={() => onOpenChange(false)}
-        aria-hidden
-      />
-      <div className="relative z-10 w-full max-w-lg rounded-lg border bg-background p-4 shadow-2xl">
+      <div className="absolute inset-0 bg-black/40" onClick={() => onOpenChange(false)} aria-hidden />
+      <Surface className="relative z-10 w-full max-w-lg p-4 shadow-elev-3">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Import Tabs</h2>
+          <Heading as="h3">Import Tabs</Heading>
           <Button variant="ghost" size="sm" onClick={() => onOpenChange(false)}>
             <X className="size-4" />
           </Button>
@@ -101,16 +99,16 @@ export function ManualImportDialog({ open, onOpenChange, onSubmit }: ManualImpor
 
         {method === 'guide' && (
           <div className="space-y-3">
-            <p className="text-sm text-muted-foreground">
+            <Text size="sm" muted>
               Choose how you'd like to import your tabs:
-            </p>
+            </Text>
 
             {/* 1) Recommend installing extension (desktop Chrome-based only) */}
             {!isMobileOrTablet() && isChromeBasedDesktop() ? (
-              <div className="rounded-md border border-amber-200 bg-amber-50 p-3 dark:border-amber-800 dark:bg-amber-950">
+              <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-amber-800 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200">
                 <div className="flex items-start gap-2">
                   <Download className="mt-0.5 size-4 text-amber-600" />
-                  <div className="text-xs text-amber-800 dark:text-amber-200">
+                  <div className="text-xs">
                     <p className="font-medium">TabSeed Helper extension recommended</p>
                     <p>Install the extension for automatic tab capture and closing.</p>
                   </div>
@@ -120,29 +118,29 @@ export function ManualImportDialog({ open, onOpenChange, onSubmit }: ManualImpor
 
             {/* 2) Paste URLs */}
             <button
-              className="flex w-full items-center gap-3 rounded-md border p-3 text-left hover:bg-accent"
+              className="flex w-full items-center gap-3 rounded-md border p-3 text-left transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               onClick={() => setMethod('urls')}
             >
               <Link className="size-5 text-primary" />
               <div>
                 <div className="font-medium">Paste URLs</div>
-                <div className="text-xs text-muted-foreground">
+                <Text size="xs" muted>
                   Quick: Paste multiple URLs (one per line)
-                </div>
+                </Text>
               </div>
             </button>
 
             {/* 3) Import from Bookmarks */}
             <button
-              className="flex w-full items-center gap-3 rounded-md border p-3 text-left hover:bg-accent"
+              className="flex w-full items-center gap-3 rounded-md border p-3 text-left transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               onClick={() => setMethod('bookmarks')}
             >
               <BookOpen className="size-5 text-primary" />
               <div>
                 <div className="font-medium">Import from Bookmarks</div>
-                <div className="text-xs text-muted-foreground">
+                <Text size="xs" muted>
                   Upload a bookmark HTML file
-                </div>
+                </Text>
               </div>
             </button>
 
@@ -158,12 +156,7 @@ export function ManualImportDialog({ open, onOpenChange, onSubmit }: ManualImpor
         {method === 'bookmarks' && (
           <div className="space-y-4">
             <div className="space-y-2">
-              <Button
-                variant="outline"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isLoading}
-                className="w-full"
-              >
+              <Button variant="outline" onClick={() => fileInputRef.current?.click()} disabled={isLoading} className="w-full">
                 <Upload className="mr-2 size-4" />
                 Choose Bookmark File
               </Button>
@@ -204,15 +197,13 @@ export function ManualImportDialog({ open, onOpenChange, onSubmit }: ManualImpor
               <textarea
                 value={urlsText}
                 onChange={(e) => setUrlsText(e.target.value)}
-                placeholder="https://example.com Optional Title
-https://another-site.com Another Title
-..."
-                className="min-h-32 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:ring-2 focus:ring-ring"
+                placeholder={`https://example.com Optional Title\nhttps://another-site.com Another Title\n...`}
+                className="min-h-32 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 disabled={isLoading}
               />
-              <p className="text-xs text-muted-foreground">
+              <Text size="xs" muted>
                 Each line can contain a URL optionally followed by a title.
-              </p>
+              </Text>
             </div>
 
             <div className="flex justify-between">
@@ -232,7 +223,7 @@ https://another-site.com Another Title
             </div>
           </div>
         )}
-      </div>
+      </Surface>
     </div>
   );
 }
