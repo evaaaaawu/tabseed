@@ -1,0 +1,81 @@
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Surface } from '@/components/ui/surface';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { Heading, Text } from '@/components/ui/typography';
+
+export default function DesignSystemPage() {
+  return (
+    <main className="container space-y-8 py-8">
+      <Heading as="h1">Design System</Heading>
+      <div className="flex items-center gap-4">
+        <Text muted>Tokens, components and patterns preview.</Text>
+        <ThemeToggle />
+      </div>
+
+      <section className="space-y-4">
+        <Heading as="h2">Buttons</Heading>
+        <div className="flex flex-wrap gap-3">
+          <Button>Primary</Button>
+          <Button variant="secondary">Secondary</Button>
+          <Button variant="outline">Outline</Button>
+          <Button variant="ghost">Ghost</Button>
+          <Button variant="link">Link</Button>
+          <Button variant="destructive">Destructive</Button>
+          <Button variant="success">Success</Button>
+          <Button variant="warning">Warning</Button>
+          <Button variant="info">Info</Button>
+          <Button variant="soft">Soft</Button>
+        </div>
+      </section>
+
+      <section className="space-y-4">
+        <Heading as="h2">Badges</Heading>
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge>Neutral</Badge>
+          <Badge tone="primary">Primary</Badge>
+          <Badge tone="success">Success</Badge>
+          <Badge tone="warning">Warning</Badge>
+          <Badge tone="destructive">Destructive</Badge>
+          <Badge tone="info">Info</Badge>
+          <Badge variant="outline">Outline</Badge>
+          <Badge variant="soft" tone="primary">
+            Soft Primary
+          </Badge>
+        </div>
+      </section>
+
+      <section className="space-y-4">
+        <Heading as="h2">Surface & Skeleton</Heading>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <Surface className="space-y-2 p-4">
+            <Heading as="h3">Card Title</Heading>
+            <Text>Some quick content inside a Surface.</Text>
+          </Surface>
+          <Surface className="space-y-2 p-4">
+            <Skeleton className="h-6 w-1/2" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-3/5" />
+          </Surface>
+          <Surface className="space-y-2 p-4">
+            <Text muted>Uses shadow-elev-1 and card tokens.</Text>
+            <Text size="sm">Check dark mode with your OS or a theme toggle.</Text>
+          </Surface>
+        </div>
+      </section>
+
+      <section className="space-y-4">
+        <Heading as="h2">Typography</Heading>
+        <div className="space-y-2">
+          <Heading as="h1">H1 Heading</Heading>
+          <Heading as="h2">H2 Heading</Heading>
+          <Heading as="h3">H3 Heading</Heading>
+          <Text>Body text default</Text>
+          <Text size="sm">Small text</Text>
+          <Text muted>Muted text</Text>
+        </div>
+      </section>
+    </main>
+  );
+}

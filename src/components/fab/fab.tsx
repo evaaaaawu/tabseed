@@ -13,22 +13,22 @@ export const Fab = forwardRef<HTMLButtonElement, FabProps>(function Fab(
 	ref,
 ) {
 	return (
-		<Tooltip>
-			<TooltipTrigger asChild>
-				<button
-					ref={ref}
-					className={cn(
-						'fixed bottom-8 right-8 inline-flex items-center justify-center rounded-full bg-primary p-4 text-primary-foreground shadow-2xl transition-all duration-300 hover:bg-primary/90 hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.3),0_10px_10px_-5px_rgba(0,0,0,0.2)] hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-						className,
-					)}
-					{...props}
-				>
-					<Plus className="size-7" />
-				</button>
-			</TooltipTrigger>
-			<TooltipContent>
-				<p>Import Tabs</p>
-			</TooltipContent>
-		</Tooltip>
-	);
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          ref={ref}
+          className={cn(
+            'duration-[var(--dur-2)] fixed bottom-8 right-8 inline-flex items-center justify-center rounded-full bg-primary p-4 text-primary-foreground shadow-elev-3 transition-[transform,shadow] ease-emphasized hover:scale-105 hover:bg-primary/90 hover:shadow-elev-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+            className,
+          )}
+          {...props}
+        >
+          <Plus className="size-7" />
+        </button>
+      </TooltipTrigger>
+      <TooltipContent>
+        <p>Import Tabs</p>
+      </TooltipContent>
+    </Tooltip>
+  );
 });

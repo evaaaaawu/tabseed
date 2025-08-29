@@ -1,7 +1,9 @@
+import { ThemeProvider } from '@/components/providers/theme-provider';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { ToastProvider } from '@/components/ui/toast';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { reportWebVitals as _report } from '@/lib/observability/web-vitals-reporter';
-import Metadata from 'next';
+import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 
@@ -31,10 +33,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <TooltipProvider>
-          <ToastProvider>{children}</ToastProvider>
+          <ThemeProvider>
+            <ToastProvider>
+              <div className="fixed right-4 top-4 z-50">
+                <ThemeToggle />
+              </div>
+              {children}
+            </ToastProvider>
+          </ThemeProvider>
         </TooltipProvider>
       </body>
     </html>
