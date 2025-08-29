@@ -9,7 +9,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 
 const STORAGE_KEY = "tabseed.sidebar.collapsed";
 
-export function AppSidebar(): JSX.Element {
+export function AppSidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState<boolean>(false);
 
@@ -38,7 +38,7 @@ export function AppSidebar(): JSX.Element {
       icon: React.ReactNode;
       active: boolean;
     }
-  ): JSX.Element => {
+  ) => {
     return (
       <TooltipProvider>
         <Tooltip delayDuration={300} disableHoverableContent>
