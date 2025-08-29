@@ -4,8 +4,8 @@ import { ToastProvider } from '@/components/ui/toast';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { reportWebVitals as _report } from '@/lib/observability/web-vitals-reporter';
 import type { Metadata } from 'next';
-import localFont from 'next/font/local';
 import { Geist, Geist_Mono } from 'next/font/google';
+import localFont from 'next/font/local';
 import './globals.css';
 
 const geistSans = Geist({
@@ -19,9 +19,7 @@ const geistMono = Geist_Mono({
 });
 
 const plemolJP = localFont({
-  src: [
-    { path: '../../public/fonts/PlemolJP-Regular.woff2', weight: '400', style: 'normal' },
-  ],
+  src: [{ path: './fonts/PlemolJP-Regular.woff2', weight: '400', style: 'normal' }],
   variable: '--font-plemoljp',
   display: 'swap',
 });
