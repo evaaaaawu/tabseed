@@ -4,6 +4,7 @@ import { ToastProvider } from '@/components/ui/toast';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { reportWebVitals as _report } from '@/lib/observability/web-vitals-reporter';
 import type { Metadata } from 'next';
+import localFont from 'next/font/local';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 
@@ -15,6 +16,14 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
+});
+
+const plemolJP = localFont({
+  src: [
+    { path: '../../public/fonts/PlemolJP-Regular.woff2', weight: '400', style: 'normal' },
+  ],
+  variable: '--font-plemoljp',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -34,7 +43,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className={`${plemolJP.variable} ${geistSans.variable} ${geistMono.variable}`}>
         <TooltipProvider>
           <ThemeProvider>
             <ToastProvider>

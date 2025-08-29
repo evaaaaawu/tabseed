@@ -10,7 +10,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['var(--font-geist-sans)', 'ui-sans-serif', 'system-ui'],
+        sans: ['var(--font-plemoljp)', 'var(--font-geist-sans)', 'ui-sans-serif', 'system-ui'],
         mono: ['var(--font-geist-mono)', 'ui-monospace', 'SFMono-Regular'],
       },
       container: {
