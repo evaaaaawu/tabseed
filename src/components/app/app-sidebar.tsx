@@ -1,12 +1,12 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import type { ReactNode } from "react";
-import { cn } from "@/lib/utils";
-import { Inbox, LayoutDashboard, BookMarked, PanelLeftClose, PanelLeftOpen } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
+import { BookMarked, Inbox, LayoutDashboard, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import type { ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 
 const STORAGE_KEY = "tabseed.sidebar.collapsed";
 
