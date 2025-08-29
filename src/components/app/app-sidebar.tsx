@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { Inbox, LayoutDashboard, BookMarked, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -31,14 +32,14 @@ export function AppSidebar() {
     } catch {}
   }, [collapsed]);
 
-  const NavItem = (
-    props: {
-      href: string;
-      label: string;
-      icon: React.ReactNode;
-      active: boolean;
-    }
-  ) => {
+  interface NavItemProps {
+    href: string;
+    label: string;
+    icon: ReactNode;
+    active: boolean;
+  }
+
+  const NavItem = (props: NavItemProps) => {
     return (
       <TooltipProvider>
         <Tooltip delayDuration={300} disableHoverableContent>
@@ -61,7 +62,7 @@ export function AppSidebar() {
         </Tooltip>
       </TooltipProvider>
     );
-  } as any;
+  };
 
   return (
     <aside
