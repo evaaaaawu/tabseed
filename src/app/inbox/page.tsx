@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Fab } from '@/components/fab/fab';
 import { ImportTargetDialog, type ImportTarget } from '@/components/fab/import-target-dialog';
 import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
-import { ImportResultBanner } from '@/components/import/import-result-banner';
+// ImportResultBanner removed per new UX; details live in /import/result via toast link
 import { useToast } from '@/components/ui/toast';
 import { useExtensionStatus } from '@/hooks/use-extension-status';
 import { ApiError } from '@/lib/api/errors';
@@ -24,11 +24,7 @@ export default function InboxPage() {
   const extStatus = useExtensionStatus();
   const { addToast } = useToast();
   const { tabs: localTabs, loading } = useAllTabs();
-  const [lastRaw, setLastRaw] = useState<{
-    created: Array<{ id: string; url: string; title?: string }>;
-    reused: Array<{ id: string; url: string; title?: string }>;
-    ignored: Array<{ id: string; url: string; title?: string }>;
-  } | null>(null);
+  // store raw result to sessionStorage for details page
 
   const handleConfirm = async (target: ImportTarget, options: { closeImported: boolean }) => {
     try {
@@ -47,18 +43,24 @@ export default function InboxPage() {
           variant: 'success',
           title: 'Imported',
           description: `${r.created} new ${r.created === 1 ? 'tab' : 'tabs'} added`,
+          linkHref: '/import/result',
+          linkLabel: 'View details',
         });
       } else if (r.created > 0 && r.reused > 0) {
         addToast({
           variant: 'warning',
           title: 'Partially imported',
           description: `${r.created} new, ${r.reused} already exist`,
+          linkHref: '/import/result',
+          linkLabel: 'View details',
         });
       } else if (r.created === 0 && r.reused > 0) {
         addToast({
           variant: 'warning',
           title: 'All duplicates',
           description: `${r.reused} link${r.reused === 1 ? '' : 's'} already in your library`,
+          linkHref: '/import/result',
+          linkLabel: 'View details',
         });
       } else {
         addToast({ variant: 'default', title: 'Nothing imported' });
@@ -76,11 +78,11 @@ export default function InboxPage() {
   const handleManualSubmit = async (tabs: CapturedTab[]) => {
     const r = await submitTabs(tabs, { type: 'inbox' }, false);
     if (r.created > 0 && r.reused === 0) {
-      addToast({ variant: 'success', title: 'Imported', description: `${r.created} new added` });
+      addToast({ variant: 'success', title: 'Imported', description: `${r.created} new added`, linkHref: '/import/result', linkLabel: 'View details' });
     } else if (r.created > 0 && r.reused > 0) {
-      addToast({ variant: 'warning', title: 'Partially imported', description: `${r.created} new, ${r.reused} exist` });
+      addToast({ variant: 'warning', title: 'Partially imported', description: `${r.created} new, ${r.reused} exist`, linkHref: '/import/result', linkLabel: 'View details' });
     } else if (r.created === 0 && r.reused > 0) {
-      addToast({ variant: 'warning', title: 'All duplicates', description: `${r.reused} already exist` });
+      addToast({ variant: 'warning', title: 'All duplicates', description: `${r.reused} already exist`, linkHref: '/import/result', linkLabel: 'View details' });
     } else {
       addToast({ variant: 'default', title: 'Nothing imported' });
     }
@@ -96,7 +98,10 @@ export default function InboxPage() {
       },
     );
     setLastResult(result.counts);
-    setLastRaw(result.raw);
+    // Persist raw for details page
+    try {
+      sessionStorage.setItem('tabseed:lastImportResult', JSON.stringify({ ...result.raw, savedAt: Date.now() }));
+    } catch {}
     return result.counts;
   };
 
@@ -122,9 +127,7 @@ export default function InboxPage() {
         </div>
       ) : null}
 
-      {lastRaw ? (
-        <ImportResultBanner created={lastRaw.created} reused={lastRaw.reused} ignored={lastRaw.ignored} />
-      ) : null}
+      {/* ImportResultBanner removed per UX update */}
 
       <div className="mt-6">
         <div className="mb-2 text-sm font-medium">Local tabs (IndexedDB)</div>
