@@ -14,5 +14,3 @@ export function AppShell({ children }: AppShellProps): JSX.Element {
     </div>
   );
 }
-
-
