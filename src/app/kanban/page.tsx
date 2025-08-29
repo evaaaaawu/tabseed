@@ -6,9 +6,10 @@ import { Fab } from '@/components/fab/fab';
 import { ImportTargetDialog, type ImportTarget } from '@/components/fab/import-target-dialog';
 import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
 import { useToast } from '@/components/ui/toast';
+import { ImportResultBanner } from '@/components/import/import-result-banner';
 import { useExtensionStatus } from '@/hooks/use-extension-status';
 import { ApiError } from '@/lib/api/errors';
-import { importTabsAndSyncLocal } from '@/lib/data/import-tabs';
+import { importTabsAndSyncLocal, importTabsAndSyncLocalWithRaw } from '@/lib/data/import-tabs';
 import { captureOpenTabs, type CapturedTab } from '@/lib/extension/bridge';
 import { useAllTabs } from '@/lib/idb/hooks';
 
@@ -23,6 +24,11 @@ export default function KanbanIndexPage() {
   const extStatus = useExtensionStatus();
   const { addToast } = useToast();
   const { tabs: localTabs, loading } = useAllTabs();
+  const [lastRaw, setLastRaw] = useState<{
+    created: Array<{ id: string; url: string; title?: string }>;
+    reused: Array<{ id: string; url: string; title?: string }>;
+    ignored: Array<{ id: string; url: string; title?: string }>;
+  } | null>(null);
 
   const handleConfirm = async (target: ImportTarget, options: { closeImported: boolean }) => {
     try {
@@ -70,7 +76,7 @@ export default function KanbanIndexPage() {
   };
 
   const submitTabs = async (tabs: CapturedTab[], target: ImportTarget, closeImported: boolean) => {
-    const result = await importTabsAndSyncLocal(
+    const result = await importTabsAndSyncLocalWithRaw(
       tabs.map((t) => ({ url: t.url, title: t.title })),
       {
         idempotencyKey: crypto.randomUUID(),
@@ -78,8 +84,9 @@ export default function KanbanIndexPage() {
         closeImported,
       },
     );
-    setLastResult(result);
-    return result;
+    setLastResult(result.counts);
+    setLastRaw(result.raw);
+    return result.counts;
   };
 
   return (
@@ -116,6 +123,10 @@ export default function KanbanIndexPage() {
         onOpenChange={setOpenManual}
         onSubmit={handleManualSubmit}
       />
+
+      {lastRaw ? (
+        <ImportResultBanner created={lastRaw.created} reused={lastRaw.reused} ignored={lastRaw.ignored} />
+      ) : null}
 
       <div className="mt-6">
         <div className="mb-2 text-sm font-medium">Local tabs (IndexedDB)</div>
