@@ -139,9 +139,14 @@ export default function KanbanIndexPage() {
         ) : (
           <ul className="space-y-2">
             {localTabs.map((t) => (
-              <li key={t.id} className="truncate rounded-md border p-2 text-sm">
-                <a href={t.url} target="_blank" rel="noreferrer" className="underline">
-                  {t.title ?? t.url}
+              <li key={t.id}>
+                <a
+                  href={t.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="block rounded-md border p-2 text-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                >
+                  <span className="truncate underline">{t.title ?? t.url}</span>
                 </a>
               </li>
             ))}
