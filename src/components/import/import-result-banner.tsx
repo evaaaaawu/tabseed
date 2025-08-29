@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 type Item = { readonly id: string; readonly url: string; readonly title?: string };
 
@@ -42,14 +42,30 @@ export function ImportResultBanner({ created, reused, ignored }: ImportResultBan
 
       <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
         <Section title={`New (${createdCount})`} items={created} emptyText="No new items" />
-        <Section title={`Existing (${reusedCount})`} items={reused} emptyText="No existing duplicates" />
-        <Section title={`Ignored (${ignoredCount})`} items={ignored} emptyText="No ignored duplicates" />
+        <Section
+          title={`Existing (${reusedCount})`}
+          items={reused}
+          emptyText="No existing duplicates"
+        />
+        <Section
+          title={`Ignored (${ignoredCount})`}
+          items={ignored}
+          emptyText="No ignored duplicates"
+        />
       </div>
     </div>
   );
 }
 
-function Section({ title, items, emptyText }: { readonly title: string; readonly items: readonly Item[]; readonly emptyText: string }) {
+function Section({
+  title,
+  items,
+  emptyText,
+}: {
+  readonly title: string;
+  readonly items: readonly Item[];
+  readonly emptyText: string;
+}) {
   return (
     <div className="rounded-md border p-2">
       <div className="mb-1 text-xs font-medium">{title}</div>
@@ -72,5 +88,3 @@ function Section({ title, items, emptyText }: { readonly title: string; readonly
     </div>
   );
 }
-
-
