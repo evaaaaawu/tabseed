@@ -19,7 +19,11 @@ const geistMono = Geist_Mono({
 });
 
 const plemolJP = localFont({
-  src: [{ path: './fonts/PlemolJP-Regular.ttf', weight: '400', style: 'normal' }],
+  src: [
+    { path: './fonts/PlemolJP-Regular.ttf', weight: '400', style: 'normal' },
+    { path: './fonts/PlemolJP-Medium.ttf', weight: '500', style: 'normal' },
+    { path: './fonts/PlemolJP-Bold.ttf', weight: '700', style: 'normal' },
+  ],
   variable: '--font-plemoljp',
   display: 'swap',
 });
