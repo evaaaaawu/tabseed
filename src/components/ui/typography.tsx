@@ -6,8 +6,8 @@ export function Heading(
   const { as = 'h1', className, ...rest } = props;
   const Comp = as as keyof JSX.IntrinsicElements;
   const map = {
-    h1: 'text-3xl leading-9 font-semibold tracking-tight',
-    h2: 'text-2xl leading-8 font-semibold tracking-tight',
+    h1: 'text-3xl leading-9 font-bold tracking-tight',
+    h2: 'text-2xl leading-8 font-bold tracking-tight',
     h3: 'text-xl leading-7 font-semibold',
   } as const;
   return <Comp className={cn(map[as], className)} {...(rest as any)} />;
