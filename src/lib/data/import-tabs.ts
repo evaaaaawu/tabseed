@@ -10,15 +10,15 @@ type OpenTab = { url: string; title?: string };
 /**
  * Call Import API then sync result to IndexedDB in bulk.
  */
-export async function importTabsAndSyncLocal(
+export async function importTabsAndSyncLocalWithRaw(
   openTabs: ReadonlyArray<OpenTab>,
   input?: {
     idempotencyKey?: string;
     target?: ImportsTabsBody['target'];
     closeImported?: boolean;
   },
-): Promise<{ created: number; reused: number; ignored: number }> {
-  if (openTabs.length === 0) return { created: 0, reused: 0, ignored: 0 };
+): Promise<{ counts: { created: number; reused: number; ignored: number }; raw: Awaited<ReturnType<typeof postImportsTabs>> }> {
+  if (openTabs.length === 0) return { counts: { created: 0, reused: 0, ignored: 0 }, raw: { created: [], reused: [], ignored: [] } as any };
 
   const res = await postImportsTabs(
     {
@@ -37,5 +37,17 @@ export async function importTabsAndSyncLocal(
   }));
 
   await bulkUpsertTabs(toUpsert);
-  return { created: res.created.length, reused: res.reused.length, ignored: res.ignored.length };
+  return { counts: { created: res.created.length, reused: res.reused.length, ignored: res.ignored.length }, raw: res };
+}
+
+export async function importTabsAndSyncLocal(
+  openTabs: ReadonlyArray<OpenTab>,
+  input?: {
+    idempotencyKey?: string;
+    target?: ImportsTabsBody['target'];
+    closeImported?: boolean;
+  },
+): Promise<{ created: number; reused: number; ignored: number }> {
+  const r = await importTabsAndSyncLocalWithRaw(openTabs, input);
+  return r.counts;
 }
