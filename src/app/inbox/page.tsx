@@ -12,6 +12,7 @@ import { ApiError } from '@/lib/api/errors';
 import { importTabsAndSyncLocalWithRaw } from '@/lib/data/import-tabs';
 import { captureOpenTabs, type CapturedTab } from '@/lib/extension/bridge';
 import { useAllTabs } from '@/lib/idb/hooks';
+import { Heading, Text } from '@/components/ui/typography';
 
 export default function InboxPage() {
   const [open, setOpen] = useState(false);
@@ -128,8 +129,8 @@ export default function InboxPage() {
 
   return (
     <div className="min-h-[60svh] p-6">
-      <h1 className="mb-4 text-2xl font-bold">Inbox</h1>
-      <p className="text-muted-foreground">This is the Inbox page.</p>
+      <Heading as="h1" className="mb-4">Inbox</Heading>
+      <Text muted>This is the Inbox page.</Text>
       <div className="mt-2 text-xs text-muted-foreground">
         Extension status:{' '}
         {extStatus === 'unknown'
