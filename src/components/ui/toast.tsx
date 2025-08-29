@@ -78,13 +78,13 @@ export function ToastProvider({ children }: { readonly children: React.ReactNode
 function variantClasses(variant: ToastVariant): string {
   switch (variant) {
     case 'success':
-      return 'border-emerald-300 bg-emerald-50 text-emerald-900 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-100';
+      return 'border-success/40 bg-success/10 text-success';
     case 'error':
-      return 'border-red-300 bg-red-50 text-red-900 dark:border-red-900 dark:bg-red-950 dark:text-red-100';
+      return 'border-destructive/40 bg-destructive/10 text-destructive';
     case 'warning':
-      return 'border-amber-300 bg-amber-50 text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-100';
+      return 'border-warning/40 bg-warning/10 text-warning';
     default:
-      return 'border-slate-200 bg-white text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100';
+      return 'border-border bg-card text-card-foreground';
   }
 }
 
@@ -94,7 +94,7 @@ function Toaster({ toasts, onClose }: { readonly toasts: readonly Toast[]; reado
       {toasts.map((t) => (
         <div
           key={t.id}
-          className={`pointer-events-auto w-full max-w-lg rounded-md border p-3 shadow-lg ${variantClasses(t.variant)}`}
+          className={`pointer-events-auto w-full max-w-lg rounded-md border p-3 shadow-elev-2 ${variantClasses(t.variant)}`}
           role="status"
           aria-live="polite"
         >
@@ -109,13 +109,13 @@ function Toaster({ toasts, onClose }: { readonly toasts: readonly Toast[]; reado
               {t.linkHref ? (
                 <a
                   href={t.linkHref}
-                  className="rounded-md border px-2 py-1 text-xs opacity-80 hover:opacity-100"
+                  className="rounded-md border px-2 py-1 text-xs text-foreground/80 hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
                   {t.linkLabel ?? 'View'}
                 </a>
               ) : null}
               <button
-                className="rounded-md border px-2 py-1 text-xs opacity-80 hover:opacity-100"
+                className="rounded-md border px-2 py-1 text-xs text-foreground/80 hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 onClick={() => onClose(t.id)}
               >
                 Close
