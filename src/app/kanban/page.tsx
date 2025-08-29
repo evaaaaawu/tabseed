@@ -35,8 +35,16 @@ export default function KanbanIndexPage() {
         return;
       }
 
-      await submitTabs(tabs, target, options.closeImported);
-      addToast({ variant: 'success', title: 'Import completed', description: 'Tabs imported to target.' });
+      const r = await submitTabs(tabs, target, options.closeImported);
+      if (r.created > 0 && r.reused === 0) {
+        addToast({ variant: 'success', title: 'Imported', description: `${r.created} new added` });
+      } else if (r.created > 0 && r.reused > 0) {
+        addToast({ variant: 'warning', title: 'Partially imported', description: `${r.created} new, ${r.reused} exist` });
+      } else if (r.created === 0 && r.reused > 0) {
+        addToast({ variant: 'warning', title: 'All duplicates', description: `${r.reused} already exist` });
+      } else {
+        addToast({ variant: 'default', title: 'Nothing imported' });
+      }
     } catch (err) {
       if (err instanceof ApiError && err.isUnauthorized) {
         window.location.href = '/login';
@@ -49,8 +57,16 @@ export default function KanbanIndexPage() {
 
   const handleManualSubmit = async (tabs: CapturedTab[]) => {
     // Default to inbox for manual import on kanban page
-    await submitTabs(tabs, { type: 'inbox' }, false);
-    addToast({ variant: 'success', title: 'Import completed', description: 'Tabs have been imported.' });
+    const r = await submitTabs(tabs, { type: 'inbox' }, false);
+    if (r.created > 0 && r.reused === 0) {
+      addToast({ variant: 'success', title: 'Imported', description: `${r.created} new added` });
+    } else if (r.created > 0 && r.reused > 0) {
+      addToast({ variant: 'warning', title: 'Partially imported', description: `${r.created} new, ${r.reused} exist` });
+    } else if (r.created === 0 && r.reused > 0) {
+      addToast({ variant: 'warning', title: 'All duplicates', description: `${r.reused} already exist` });
+    } else {
+      addToast({ variant: 'default', title: 'Nothing imported' });
+    }
   };
 
   const submitTabs = async (tabs: CapturedTab[], target: ImportTarget, closeImported: boolean) => {
@@ -63,6 +79,7 @@ export default function KanbanIndexPage() {
       },
     );
     setLastResult(result);
+    return result;
   };
 
   return (
