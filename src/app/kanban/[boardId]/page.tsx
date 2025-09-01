@@ -1,6 +1,6 @@
 'use client';
 
-import { DndContext, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { DndContext, PointerSensor, type DragEndEvent, useSensor, useSensors } from '@dnd-kit/core';
 import {
   SortableContext,
   arrayMove,
@@ -14,8 +14,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { TabCard } from '@/components/tabs/tab-card';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
-import { Heading, Text } from '@/components/ui/typography';
 import { useToast } from '@/components/ui/toast';
+import { Heading, Text } from '@/components/ui/typography';
 import { useColumns } from '@/lib/idb/columns-hooks';
 import { addColumnAtEnd, ensureDefaultColumn, reorderColumns } from '@/lib/idb/columns-repo';
 
@@ -29,7 +29,7 @@ function SortableColumnShell({ id, name }: { id: string; name: string }) {
     <div
       ref={setNodeRef}
       style={style}
-      className="h-full w-[18rem] shrink-0 rounded-md border bg-card p-3 shadow-elev-1"
+      className="h-full w-72 shrink-0 rounded-md border bg-card p-3 shadow-elev-1"
       {...attributes}
       {...listeners}
     >
@@ -62,7 +62,7 @@ export default function KanbanBoardPage({ params }: { params: { boardId: string 
     setIds(columns.map((c) => c.id));
   }, [columns]);
 
-  const handleDragEnd = async (event: any): Promise<void> => {
+  const handleDragEnd = async (event: DragEndEvent): Promise<void> => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
     const oldIndex = ids.indexOf(active.id);
