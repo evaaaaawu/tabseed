@@ -2,23 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Design tokens — Light */
+/* Design tokens — Light (Solarized Light) */
 :root {
-  --background: 0 0% 100%;
-  --foreground: 224 71.4% 4.1%;
+  /* Solarized Light base */
+  --background: 44 87% 94%; /* base3 #fdf6e3 */
+  --foreground: 195 14% 45%; /* base00 #657b83 */
 
-  --muted: 220 14.3% 95.9%;
-  --muted-foreground: 220 8.9% 46.1%;
+  --muted: 44 36% 89%; /* base2 #eee8d5 */
+  --muted-foreground: 186 13% 60%; /* base1 #93a1a1 */
 
-  /* Fix: light popover should be light */
-  --popover: 0 0% 100%;
-  --popover-foreground: 224 71.4% 4.1%;
+  --popover: 44 87% 94%;
+  --popover-foreground: 195 14% 45%;
 
-  --card: 0 0% 100%;
-  --card-foreground: 224 71.4% 4.1%;
+  --card: 44 87% 94%;
+  --card-foreground: 195 14% 45%;
 
-  --border: 220 13% 91%;
-  --input: 220 13% 91%;
+  --border: 44 36% 85%; /* slightly darker than base2 */
+  --input: 44 36% 85%;
   --ring: 221 83% 53%;
 
   /* Brand colors */
@@ -60,23 +60,22 @@
   --radius: 8px;
 }
 
-/* Dark theme overrides */
+/* Dark theme overrides (Solarized Dark) */
 .dark {
-  --background: 224 71% 4%;
-  --foreground: 213 31% 91%;
+  --background: 193 100% 11%; /* base03 #002b36 */
+  --foreground: 186 13% 56%; /* base0 #839496 */
 
-  --muted: 223 47% 11%;
-  --muted-foreground: 215 20% 65%;
+  --muted: 192 88% 13%; /* base02 #073642 */
+  --muted-foreground: 186 13% 60%; /* base1 #93a1a1 */
 
-  /* Fix: dark popover should be dark */
-  --popover: 224 71% 4%;
-  --popover-foreground: 213 31% 91%;
+  --popover: 193 100% 11%;
+  --popover-foreground: 186 13% 56%;
 
-  --card: 224 71% 4%;
-  --card-foreground: 213 31% 91%;
+  --card: 193 100% 11%;
+  --card-foreground: 186 13% 56%;
 
-  --border: 216 34% 17%;
-  --input: 216 34% 17%;
+  --border: 191 33% 22%; /* subtle line on dark */
+  --input: 191 33% 22%;
   --ring: 224 76% 48%;
 
   /* Keep brand readable on dark */
