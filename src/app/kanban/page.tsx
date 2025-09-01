@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -18,6 +19,7 @@ export default function KanbanIndexPage() {
   const { count } = useBoardsCount();
   const canCreate = count < MAX_BOARDS;
   const { addToast } = useToast();
+  const router = useRouter();
   const [editingId, setEditingId] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -46,22 +48,27 @@ export default function KanbanIndexPage() {
 
   return (
     <div className="min-h-[60svh] p-6">
-      <div className="mb-4 flex items-center justify-between gap-3">
-        <Heading as="h1">Kanban</Heading>
+      <div className="mb-2 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <Heading as="h1">Kanban</Heading>
+          <Button size="sm" onClick={handleCreate} disabled={!canCreate}>
+            New Kanban
+          </Button>
+        </div>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <span>{count}</span>
           <span>/</span>
           <span>{MAX_BOARDS}</span>
         </div>
       </div>
+      {!canCreate ? (
+        <div className="mb-3 text-sm text-muted-foreground">已達 100 個 Kanban 上限，請刪除一些後再建立新 Kanban。</div>
+      ) : null}
 
-      <Surface className="mb-4 flex items-center justify-between gap-3 p-3">
+      <Surface className="mb-4 p-3">
         <Text size="sm" muted>
           Create Kanban spaces to organize your tabs. Newest first.
         </Text>
-        <Button size="sm" onClick={handleCreate} disabled={!canCreate}>
-          New Kanban
-        </Button>
       </Surface>
 
       {loading ? (
@@ -81,7 +88,11 @@ export default function KanbanIndexPage() {
       ) : (
         <div className={`grid gap-3 ${gridCols}`}>
           {boards.map((b) => (
-            <div key={b.id} className="group rounded-md border p-3">
+            <div
+              key={b.id}
+              className="group cursor-default rounded-md border p-3 transition-colors hover:bg-accent/40"
+              onDoubleClick={() => router.push(`/kanban/${b.id}`)}
+            >
               {editingId === b.id ? (
                 <form
                   onSubmit={(e) => {
