@@ -15,6 +15,49 @@ export default function DesignSystemPage() {
       </div>
 
       <section className="space-y-4">
+        <Heading as="h2">Theme Tokens Preview</Heading>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <Surface className="space-y-3 p-4">
+            <Heading as="h3">Surfaces</Heading>
+            <div className="grid grid-cols-3 gap-2">
+              <div className="h-10 rounded bg-background" />
+              <div className="h-10 rounded bg-card" />
+              <div className="h-10 rounded bg-popover" />
+            </div>
+            <Text size="sm" muted>
+              background / card / popover
+            </Text>
+          </Surface>
+          <Surface className="space-y-3 p-4">
+            <Heading as="h3">Text</Heading>
+            <div className="flex items-center gap-2">
+              <span className="rounded px-2 py-1 text-foreground ring-1 ring-border">foreground</span>
+              <span className="rounded px-2 py-1 text-muted-foreground ring-1 ring-border">muted-foreground</span>
+            </div>
+            <Text size="sm" muted>
+              foreground / muted-foreground
+            </Text>
+          </Surface>
+          <Surface className="space-y-3 p-4">
+            <Heading as="h3">Brand & Accents</Heading>
+            <div className="grid grid-cols-4 gap-2">
+              <div className="h-10 rounded bg-primary" />
+              <div className="h-10 rounded bg-secondary" />
+              <div className="h-10 rounded bg-success" />
+              <div className="h-10 rounded bg-warning" />
+              <div className="h-10 rounded bg-info" />
+              <div className="h-10 rounded bg-destructive" />
+              <div className="h-10 rounded bg-accent" />
+              <div className="h-10 rounded bg-ring" />
+            </div>
+            <Text size="sm" muted>
+              primary / secondary / success / warning / info / destructive / accent / ring
+            </Text>
+          </Surface>
+        </div>
+      </section>
+
+      <section className="space-y-4">
         <Heading as="h2">Buttons</Heading>
         <div className="flex flex-wrap gap-3">
           <Button>Primary</Button>
