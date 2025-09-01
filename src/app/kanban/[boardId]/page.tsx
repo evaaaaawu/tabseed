@@ -83,7 +83,7 @@ export default function KanbanBoardPage({ params }: { params: { boardId: string 
         addToast({ variant: 'warning', title: 'Column limit reached', description: 'You can create up to 50 columns per board.' });
         return;
       }
-      addToast({ variant: 'destructive', title: 'Failed to add column' });
+      addToast({ variant: 'error', title: 'Failed to add column' });
     }
   };
 
