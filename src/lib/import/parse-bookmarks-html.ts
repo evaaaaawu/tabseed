@@ -14,17 +14,19 @@ export async function parseBookmarksHtml(file: File): Promise<CapturedTab[]> {
   // Find all anchor elements with href attributes
   const anchors = Array.from(doc.querySelectorAll('a[href]'));
 
-  const tabs = anchors
-    .map(a => {
+  type MaybeCaptured = CapturedTab | null;
+
+  const tabs: CapturedTab[] = anchors
+    .map<MaybeCaptured>((a) => {
       const url = a.getAttribute('href');
       const title = (a.textContent ?? '').trim();
-      return url ? { url, title: title || undefined } : null;
+      return url ? ({ url, title: title || undefined } as CapturedTab) : null;
     })
     .filter((tab): tab is CapturedTab => tab !== null && isValidUrl(tab.url));
 
   // Remove duplicates based on URL
   const seen = new Set<string>();
-  const uniqueTabs = tabs.filter(tab => {
+  const uniqueTabs = tabs.filter((tab) => {
     if (seen.has(tab.url)) return false;
     seen.add(tab.url);
     return true;
