@@ -7,7 +7,6 @@ import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
 import { TabCard } from '@/components/tabs/tab-card';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
-import { Surface } from '@/components/ui/surface';
 import { useToast } from '@/components/ui/toast';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Heading, Text } from '@/components/ui/typography';
@@ -21,11 +20,6 @@ import { Plus } from 'lucide-react';
 export default function InboxPage() {
   const [open, setOpen] = useState(false);
   const [openManual, setOpenManual] = useState(false);
-  const [lastResult, setLastResult] = useState<{
-    created: number;
-    reused: number;
-    ignored: number;
-  } | null>(null);
   const extStatus = useExtensionStatus();
   const { addToast } = useToast();
   const { tabs, loading } = useAllTabsNewest();
@@ -120,7 +114,6 @@ export default function InboxPage() {
         closeImported,
       },
     );
-    setLastResult(result.counts);
     // Persist raw for details page
     try {
       sessionStorage.setItem(
@@ -141,7 +134,7 @@ export default function InboxPage() {
               <Button
                 size="sm"
                 variant="default"
-                className="rounded-full ml-2"
+                className="ml-2 rounded-full"
                 aria-label="Import tabs"
                 onClick={() => (extStatus === 'available' ? setOpen(true) : setOpenManual(true))}
               >
@@ -153,15 +146,6 @@ export default function InboxPage() {
         </TooltipProvider>
       </div>
 
-      {lastResult ? (
-        <Surface className="mb-4 p-3 text-sm">
-          <div className="font-medium">Latest import result</div>
-          <div className="mt-1 text-muted-foreground">
-            created: {lastResult.created}, reused: {lastResult.reused}, ignored: {lastResult.ignored}
-          </div>
-        </Surface>
-      ) : null}
-
       <div className="mt-4">
         {loading ? (
           <Text size="sm" muted>
@@ -172,13 +156,7 @@ export default function InboxPage() {
         ) : (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {tabs.map((t) => (
-              <TabCard
-                key={t.id}
-                id={t.id}
-                url={t.url}
-                title={t.title}
-                color={t.color}
-              />
+              <TabCard key={t.id} id={t.id} url={t.url} title={t.title} color={t.color} />
             ))}
           </div>
         )}
