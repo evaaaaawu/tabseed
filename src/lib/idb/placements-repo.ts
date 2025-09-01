@@ -1,7 +1,10 @@
 import { getDb } from './db';
 import type { TabPlacementRecord } from './types';
 
-export async function listPlacements(boardId: string, columnId?: string): Promise<readonly TabPlacementRecord[]> {
+export async function listPlacements(
+  boardId: string,
+  columnId?: string,
+): Promise<readonly TabPlacementRecord[]> {
   const db = getDb();
   if (columnId) {
     return db.placements.where({ boardId, columnId }).sortBy('orderIndex');
@@ -9,10 +12,17 @@ export async function listPlacements(boardId: string, columnId?: string): Promis
   return db.placements.where('boardId').equals(boardId).sortBy('orderIndex');
 }
 
-export async function addPlacementAtEnd(input: { tabId: string; boardId: string; columnId: string }): Promise<TabPlacementRecord> {
+export async function addPlacementAtEnd(input: {
+  tabId: string;
+  boardId: string;
+  columnId: string;
+}): Promise<TabPlacementRecord> {
   const db = getDb();
   const now = new Date().toISOString();
-  const rows = await db.placements.where({ boardId: input.boardId, columnId: input.columnId }).reverse().sortBy('orderIndex');
+  const rows = await db.placements
+    .where({ boardId: input.boardId, columnId: input.columnId })
+    .reverse()
+    .sortBy('orderIndex');
   const lastOrder = rows.length > 0 ? rows[0]!.orderIndex : 0;
   const record: TabPlacementRecord = {
     id: crypto.randomUUID(),
@@ -55,7 +65,10 @@ export async function movePlacement(
     }
   }
   if (nextIndex === undefined) {
-    const rows = await db.placements.where({ columnId: input.toColumnId }).reverse().sortBy('orderIndex');
+    const rows = await db.placements
+      .where({ columnId: input.toColumnId })
+      .reverse()
+      .sortBy('orderIndex');
     nextIndex = rows.length > 0 ? rows[0]!.orderIndex + 1_000 : 1_000;
   }
 
@@ -65,5 +78,3 @@ export async function movePlacement(
     updatedAt: now,
   } as Partial<TabPlacementRecord>);
 }
-
-

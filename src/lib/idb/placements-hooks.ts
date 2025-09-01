@@ -31,5 +31,3 @@ export function usePlacements(boardId: string, columnId?: string): {
 
   return { placements, loading };
 }
-
-
