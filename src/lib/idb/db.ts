@@ -4,12 +4,17 @@ import type { TabRecord } from './types';
 
 export class TabSeedIDB extends Dexie {
   public tabs!: Table<TabRecord, string>;
+  public boards!: Table<import('./types').BoardRecord, string>;
 
   constructor() {
     super('tabseed');
     this.version(1).stores({
       // by id (primary key), and an index on url for quick lookup/dedupe
       tabs: '&id, url',
+    });
+    // v2: add boards store
+    this.version(2).stores({
+      boards: '&id, createdAt',
     });
   }
 }

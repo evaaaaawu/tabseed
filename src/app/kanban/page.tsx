@@ -1,158 +1,120 @@
 "use client";
 
-import { useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { Fab } from '@/components/fab/fab';
-import { type ImportTarget,ImportTargetDialog } from '@/components/fab/import-target-dialog';
-import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
-// ImportResultBanner removed per new UX; details live in /import/result via toast link
+import { Button } from '@/components/ui/button';
+import { EmptyState } from '@/components/ui/empty-state';
+import { Input } from '@/components/ui/input';
 import { Surface } from '@/components/ui/surface';
-import { useToast } from '@/components/ui/toast';
 import { Heading, Text } from '@/components/ui/typography';
-import { useExtensionStatus } from '@/hooks/use-extension-status';
-import { ApiError } from '@/lib/api/errors';
-import { importTabsAndSyncLocalWithRaw } from '@/lib/data/import-tabs';
-import { type CapturedTab,captureOpenTabs } from '@/lib/extension/bridge';
-import { useAllTabs } from '@/lib/idb/hooks';
+import { useToast } from '@/components/ui/toast';
+import { useBoardsCount, useBoardsNewest } from '@/lib/idb/boards-hooks';
+import { createBoardDraft, renameBoard } from '@/lib/idb/boards-repo';
+
+const MAX_BOARDS = 100;
 
 export default function KanbanIndexPage() {
-  const [open, setOpen] = useState(false);
-  const [openManual, setOpenManual] = useState(false);
-  const [lastResult, setLastResult] = useState<{
-    created: number;
-    reused: number;
-    ignored: number;
-  } | null>(null);
-  const extStatus = useExtensionStatus();
+  const { boards, loading } = useBoardsNewest();
+  const { count } = useBoardsCount();
+  const canCreate = count < MAX_BOARDS;
   const { addToast } = useToast();
-  const { tabs: localTabs, loading } = useAllTabs();
-  // store raw result to sessionStorage for details page
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleConfirm = async (target: ImportTarget, options: { closeImported: boolean }) => {
-    try {
-      const tabs = await captureOpenTabs({ closeImported: options.closeImported });
-
-      // If no tabs captured (extension unavailable), open manual import dialog
-      if (tabs.length === 0) {
-        setOpen(false);
-        setOpenManual(true);
-        return;
-      }
-
-      const r = await submitTabs(tabs, target, options.closeImported);
-      if (r.created > 0 && r.reused === 0) {
-        addToast({ variant: 'success', title: 'Imported', description: `${r.created} new added`, linkHref: '/import/result', linkLabel: 'View details' });
-      } else if (r.created > 0 && r.reused > 0) {
-        addToast({ variant: 'warning', title: 'Partially imported', description: `${r.created} new, ${r.reused} exist`, linkHref: '/import/result', linkLabel: 'View details' });
-      } else if (r.created === 0 && r.reused > 0) {
-        addToast({ variant: 'warning', title: 'All duplicates', description: `${r.reused} already exist`, linkHref: '/import/result', linkLabel: 'View details' });
-      } else {
-        addToast({ variant: 'default', title: 'Nothing imported' });
-      }
-    } catch (err) {
-      if (err instanceof ApiError && err.isUnauthorized) {
-        window.location.href = '/login';
-        return;
-      }
-      addToast({ variant: 'error', title: 'Import failed', description: (err as Error).message });
-      throw err as Error;
+  useEffect(() => {
+    if (editingId && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
     }
-  };
+  }, [editingId]);
 
-  const handleManualSubmit = async (tabs: CapturedTab[]) => {
-    // Default to inbox for manual import on kanban page
-    const r = await submitTabs(tabs, { type: 'inbox' }, false);
-    if (r.created > 0 && r.reused === 0) {
-      addToast({ variant: 'success', title: 'Imported', description: `${r.created} new added`, linkHref: '/import/result', linkLabel: 'View details' });
-    } else if (r.created > 0 && r.reused > 0) {
-      addToast({ variant: 'warning', title: 'Partially imported', description: `${r.created} new, ${r.reused} exist`, linkHref: '/import/result', linkLabel: 'View details' });
-    } else if (r.created === 0 && r.reused > 0) {
-      addToast({ variant: 'warning', title: 'All duplicates', description: `${r.reused} already exist`, linkHref: '/import/result', linkLabel: 'View details' });
-    } else {
-      addToast({ variant: 'default', title: 'Nothing imported' });
+  const handleCreate = async (): Promise<void> => {
+    if (!canCreate) {
+      addToast({ variant: 'warning', title: 'Limit reached', description: 'You can create up to 100 Kanban boards.' });
+      return;
     }
+    const draft = await createBoardDraft();
+    setEditingId(draft.id);
   };
 
-  const submitTabs = async (tabs: CapturedTab[], target: ImportTarget, closeImported: boolean) => {
-    const result = await importTabsAndSyncLocalWithRaw(
-      tabs.map((t) => ({ url: t.url, title: t.title })),
-      {
-        idempotencyKey: crypto.randomUUID(),
-        target: target.type === 'inbox' ? { inbox: true } : { boardId: target.boardId },
-        closeImported,
-      },
-    );
-    setLastResult(result.counts);
-    // Persist raw for details page
-    try {
-      sessionStorage.setItem('tabseed:lastImportResult', JSON.stringify({ ...result.raw, savedAt: Date.now() }));
-    } catch {}
-    return result.counts;
+  const handleCommitName = async (boardId: string, value: string): Promise<void> => {
+    await renameBoard(boardId, value);
+    setEditingId(null);
   };
+
+  const gridCols = useMemo(() => 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4', []);
 
   return (
     <div className="min-h-[60svh] p-6">
-      <Heading as="h1" className="mb-4">Kanban</Heading>
-      <Text muted>This is the Kanban entry point.</Text>
-      <div className="mt-2 text-xs text-muted-foreground">
-        Extension status:{' '}
-        {extStatus === 'unknown'
-          ? 'Detecting...'
-          : extStatus === 'available'
-            ? 'Available'
-            : 'Not detected (manual import will be available)'}
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <Heading as="h1">Kanban</Heading>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <span>{count}</span>
+          <span>/</span>
+          <span>{MAX_BOARDS}</span>
+        </div>
       </div>
-      {lastResult ? (
-        <Surface className="mt-3 p-3 text-sm">
-          <div className="font-medium">Latest import result</div>
-          <div className="mt-1 text-muted-foreground">
-            created: {lastResult.created}, reused: {lastResult.reused}, ignored: {lastResult.ignored}
-          </div>
-        </Surface>
-      ) : null}
 
-      <Fab label="Import Tabs" onClick={() => (extStatus === 'available' ? setOpen(true) : setOpenManual(true))} />
-      <ImportTargetDialog
-        open={open}
-        onOpenChange={setOpen}
-        onConfirm={handleConfirm}
-        onSwitchToManual={() => setOpenManual(true)}
-      />
-      <ManualImportDialog
-        open={openManual}
-        onOpenChange={setOpenManual}
-        onSubmit={handleManualSubmit}
-      />
+      <Surface className="mb-4 flex items-center justify-between gap-3 p-3">
+        <Text size="sm" muted>
+          Create Kanban spaces to organize your tabs. Newest first.
+        </Text>
+        <Button size="sm" onClick={handleCreate} disabled={!canCreate}>
+          New Kanban
+        </Button>
+      </Surface>
 
-      {/* ImportResultBanner removed per UX update */}
-
-      <div className="mt-6">
-        <div className="mb-2 text-sm font-medium">Local tabs (IndexedDB)</div>
-        {loading ? (
-          <Text size="sm" muted>
-            Loading...
-          </Text>
-        ) : localTabs.length === 0 ? (
-          <Text size="sm" muted>
-            No tabs imported yet.
-          </Text>
-        ) : (
-          <ul className="space-y-2">
-            {localTabs.map((t) => (
-              <li key={t.id}>
-                <a
-                  href={t.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="block rounded-md border p-2 text-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      {loading ? (
+        <Text size="sm" muted>
+          Loading...
+        </Text>
+      ) : boards.length === 0 ? (
+        <EmptyState
+          title="No Kanban yet"
+          description="Create your first Kanban space. You can rename it immediately."
+          action={
+            <Button onClick={handleCreate} disabled={!canCreate}>
+              Create Kanban
+            </Button>
+          }
+        />
+      ) : (
+        <div className={`grid gap-3 ${gridCols}`}>
+          {boards.map((b) => (
+            <div key={b.id} className="group rounded-md border p-3">
+              {editingId === b.id ? (
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    const form = e.currentTarget as HTMLFormElement;
+                    const data = new FormData(form);
+                    const value = String(data.get('name') ?? '');
+                    void handleCommitName(b.id, value);
+                  }}
                 >
-                  <span className="truncate underline">{t.title ?? t.url}</span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+                  <Input
+                    ref={inputRef}
+                    name="name"
+                    defaultValue={b.name}
+                    placeholder="Untitled"
+                    onBlur={(e) => void handleCommitName(b.id, e.currentTarget.value)}
+                  />
+                </form>
+              ) : (
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <div className="line-clamp-2 text-base font-medium">{b.name}</div>
+                    <div className="mt-1 text-xs text-muted-foreground">{new Date(b.createdAt).toLocaleString()}</div>
+                  </div>
+                  <Button variant="ghost" size="sm" onClick={() => setEditingId(b.id)}>
+                    Rename
+                  </Button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
