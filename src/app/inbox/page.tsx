@@ -9,8 +9,8 @@ import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Surface } from '@/components/ui/surface';
 import { useToast } from '@/components/ui/toast';
-import { Heading, Text } from '@/components/ui/typography';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Heading, Text } from '@/components/ui/typography';
 import { useExtensionStatus } from '@/hooks/use-extension-status';
 import { ApiError } from '@/lib/api/errors';
 import { importTabsAndSyncLocalWithRaw } from '@/lib/data/import-tabs';
@@ -139,16 +139,16 @@ export default function InboxPage() {
           <Tooltip delayDuration={300}>
             <TooltipTrigger asChild>
               <Button
-                size="icon"
-                variant="soft"
-                className="rounded-full"
+                size="sm"
+                variant="default"
+                className="rounded-full ml-2"
                 aria-label="Import tabs"
                 onClick={() => (extStatus === 'available' ? setOpen(true) : setOpenManual(true))}
               >
-                <Plus className="size-4" />
+                <Plus className="size-4" strokeWidth={2.5} />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Import tabs</TooltipContent>
+            <TooltipContent side="right">Import tabs</TooltipContent>
           </Tooltip>
         </TooltipProvider>
       </div>
