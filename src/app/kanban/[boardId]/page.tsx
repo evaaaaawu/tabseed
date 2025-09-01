@@ -1,19 +1,23 @@
-"use client";
+'use client';
 
 import { DndContext, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { SortableContext, arrayMove, horizontalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import {
+  SortableContext,
+  arrayMove,
+  horizontalListSortingStrategy,
+  useSortable,
+} from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Plus } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
+import { TabCard } from '@/components/tabs/tab-card';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Heading, Text } from '@/components/ui/typography';
-import { useBoardsNewest } from '@/lib/idb/boards-hooks';
-import { addColumnAtEnd, ensureDefaultColumn, reorderColumns } from '@/lib/idb/columns-repo';
+import { useToast } from '@/components/ui/toast';
 import { useColumns } from '@/lib/idb/columns-hooks';
-import { TabCard } from '@/components/tabs/tab-card';
-import { usePlacements } from '@/lib/idb/placements-hooks';
+import { addColumnAtEnd, ensureDefaultColumn, reorderColumns } from '@/lib/idb/columns-repo';
 
 function SortableColumnShell({ id, name }: { id: string; name: string }) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
@@ -30,7 +34,9 @@ function SortableColumnShell({ id, name }: { id: string; name: string }) {
       {...listeners}
     >
       <div className="mb-2 flex items-center justify-between">
-        <Heading as="h3" className="truncate text-base">{name}</Heading>
+        <Heading as="h3" className="truncate text-base">
+          {name}
+        </Heading>
       </div>
       <div className="space-y-2">
         {/* Placeholder static card list; will be fed by placements in next step */}
@@ -45,6 +51,7 @@ export default function KanbanBoardPage({ params }: { params: { boardId: string 
   const sensors = useSensors(useSensor(PointerSensor));
   const { columns, loading } = useColumns(boardId);
   const [ids, setIds] = useState<string[]>([]);
+  const { addToast } = useToast();
 
   useEffect(() => {
     // ensure default column exists
@@ -66,7 +73,16 @@ export default function KanbanBoardPage({ params }: { params: { boardId: string 
   };
 
   const handleAddColumn = async (): Promise<void> => {
-    await addColumnAtEnd(boardId, 'New Column');
+    try {
+      await addColumnAtEnd(boardId, 'New Column');
+    } catch (e) {
+      const err = e as Error;
+      if (err.message === 'column_limit_reached') {
+        addToast({ variant: 'warning', title: 'Column limit reached', description: 'You can create up to 50 columns per board.' });
+        return;
+      }
+      addToast({ variant: 'destructive', title: 'Failed to add column' });
+    }
   };
 
   const gridClass = useMemo(() => 'flex gap-3 overflow-x-auto pb-4', []);
@@ -75,7 +91,12 @@ export default function KanbanBoardPage({ params }: { params: { boardId: string 
     <div className="min-h-[60svh] p-6">
       <div className="mb-4 flex items-center gap-2">
         <Heading as="h1">Kanban</Heading>
-        <Button size="sm" className="ml-2 rounded-full" onClick={handleAddColumn} aria-label="Add column">
+        <Button
+          size="sm"
+          className="ml-2 rounded-full"
+          onClick={handleAddColumn}
+          aria-label="Add column"
+        >
           <Plus className="size-4" strokeWidth={2.5} />
         </Button>
       </div>
@@ -101,5 +122,3 @@ export default function KanbanBoardPage({ params }: { params: { boardId: string 
     </div>
   );
 }
-
-

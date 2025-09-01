@@ -28,6 +28,10 @@ export async function listColumns(boardId: string): Promise<readonly KanbanColum
 export async function addColumnAtEnd(boardId: string, name: string): Promise<KanbanColumnRecord> {
   const db = getDb();
   const now = new Date().toISOString();
+  const count = await db.columns.where('boardId').equals(boardId).count();
+  if (count >= 50) {
+    throw new Error('column_limit_reached');
+  }
   const last = await db.columns.where('boardId').equals(boardId).reverse().sortBy('sortOrder');
   const lastOrder = last.length > 0 ? last[0]!.sortOrder : 0;
   const record: KanbanColumnRecord = {
@@ -45,14 +49,20 @@ export async function addColumnAtEnd(boardId: string, name: string): Promise<Kan
 export async function renameColumn(columnId: string, name: string): Promise<void> {
   const db = getDb();
   const now = new Date().toISOString();
-  await db.columns.update(columnId, { name: name.trim() || 'Untitled', updatedAt: now } as Partial<KanbanColumnRecord>);
+  await db.columns.update(columnId, {
+    name: name.trim() || 'Untitled',
+    updatedAt: now,
+  } as Partial<KanbanColumnRecord>);
 }
 
 /**
  * Reorder columns by applying new index positions. Input is an array of column ids
  * in desired left→right order; function recomputes sortOrder with gaps for future inserts.
  */
-export async function reorderColumns(boardId: string, orderedColumnIds: readonly string[]): Promise<void> {
+export async function reorderColumns(
+  boardId: string,
+  orderedColumnIds: readonly string[],
+): Promise<void> {
   const db = getDb();
   const now = new Date().toISOString();
   const gap = 1_000;
@@ -60,9 +70,10 @@ export async function reorderColumns(boardId: string, orderedColumnIds: readonly
     for (let i = 0; i < orderedColumnIds.length; i++) {
       const id = orderedColumnIds[i]!;
       const nextOrder = (i + 1) * gap;
-      await db.columns.update(id, { sortOrder: nextOrder, updatedAt: now } as Partial<KanbanColumnRecord>);
+      await db.columns.update(id, {
+        sortOrder: nextOrder,
+        updatedAt: now,
+      } as Partial<KanbanColumnRecord>);
     }
   });
 }
-
-
