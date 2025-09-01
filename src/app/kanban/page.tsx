@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
+import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Input } from '@/components/ui/input';
@@ -10,7 +11,6 @@ import { useToast } from '@/components/ui/toast';
 import { Heading, Text } from '@/components/ui/typography';
 import { useBoardsCount, useBoardsNewest } from '@/lib/idb/boards-hooks';
 import { createBoardDraft, renameBoard } from '@/lib/idb/boards-repo';
-import { Plus } from 'lucide-react';
 
 const MAX_BOARDS = 100;
 
