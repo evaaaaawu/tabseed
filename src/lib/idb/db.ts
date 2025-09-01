@@ -5,6 +5,8 @@ import type { TabRecord } from './types';
 export class TabSeedIDB extends Dexie {
   public tabs!: Table<TabRecord, string>;
   public boards!: Table<import('./types').BoardRecord, string>;
+  public columns!: Table<import('./types').KanbanColumnRecord, string>;
+  public placements!: Table<import('./types').TabPlacementRecord, string>;
 
   constructor() {
     super('tabseed');
@@ -15,6 +17,11 @@ export class TabSeedIDB extends Dexie {
     // v2: add boards store
     this.version(2).stores({
       boards: '&id, createdAt',
+    });
+    // v3: add kanban columns and placements
+    this.version(3).stores({
+      columns: '&id, boardId, sortOrder',
+      placements: '&id, boardId, columnId, orderIndex',
     });
   }
 }

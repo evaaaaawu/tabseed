@@ -25,3 +25,26 @@ export interface BoardRecord {
   readonly createdAt: string; // ISO
   readonly updatedAt: string; // ISO
 }
+
+// --- Kanban columns ---
+export interface KanbanColumnRecord {
+  readonly id: string;
+  readonly boardId: string;
+  readonly name: string; // e.g., "No Status" default
+  readonly sortOrder: number; // increasing sequence for left→right ordering
+  readonly etag?: string;
+  readonly createdAt: string; // ISO
+  readonly updatedAt: string; // ISO
+}
+
+// --- Per-board tab placements (card ordering) ---
+export interface TabPlacementRecord {
+  readonly id: string;
+  readonly tabId: string;
+  readonly boardId: string;
+  readonly columnId: string;
+  readonly orderIndex: number; // sparse index for stable inserts (e.g., 1_000, 2_000, ...)
+  readonly etag?: string;
+  readonly createdAt: string; // ISO
+  readonly updatedAt: string; // ISO
+}
