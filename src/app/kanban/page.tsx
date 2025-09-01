@@ -6,11 +6,11 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Input } from '@/components/ui/input';
-import { Surface } from '@/components/ui/surface';
 import { useToast } from '@/components/ui/toast';
 import { Heading, Text } from '@/components/ui/typography';
 import { useBoardsCount, useBoardsNewest } from '@/lib/idb/boards-hooks';
 import { createBoardDraft, renameBoard } from '@/lib/idb/boards-repo';
+import { Plus } from 'lucide-react';
 
 const MAX_BOARDS = 100;
 
@@ -49,27 +49,24 @@ export default function KanbanIndexPage() {
   return (
     <div className="min-h-[60svh] p-6">
       <div className="mb-2 flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
+        <div className="mb-8 flex items-center gap-3">
           <Heading as="h1">Kanban</Heading>
-          <Button size="sm" onClick={handleCreate} disabled={!canCreate}>
-            New Kanban
+          <Button size="sm" variant="secondary" onClick={handleCreate} disabled={!canCreate}>
+            <Plus className="size-4" strokeWidth={2} />
+            <span className="ml-1">Kanban</span>
           </Button>
-        </div>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span>{count}</span>
-          <span>/</span>
-          <span>{MAX_BOARDS}</span>
+          <div className="flex items-center gap-1 text-sm text-muted-foreground">
+            <span>{count}</span>
+            <span>/</span>
+            <span>{MAX_BOARDS}</span>
+          </div>
         </div>
       </div>
       {!canCreate ? (
-        <div className="mb-3 text-sm text-muted-foreground">已達 100 個 Kanban 上限，請刪除一些後再建立新 Kanban。</div>
+        <div className="mb-3 text-sm text-muted-foreground">
+          You have reached the limit of 100 Kanban boards.
+        </div>
       ) : null}
-
-      <Surface className="mb-4 p-3">
-        <Text size="sm" muted>
-          Create Kanban spaces to organize your tabs. Newest first.
-        </Text>
-      </Surface>
 
       {loading ? (
         <Text size="sm" muted>
@@ -115,7 +112,9 @@ export default function KanbanIndexPage() {
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <div className="line-clamp-2 text-base font-medium">{b.name}</div>
-                    <div className="mt-1 text-xs text-muted-foreground">{new Date(b.createdAt).toLocaleString()}</div>
+                    <div className="mt-1 text-xs text-muted-foreground">
+                      {new Date(b.createdAt).toLocaleString()}
+                    </div>
                   </div>
                   <Button variant="ghost" size="sm" onClick={() => setEditingId(b.id)}>
                     Rename
