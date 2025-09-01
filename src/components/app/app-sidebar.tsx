@@ -13,19 +13,17 @@ const STORAGE_KEY = "tabseed.sidebar.collapsed";
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const [collapsed, setCollapsed] = useState<boolean>(false);
-
-  useEffect(() => {
+  const [collapsed, setCollapsed] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw != null) {
-        setCollapsed(raw === "1");
-      } else if (typeof window !== "undefined") {
-        const prefersNarrow = window.matchMedia && window.matchMedia("(max-width: 768px)").matches;
-        setCollapsed(prefersNarrow);
-      }
-    } catch {}
-  }, []);
+      if (raw != null) return raw === "1";
+      const prefersNarrow = window.matchMedia && window.matchMedia("(max-width: 768px)").matches;
+      return prefersNarrow;
+    } catch {
+      return false;
+    }
+  });
 
   useEffect(() => {
     try {
