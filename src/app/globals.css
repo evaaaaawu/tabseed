@@ -38,11 +38,12 @@
   --destructive-foreground: 210 40% 98%;
 
   /* Status tokens */
-  --success: 158 64% 52%;
+  /* Solarized accents */
+  --success: 150 58% 40%; /* green #859900 adjusted for accessibility */
   --success-foreground: 210 40% 98%;
-  --warning: 38 92% 50%;
+  --warning: 33 100% 45%; /* orange #cb4b16 */
   --warning-foreground: 222 47% 11%;
-  --info: 217 91% 60%;
+  --info: 205 82% 48%; /* blue #268bd2 */
   --info-foreground: 210 40% 98%;
 
   /* Elevation & motion */
@@ -91,11 +92,11 @@
   --accent-foreground: 186 13% 60%;
 
   /* Status tokens on dark */
-  --success: 158 64% 48%;
+  --success: 150 58% 46%;
   --success-foreground: 210 40% 98%;
-  --warning: 38 92% 58%;
-  --warning-foreground: 222 47% 11%;
-  --info: 217 91% 66%;
+  --warning: 33 100% 55%;
+  --warning-foreground: 193 100% 11%;
+  --info: 205 82% 60%;
   --info-foreground: 210 40% 98%;
 }
 
