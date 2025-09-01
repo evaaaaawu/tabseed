@@ -22,7 +22,7 @@ export default function LibraryPage() {
 
   return (
     <div className="min-h-[60svh] p-6">
-      <Heading as="h1" className="mb-4">
+      <Heading as="h1" className="mb-8">
         Library
       </Heading>
 

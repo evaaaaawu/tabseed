@@ -126,7 +126,7 @@ export default function InboxPage() {
 
   return (
     <div className="min-h-[60svh] p-6">
-      <div className="mb-4 flex items-center gap-2">
+      <div className="mb-8 flex items-center gap-2">
         <Heading as="h1">Inbox</Heading>
         <TooltipProvider>
           <Tooltip delayDuration={300}>
