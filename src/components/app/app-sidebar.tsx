@@ -87,7 +87,7 @@ export function AppSidebar() {
         </button>
       </div>
       {!collapsed && (
-        <div className="px-3 mb-2">
+        <div className="mb-2 px-3">
           <Badge
             tone={extStatus === 'available' ? 'success' : extStatus === 'unknown' ? 'info' : 'warning'}
             variant="soft"

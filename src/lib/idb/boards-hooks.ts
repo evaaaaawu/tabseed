@@ -43,4 +43,3 @@ export function useBoardsCount(): { readonly count: number; readonly loading: bo
 
   return { count, loading };
 }
-

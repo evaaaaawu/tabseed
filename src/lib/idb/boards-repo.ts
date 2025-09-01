@@ -34,4 +34,3 @@ export async function countBoards(): Promise<number> {
   const db = getDb();
   return db.boards.count();
 }
-

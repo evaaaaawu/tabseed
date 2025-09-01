@@ -1,5 +1,6 @@
 "use client";
 
+import { Plus } from 'lucide-react';
 import { useState } from 'react';
 
 import { type ImportTarget, ImportTargetDialog } from '@/components/fab/import-target-dialog';
@@ -15,7 +16,6 @@ import { ApiError } from '@/lib/api/errors';
 import { importTabsAndSyncLocalWithRaw } from '@/lib/data/import-tabs';
 import { type CapturedTab, captureOpenTabs } from '@/lib/extension/bridge';
 import { useAllTabsNewest } from '@/lib/idb/hooks';
-import { Plus } from 'lucide-react';
 
 export default function InboxPage() {
   const [open, setOpen] = useState(false);
