@@ -2,19 +2,19 @@
 
 import { useState } from 'react';
 
-import { type ImportTarget,ImportTargetDialog } from '@/components/fab/import-target-dialog';
+import { type ImportTarget, ImportTargetDialog } from '@/components/fab/import-target-dialog';
 import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
 // ImportResultBanner removed per new UX; details live in /import/result via toast link
-import { Surface } from '@/components/ui/surface';
+import { TabCard } from '@/components/tabs/tab-card';
 import { Button } from '@/components/ui/button';
+import { EmptyState } from '@/components/ui/empty-state';
+import { Surface } from '@/components/ui/surface';
 import { useToast } from '@/components/ui/toast';
 import { Heading, Text } from '@/components/ui/typography';
-import { TabCard } from '@/components/tabs/tab-card';
-import { EmptyState } from '@/components/ui/empty-state';
 import { useExtensionStatus } from '@/hooks/use-extension-status';
 import { ApiError } from '@/lib/api/errors';
 import { importTabsAndSyncLocalWithRaw } from '@/lib/data/import-tabs';
-import { type CapturedTab,captureOpenTabs } from '@/lib/extension/bridge';
+import { type CapturedTab, captureOpenTabs } from '@/lib/extension/bridge';
 import { useAllTabsNewest } from '@/lib/idb/hooks';
 
 export default function InboxPage() {

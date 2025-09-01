@@ -6,10 +6,10 @@ import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
 
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { cn } from '@/lib/utils';
-import { useExtensionStatus } from '@/hooks/use-extension-status';
 import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useExtensionStatus } from '@/hooks/use-extension-status';
+import { cn } from '@/lib/utils';
 
 const STORAGE_KEY = "tabseed.sidebar.collapsed";
 
