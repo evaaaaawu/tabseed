@@ -8,11 +8,14 @@ import { useEffect, useState } from 'react';
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
+import { useExtensionStatus } from '@/hooks/use-extension-status';
+import { Badge } from '@/components/ui/badge';
 
 const STORAGE_KEY = "tabseed.sidebar.collapsed";
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const extStatus = useExtensionStatus();
   const [collapsed, setCollapsed] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
     try {
@@ -83,6 +86,20 @@ export function AppSidebar() {
           {collapsed ? <PanelLeftOpen className="size-4" /> : <PanelLeftClose className="size-4" />}
         </button>
       </div>
+      {!collapsed && (
+        <div className="px-3">
+          <Badge
+            tone={extStatus === 'available' ? 'success' : extStatus === 'unknown' ? 'info' : 'warning'}
+            variant="soft"
+          >
+            {extStatus === 'available'
+              ? 'Extension: Available'
+              : extStatus === 'unknown'
+                ? 'Extension: Detecting'
+                : 'Extension: Not detected'}
+          </Badge>
+        </div>
+      )}
       <nav className="flex-1 space-y-1 p-2">
         <NavItem
           href="/inbox"

@@ -2,18 +2,20 @@
 
 import { useState } from 'react';
 
-import { Fab } from '@/components/fab/fab';
 import { type ImportTarget,ImportTargetDialog } from '@/components/fab/import-target-dialog';
 import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
 // ImportResultBanner removed per new UX; details live in /import/result via toast link
 import { Surface } from '@/components/ui/surface';
+import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/toast';
 import { Heading, Text } from '@/components/ui/typography';
+import { TabCard } from '@/components/tabs/tab-card';
+import { EmptyState } from '@/components/ui/empty-state';
 import { useExtensionStatus } from '@/hooks/use-extension-status';
 import { ApiError } from '@/lib/api/errors';
 import { importTabsAndSyncLocalWithRaw } from '@/lib/data/import-tabs';
 import { type CapturedTab,captureOpenTabs } from '@/lib/extension/bridge';
-import { useAllTabs } from '@/lib/idb/hooks';
+import { useAllTabsNewest } from '@/lib/idb/hooks';
 
 export default function InboxPage() {
   const [open, setOpen] = useState(false);
@@ -25,7 +27,7 @@ export default function InboxPage() {
   } | null>(null);
   const extStatus = useExtensionStatus();
   const { addToast } = useToast();
-  const { tabs: localTabs, loading } = useAllTabs();
+  const { tabs, loading } = useAllTabsNewest();
   // store raw result to sessionStorage for details page
 
   const handleConfirm = async (target: ImportTarget, options: { closeImported: boolean }) => {
@@ -130,18 +132,17 @@ export default function InboxPage() {
 
   return (
     <div className="min-h-[60svh] p-6">
-      <Heading as="h1" className="mb-4">Inbox</Heading>
-      <Text muted>This is the Inbox page.</Text>
-      <div className="mt-2 text-xs text-muted-foreground">
-        Extension status:{' '}
-        {extStatus === 'unknown'
-          ? 'Detecting...'
-          : extStatus === 'available'
-            ? 'Available'
-            : 'Not detected (manual import will be available)'}
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <Heading as="h1">Inbox</Heading>
+        <div className="shrink-0">
+          <Button size="sm" onClick={() => (extStatus === 'available' ? setOpen(true) : setOpenManual(true))}>
+            Import tabs
+          </Button>
+        </div>
       </div>
+
       {lastResult ? (
-        <Surface className="mt-3 p-3 text-sm">
+        <Surface className="mb-4 p-3 text-sm">
           <div className="font-medium">Latest import result</div>
           <div className="mt-1 text-muted-foreground">
             created: {lastResult.created}, reused: {lastResult.reused}, ignored: {lastResult.ignored}
@@ -149,40 +150,28 @@ export default function InboxPage() {
         </Surface>
       ) : null}
 
-      {/* ImportResultBanner removed per UX update */}
-
-      <div className="mt-6">
-        <div className="mb-2 text-sm font-medium">Local tabs (IndexedDB)</div>
+      <div className="mt-4">
         {loading ? (
           <Text size="sm" muted>
             Loading...
           </Text>
-        ) : localTabs.length === 0 ? (
-          <Text size="sm" muted>
-            No tabs imported yet.
-          </Text>
+        ) : tabs.length === 0 ? (
+          <EmptyState title="No tabs yet" />
         ) : (
-          <ul className="space-y-2">
-            {localTabs.map((t) => (
-              <li key={t.id}>
-                <a
-                  href={t.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="block rounded-md border p-2 text-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                >
-                  <span className="truncate underline">{t.title ?? t.url}</span>
-                </a>
-              </li>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+            {tabs.map((t) => (
+              <TabCard
+                key={t.id}
+                id={t.id}
+                url={t.url}
+                title={t.title}
+                color={t.color}
+              />
             ))}
-          </ul>
+          </div>
         )}
       </div>
 
-      <Fab
-        label="Import Tabs"
-        onClick={() => (extStatus === 'available' ? setOpen(true) : setOpenManual(true))}
-      />
       <ImportTargetDialog
         open={open}
         onOpenChange={setOpen}
