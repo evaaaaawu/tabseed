@@ -22,16 +22,17 @@
   --ring: 221 83% 53%;
 
   /* Brand colors */
-  /* primary: #86C166 ≈ hsl(99 42% 58%) */
-  --primary: 99 42% 58%;
+  /* primary: Solarized Blue #268bd2 ≈ hsl(205 82% 48%) */
+  --primary: 205 82% 48%;
   --primary-foreground: 210 40% 98%;
 
-  /* secondary: #FAD689 ≈ hsl(41 92% 76%) */
-  --secondary: 41 92% 76%;
+  /* secondary: Solarized Yellow #b58900 ≈ hsl(45 100% 36%) */
+  --secondary: 45 100% 36%;
   --secondary-foreground: 222 47% 11%;
 
-  --accent: 220 14% 96%;
-  --accent-foreground: 222 47% 11%;
+  /* accent: neutral surface hover aligned to base2 */
+  --accent: 44 36% 89%;
+  --accent-foreground: 195 14% 45%;
 
   --destructive: 0 84% 60%;
   --destructive-foreground: 210 40% 98%;
@@ -78,12 +79,17 @@
   --input: 191 33% 22%;
   --ring: 224 76% 48%;
 
-  /* Keep brand readable on dark */
-  --primary: 99 43% 52%;
+  /* Keep brand readable on dark — Solarized Blue (slightly lighter) */
+  --primary: 205 82% 55%;
   --primary-foreground: 210 40% 98%;
 
-  --secondary: 41 88% 70%;
-  --secondary-foreground: 222 47% 11%;
+  /* Solarized Yellow on dark */
+  --secondary: 45 100% 45%;
+  --secondary-foreground: 193 100% 11%;
+
+  /* accent on dark: base02 */
+  --accent: 192 88% 13%;
+  --accent-foreground: 186 13% 60%;
 
   /* Status tokens on dark */
   --success: 158 64% 48%;
@@ -105,7 +111,7 @@
     @apply bg-background text-foreground antialiased font-sans;
   }
   ::selection {
-    @apply bg-primary/15;
+    @apply bg-primary/20;
   }
   :focus-visible {
     @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
