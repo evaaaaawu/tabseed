@@ -3,7 +3,7 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import localFont from 'next/font/local';
-import type { Metric } from 'web-vitals';
+// Using unknown here to avoid strict coupling with web-vitals types in Next's signature
 
 import { ThemeProvider } from '@/components/providers/theme-provider';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
@@ -37,8 +37,8 @@ export const metadata: Metadata = {
 };
 
 // Next.js will call this on the client in production
-export function reportWebVitals(metric: Metric) {
-  _report(metric as any);
+export function reportWebVitals(metric: unknown) {
+  _report(metric);
 }
 
 export default function RootLayout({

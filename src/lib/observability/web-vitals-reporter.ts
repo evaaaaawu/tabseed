@@ -1,19 +1,23 @@
-import type { Metric, ReportCallback } from 'web-vitals';
-
-export const reportWebVitals: ReportCallback = async (metric: Metric) => {
+export const reportWebVitals = async (metric: unknown): Promise<void> => {
   try {
+    const m = metric as {
+      name?: string;
+      id?: string;
+      value?: number;
+      delta?: number;
+      label?: string;
+    };
     await fetch('/api/telemetry/web-vitals', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        name: metric.name,
-        id: metric.id,
-        value: metric.value,
-        // web-vitals Metric has optional delta/label on specific metric subtypes
-        delta: (metric as Partial<Metric> & { delta?: number }).delta,
-        label: (metric as Partial<Metric> & { label?: string }).label,
+        name: m.name,
+        id: m.id,
+        value: m.value,
+        delta: m.delta,
+        label: m.label,
       }),
       keepalive: true,
     });
