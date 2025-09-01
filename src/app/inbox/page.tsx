@@ -4,18 +4,19 @@ import { useState } from 'react';
 
 import { type ImportTarget, ImportTargetDialog } from '@/components/fab/import-target-dialog';
 import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
-// ImportResultBanner removed per new UX; details live in /import/result via toast link
 import { TabCard } from '@/components/tabs/tab-card';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Surface } from '@/components/ui/surface';
 import { useToast } from '@/components/ui/toast';
 import { Heading, Text } from '@/components/ui/typography';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useExtensionStatus } from '@/hooks/use-extension-status';
 import { ApiError } from '@/lib/api/errors';
 import { importTabsAndSyncLocalWithRaw } from '@/lib/data/import-tabs';
 import { type CapturedTab, captureOpenTabs } from '@/lib/extension/bridge';
 import { useAllTabsNewest } from '@/lib/idb/hooks';
+import { Plus } from 'lucide-react';
 
 export default function InboxPage() {
   const [open, setOpen] = useState(false);
@@ -132,13 +133,24 @@ export default function InboxPage() {
 
   return (
     <div className="min-h-[60svh] p-6">
-      <div className="mb-4 flex items-center justify-between gap-3">
+      <div className="mb-4 flex items-center gap-2">
         <Heading as="h1">Inbox</Heading>
-        <div className="shrink-0">
-          <Button size="sm" onClick={() => (extStatus === 'available' ? setOpen(true) : setOpenManual(true))}>
-            Import tabs
-          </Button>
-        </div>
+        <TooltipProvider>
+          <Tooltip delayDuration={300}>
+            <TooltipTrigger asChild>
+              <Button
+                size="icon"
+                variant="soft"
+                className="rounded-full"
+                aria-label="Import tabs"
+                onClick={() => (extStatus === 'available' ? setOpen(true) : setOpenManual(true))}
+              >
+                <Plus className="size-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Import tabs</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
 
       {lastResult ? (
