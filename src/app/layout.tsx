@@ -38,7 +38,7 @@ export const metadata: Metadata = {
 
 // Next.js will call this on the client in production
 export function reportWebVitals(metric: Metric) {
-  _report(metric);
+  _report(metric as any);
 }
 
 export default function RootLayout({
