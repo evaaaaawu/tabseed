@@ -65,8 +65,10 @@ export default function KanbanBoardPage({ params }: { params: { boardId: string 
   const handleDragEnd = async (event: DragEndEvent): Promise<void> => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
-    const oldIndex = ids.indexOf(active.id);
-    const newIndex = ids.indexOf(over.id);
+    const activeId = String(active.id);
+    const overId = String(over.id);
+    const oldIndex = ids.indexOf(activeId);
+    const newIndex = ids.indexOf(overId);
     const next = arrayMove(ids, oldIndex, newIndex);
     setIds(next);
     await reorderColumns(boardId, next);
