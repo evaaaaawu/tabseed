@@ -15,6 +15,7 @@ import { ImportToColumnDialog } from '@/components/fab/import-to-column-dialog';
 import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
 import { TabCard } from '@/components/tabs/tab-card';
 import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useToast } from '@/components/ui/toast';
 import { Heading, Text } from '@/components/ui/typography';
@@ -61,15 +62,23 @@ function SortableColumnShell({
           </Heading>
           <span className="text-sm text-muted-foreground">{items.length}</span>
         </div>
-        <Button
-          size="sm"
-          className="h-7 w-7 rounded-md p-0"
-          aria-label="Add column"
-          onMouseDown={(e) => e.stopPropagation()}
-          onClick={() => void onAddColumnAfter(id)}
-        >
-          <Plus className="size-4" strokeWidth={2.5} />
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-7 w-7 rounded-md p-0"
+                aria-label="Add column"
+                onMouseDown={(e) => e.stopPropagation()}
+                onClick={() => void onAddColumnAfter(id)}
+              >
+                <Plus className="size-4" strokeWidth={2.5} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="top">+ new column</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
       <div className="space-y-2">
         {items.map(({ placement, tab }) => (
@@ -185,7 +194,7 @@ export default function KanbanBoardPage({ params }: { params: { boardId: string 
 
   return (
     <div className="min-h-[60svh] p-6">
-      <div className="mb-4 flex items-center gap-2">
+      <div className="mb-8 flex items-center gap-2">
         <Heading as="h1">Kanban</Heading>
       </div>
 
