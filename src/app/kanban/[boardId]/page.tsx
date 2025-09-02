@@ -17,6 +17,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Plus } from 'lucide-react';
+import { useParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
 import { ImportToColumnDialog } from '@/components/fab/import-to-column-dialog';
@@ -156,7 +157,8 @@ function SortableColumnShell({
   );
 }
 
-export default function KanbanBoardPage({ params }: { params: { boardId: string } }) {
+export default function KanbanBoardPage() {
+  const params = useParams<{ boardId: string }>();
   const boardId = params.boardId;
   const sensors = useSensors(useSensor(PointerSensor));
   const { columns, loading } = useColumns(boardId);
