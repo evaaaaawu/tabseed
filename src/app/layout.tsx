@@ -3,7 +3,6 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import localFont from 'next/font/local';
-// Using unknown here to avoid strict coupling with web-vitals types in Next's signature
 
 import { ThemeProvider } from '@/components/providers/theme-provider';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
