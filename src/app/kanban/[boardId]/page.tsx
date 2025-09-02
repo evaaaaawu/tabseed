@@ -19,17 +19,24 @@ import { Heading, Text } from '@/components/ui/typography';
 import { useColumns } from '@/lib/idb/columns-hooks';
 import { addColumnAtEnd, ensureDefaultColumn, reorderColumns } from '@/lib/idb/columns-repo';
 import { usePlacements } from '@/lib/idb/placements-hooks';
+import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
+import { useExtensionStatus } from '@/hooks/use-extension-status';
+import { importTabsAndSyncLocalWithRaw } from '@/lib/data/import-tabs';
+import { type CapturedTab, captureOpenTabs } from '@/lib/extension/bridge';
+import { ApiError } from '@/lib/api/errors';
 
 function SortableColumnShell({
   id,
   boardId,
   name,
   onAddColumnAfter,
+  onImportToThisColumn,
 }: {
   id: string;
   boardId: string;
   name: string;
   onAddColumnAfter: (afterId: string) => Promise<void> | void;
+  onImportToThisColumn: (columnId: string) => Promise<void> | void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
   const style = {
@@ -62,12 +69,12 @@ function SortableColumnShell({
           <Plus className="size-4" strokeWidth={2.5} />
         </Button>
       </div>
-      <div className="space-y-2">
-        {/* Placeholder static card list; will be fed by placements in next step */}
-        <TabCard id={`placeholder-${id}`} url="#" title="Example card" />
-      </div>
-      <button className="mt-3 w-full rounded-md px-2 py-1 text-left text-sm text-muted-foreground hover:bg-accent">
-        + New card
+      <div className="space-y-2" />
+      <button
+        className="mt-3 w-full rounded-md px-2 py-1 text-left text-sm text-muted-foreground hover:bg-accent"
+        onClick={() => void onImportToThisColumn(id)}
+      >
+        + Import tabs
       </button>
     </div>
   );
@@ -79,6 +86,9 @@ export default function KanbanBoardPage({ params }: { params: { boardId: string 
   const { columns, loading } = useColumns(boardId);
   const [ids, setIds] = useState<string[]>([]);
   const { addToast } = useToast();
+  const extStatus = useExtensionStatus();
+  const [openManual, setOpenManual] = useState(false);
+  const [targetColumnId, setTargetColumnId] = useState<string | null>(null);
 
   useEffect(() => {
     // ensure default column exists
@@ -121,6 +131,61 @@ export default function KanbanBoardPage({ params }: { params: { boardId: string 
     }
   };
 
+  const submitTabsToColumn = async (
+    tabs: CapturedTab[],
+    columnId: string,
+    closeImported: boolean,
+  ): Promise<{ created: number; reused: number; ignored: number }> => {
+    const result = await importTabsAndSyncLocalWithRaw(
+      tabs.map((t) => ({ url: t.url, title: t.title })),
+      {
+        idempotencyKey: crypto.randomUUID(),
+        target: { boardId, columnId },
+        closeImported,
+      },
+    );
+    try {
+      sessionStorage.setItem(
+        'tabseed:lastImportResult',
+        JSON.stringify({ ...result.raw, savedAt: Date.now() }),
+      );
+    } catch {}
+    return result.counts;
+  };
+
+  const handleImportToColumn = async (columnId: string): Promise<void> => {
+    try {
+      if (extStatus === 'available') {
+        const tabs = await captureOpenTabs({ closeImported: false });
+        if (tabs.length === 0) {
+          setTargetColumnId(columnId);
+          setOpenManual(true);
+          return;
+        }
+        const r = await submitTabsToColumn(tabs, columnId, false);
+        if (r.created > 0 && r.reused === 0) {
+          addToast({ variant: 'success', title: 'Imported', description: `${r.created} new ${r.created === 1 ? 'tab' : 'tabs'} added`, linkHref: '/import/result', linkLabel: 'View details' });
+        } else if (r.created > 0 && r.reused > 0) {
+          addToast({ variant: 'warning', title: 'Partially imported', description: `${r.created} new, ${r.reused} already exist`, linkHref: '/import/result', linkLabel: 'View details' });
+        } else if (r.created === 0 && r.reused > 0) {
+          addToast({ variant: 'warning', title: 'All duplicates', description: `${r.reused} link${r.reused === 1 ? '' : 's'} already in your library`, linkHref: '/import/result', linkLabel: 'View details' });
+        } else {
+          addToast({ variant: 'default', title: 'Nothing imported' });
+        }
+      } else {
+        setTargetColumnId(columnId);
+        setOpenManual(true);
+      }
+    } catch (err) {
+      if (err instanceof ApiError && err.isUnauthorized) {
+        window.location.href = '/login';
+        return;
+      }
+      addToast({ variant: 'error', title: 'Import failed', description: (err as Error).message });
+      throw err as Error;
+    }
+  };
+
   const gridClass = useMemo(() => 'flex gap-3 overflow-x-auto pb-4', []);
 
   return (
@@ -148,6 +213,7 @@ export default function KanbanBoardPage({ params }: { params: { boardId: string 
                     boardId={boardId}
                     name={col.name}
                     onAddColumnAfter={handleAddColumnAfter}
+                    onImportToThisColumn={handleImportToColumn}
                   />
                 );
               })}
@@ -155,6 +221,28 @@ export default function KanbanBoardPage({ params }: { params: { boardId: string 
           </SortableContext>
         </DndContext>
       )}
+
+      <ManualImportDialog
+        open={openManual}
+        onOpenChange={(o) => {
+          setOpenManual(o);
+          if (!o) setTargetColumnId(null);
+        }}
+        onSubmit={async (tabs) => {
+          const columnId = targetColumnId;
+          if (!columnId) return;
+          const r = await submitTabsToColumn(tabs, columnId, false);
+          if (r.created > 0 && r.reused === 0) {
+            addToast({ variant: 'success', title: 'Imported', description: `${r.created} new added`, linkHref: '/import/result', linkLabel: 'View details' });
+          } else if (r.created > 0 && r.reused > 0) {
+            addToast({ variant: 'warning', title: 'Partially imported', description: `${r.created} new, ${r.reused} exist`, linkHref: '/import/result', linkLabel: 'View details' });
+          } else if (r.created === 0 && r.reused > 0) {
+            addToast({ variant: 'warning', title: 'All duplicates', description: `${r.reused} already exist`, linkHref: '/import/result', linkLabel: 'View details' });
+          } else {
+            addToast({ variant: 'default', title: 'Nothing imported' });
+          }
+        }}
+      />
     </div>
   );
 }
