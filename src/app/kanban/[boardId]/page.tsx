@@ -11,19 +11,18 @@ import { CSS } from '@dnd-kit/utilities';
 import { Plus } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
-import { TabCard } from '@/components/tabs/tab-card';
+import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useToast } from '@/components/ui/toast';
 import { Heading, Text } from '@/components/ui/typography';
+import { useExtensionStatus } from '@/hooks/use-extension-status';
+import { ApiError } from '@/lib/api/errors';
+import { importTabsAndSyncLocalWithRaw } from '@/lib/data/import-tabs';
+import { type CapturedTab, captureOpenTabs } from '@/lib/extension/bridge';
 import { useColumns } from '@/lib/idb/columns-hooks';
 import { addColumnAtEnd, ensureDefaultColumn, reorderColumns } from '@/lib/idb/columns-repo';
 import { usePlacements } from '@/lib/idb/placements-hooks';
-import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
-import { useExtensionStatus } from '@/hooks/use-extension-status';
-import { importTabsAndSyncLocalWithRaw } from '@/lib/data/import-tabs';
-import { type CapturedTab, captureOpenTabs } from '@/lib/extension/bridge';
-import { ApiError } from '@/lib/api/errors';
 
 function SortableColumnShell({
   id,
@@ -72,7 +71,12 @@ function SortableColumnShell({
       <div className="space-y-2" />
       <button
         className="mt-3 w-full rounded-md px-2 py-1 text-left text-sm text-muted-foreground hover:bg-accent"
-        onClick={() => void onImportToThisColumn(id)}
+        onMouseDown={(e) => e.stopPropagation()}
+        onPointerDown={(e) => e.stopPropagation()}
+        onClick={(e) => {
+          e.stopPropagation();
+          void onImportToThisColumn(id);
+        }}
       >
         + Import tabs
       </button>
