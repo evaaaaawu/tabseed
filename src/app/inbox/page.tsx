@@ -9,7 +9,6 @@ import { TabCard } from '@/components/tabs/tab-card';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useToast } from '@/components/ui/toast';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Heading, Text } from '@/components/ui/typography';
 import { useExtensionStatus } from '@/hooks/use-extension-status';
 import { ApiError } from '@/lib/api/errors';
@@ -132,22 +131,16 @@ export default function InboxPage() {
     <div className="min-h-[60svh] p-6">
       <div className="mb-8 flex items-center gap-2">
         <Heading as="h1">Inbox</Heading>
-        <TooltipProvider>
-          <Tooltip delayDuration={300}>
-            <TooltipTrigger asChild>
-              <Button
-                size="sm"
-                variant="default"
-                className="ml-2 rounded-full"
-                aria-label="Import tabs"
-                onClick={() => (extStatus === 'available' ? setOpen(true) : setOpenManual(true))}
-              >
-                <Plus className="size-4" strokeWidth={2.5} />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="right">Import tabs</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <Button
+          size="sm"
+          variant="default"
+          className="ml-2"
+          aria-label="Import tabs"
+          onClick={() => (extStatus === 'available' ? setOpen(true) : setOpenManual(true))}
+        >
+          <Plus className="mr-2 last:size-4" strokeWidth={2.5} />
+          Import tabs
+        </Button>
       </div>
 
       <div className="mt-4">
