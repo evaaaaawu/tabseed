@@ -100,5 +100,3 @@ export function ImportToColumnDialog({
     </div>
   );
 }
-
-

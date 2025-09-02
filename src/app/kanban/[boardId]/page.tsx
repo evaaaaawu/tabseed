@@ -13,6 +13,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { ImportToColumnDialog } from '@/components/fab/import-to-column-dialog';
 import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
+import { TabCard } from '@/components/tabs/tab-card';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useToast } from '@/components/ui/toast';
@@ -24,7 +25,6 @@ import { type CapturedTab, captureOpenTabs } from '@/lib/extension/bridge';
 import { useColumns } from '@/lib/idb/columns-hooks';
 import { addColumnAtEnd, ensureDefaultColumn, reorderColumns } from '@/lib/idb/columns-repo';
 import { usePlacementsWithTabs } from '@/lib/idb/placements-hooks';
-import { TabCard } from '@/components/tabs/tab-card';
 import { ensurePlacementsAtEnd } from '@/lib/idb/placements-repo';
 
 function SortableColumnShell({

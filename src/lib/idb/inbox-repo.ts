@@ -44,4 +44,3 @@ export async function removeFromInbox(tabId: string): Promise<void> {
   const db = getDb();
   await db.inbox.delete(tabId);
 }
-
