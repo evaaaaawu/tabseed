@@ -18,13 +18,25 @@ import { useToast } from '@/components/ui/toast';
 import { Heading, Text } from '@/components/ui/typography';
 import { useColumns } from '@/lib/idb/columns-hooks';
 import { addColumnAtEnd, ensureDefaultColumn, reorderColumns } from '@/lib/idb/columns-repo';
+import { usePlacements } from '@/lib/idb/placements-hooks';
 
-function SortableColumnShell({ id, name }: { id: string; name: string }) {
+function SortableColumnShell({
+  id,
+  boardId,
+  name,
+  onAddColumnAfter,
+}: {
+  id: string;
+  boardId: string;
+  name: string;
+  onAddColumnAfter: (afterId: string) => Promise<void> | void;
+}) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
   } as React.CSSProperties;
+  const { placements } = usePlacements(boardId, id);
   return (
     <div
       ref={setNodeRef}
@@ -34,14 +46,29 @@ function SortableColumnShell({ id, name }: { id: string; name: string }) {
       {...listeners}
     >
       <div className="mb-2 flex items-center justify-between">
-        <Heading as="h3" className="truncate text-base">
-          {name}
-        </Heading>
+        <div className="flex items-center gap-2">
+          <Heading as="h3" className="truncate text-base">
+            {name}
+          </Heading>
+          <span className="text-sm text-muted-foreground">{placements.length}</span>
+        </div>
+        <Button
+          size="sm"
+          className="h-7 w-7 rounded-md p-0"
+          aria-label="Add column"
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={() => void onAddColumnAfter(id)}
+        >
+          <Plus className="size-4" strokeWidth={2.5} />
+        </Button>
       </div>
       <div className="space-y-2">
         {/* Placeholder static card list; will be fed by placements in next step */}
         <TabCard id={`placeholder-${id}`} url="#" title="Example card" />
       </div>
+      <button className="mt-3 w-full rounded-md px-2 py-1 text-left text-sm text-muted-foreground hover:bg-accent">
+        + New card
+      </button>
     </div>
   );
 }
@@ -74,9 +101,16 @@ export default function KanbanBoardPage({ params }: { params: { boardId: string 
     await reorderColumns(boardId, next);
   };
 
-  const handleAddColumn = async (): Promise<void> => {
+  const handleAddColumnAfter = async (afterId: string): Promise<void> => {
     try {
-      await addColumnAtEnd(boardId, 'New Column');
+      const created = await addColumnAtEnd(boardId, 'New Column');
+      const at = ids.indexOf(afterId);
+      if (at >= 0) {
+        const next = [...ids];
+        next.splice(at + 1, 0, created.id);
+        setIds(next);
+        await reorderColumns(boardId, next);
+      }
     } catch (e) {
       const err = e as Error;
       if (err.message === 'column_limit_reached') {
@@ -93,14 +127,6 @@ export default function KanbanBoardPage({ params }: { params: { boardId: string 
     <div className="min-h-[60svh] p-6">
       <div className="mb-4 flex items-center gap-2">
         <Heading as="h1">Kanban</Heading>
-        <Button
-          size="sm"
-          className="ml-2 rounded-full"
-          onClick={handleAddColumn}
-          aria-label="Add column"
-        >
-          <Plus className="size-4" strokeWidth={2.5} />
-        </Button>
       </div>
 
       {loading ? (
@@ -115,7 +141,15 @@ export default function KanbanBoardPage({ params }: { params: { boardId: string 
             <div className={gridClass}>
               {ids.map((id) => {
                 const col = columns.find((c) => c.id === id)!;
-                return <SortableColumnShell key={id} id={id} name={col.name} />;
+                return (
+                  <SortableColumnShell
+                    key={id}
+                    id={id}
+                    boardId={boardId}
+                    name={col.name}
+                    onAddColumnAfter={handleAddColumnAfter}
+                  />
+                );
               })}
             </div>
           </SortableContext>
