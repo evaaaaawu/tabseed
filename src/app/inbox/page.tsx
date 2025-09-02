@@ -15,14 +15,15 @@ import { useExtensionStatus } from '@/hooks/use-extension-status';
 import { ApiError } from '@/lib/api/errors';
 import { importTabsAndSyncLocalWithRaw } from '@/lib/data/import-tabs';
 import { type CapturedTab, captureOpenTabs } from '@/lib/extension/bridge';
-import { useAllTabsNewest } from '@/lib/idb/hooks';
+import { useInboxTabsNewest } from '@/lib/idb/hooks';
+import { ensureInboxAtEnd } from '@/lib/idb/inbox-repo';
 
 export default function InboxPage() {
   const [open, setOpen] = useState(false);
   const [openManual, setOpenManual] = useState(false);
   const extStatus = useExtensionStatus();
   const { addToast } = useToast();
-  const { tabs, loading } = useAllTabsNewest();
+  const { tabs, loading } = useInboxTabsNewest();
   // store raw result to sessionStorage for details page
 
   const handleConfirm = async (target: ImportTarget, options: { closeImported: boolean }) => {
@@ -114,6 +115,9 @@ export default function InboxPage() {
         closeImported,
       },
     );
+    // Ensure inbox membership for created + reused tabs
+    const tabIds = [...result.raw.created, ...result.raw.reused].map((t) => t.id);
+    if (tabIds.length > 0) await ensureInboxAtEnd(tabIds);
     // Persist raw for details page
     try {
       sessionStorage.setItem(
