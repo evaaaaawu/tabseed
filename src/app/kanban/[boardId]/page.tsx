@@ -23,7 +23,8 @@ import { importTabsAndSyncLocalWithRaw } from '@/lib/data/import-tabs';
 import { type CapturedTab, captureOpenTabs } from '@/lib/extension/bridge';
 import { useColumns } from '@/lib/idb/columns-hooks';
 import { addColumnAtEnd, ensureDefaultColumn, reorderColumns } from '@/lib/idb/columns-repo';
-import { usePlacements } from '@/lib/idb/placements-hooks';
+import { usePlacementsWithTabs } from '@/lib/idb/placements-hooks';
+import { TabCard } from '@/components/tabs/tab-card';
 import { ensurePlacementsAtEnd } from '@/lib/idb/placements-repo';
 
 function SortableColumnShell({
@@ -44,7 +45,7 @@ function SortableColumnShell({
     transform: CSS.Transform.toString(transform),
     transition,
   } as React.CSSProperties;
-  const { placements } = usePlacements(boardId, id);
+  const { items } = usePlacementsWithTabs(boardId, id);
   return (
     <div
       ref={setNodeRef}
@@ -58,7 +59,7 @@ function SortableColumnShell({
           <Heading as="h3" className="truncate text-base">
             {name}
           </Heading>
-          <span className="text-sm text-muted-foreground">{placements.length}</span>
+          <span className="text-sm text-muted-foreground">{items.length}</span>
         </div>
         <Button
           size="sm"
@@ -70,7 +71,17 @@ function SortableColumnShell({
           <Plus className="size-4" strokeWidth={2.5} />
         </Button>
       </div>
-      <div className="space-y-2" />
+      <div className="space-y-2">
+        {items.map(({ placement, tab }) => (
+          <div key={placement.id}>
+            {tab ? (
+              <TabCard id={tab.id} url={tab.url} title={tab.title} color={tab.color} />
+            ) : (
+              <div className="rounded border p-2 text-xs text-muted-foreground">Missing tab</div>
+            )}
+          </div>
+        ))}
+      </div>
       <button
         className="mt-3 w-full rounded-md px-2 py-1 text-left text-sm text-muted-foreground hover:bg-accent"
         onMouseDown={(e) => e.stopPropagation()}
