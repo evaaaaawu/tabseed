@@ -5,19 +5,27 @@ const DEFAULT_COLUMN_NAME = 'No Status';
 
 export async function ensureDefaultColumn(boardId: string): Promise<KanbanColumnRecord> {
   const db = getDb();
-  const existing = await db.columns.where('boardId').equals(boardId).first();
-  if (existing) return existing;
   const now = new Date().toISOString();
-  const record: KanbanColumnRecord = {
-    id: crypto.randomUUID(),
-    boardId,
-    name: DEFAULT_COLUMN_NAME,
-    sortOrder: 1_000,
-    createdAt: now,
-    updatedAt: now,
-  };
-  await db.columns.put(record);
-  return record;
+  const defaultId = `${boardId}::col:default`;
+  let result: KanbanColumnRecord | null = null;
+  await db.transaction('rw', db.columns, async () => {
+    const existing = await db.columns.where('boardId').equals(boardId).first();
+    if (existing) {
+      result = existing;
+      return;
+    }
+    const record: KanbanColumnRecord = {
+      id: defaultId,
+      boardId,
+      name: DEFAULT_COLUMN_NAME,
+      sortOrder: 1_000,
+      createdAt: now,
+      updatedAt: now,
+    };
+    await db.columns.put(record);
+    result = record;
+  });
+  return result!;
 }
 
 export async function listColumns(boardId: string): Promise<readonly KanbanColumnRecord[]> {

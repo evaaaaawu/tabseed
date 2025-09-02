@@ -58,7 +58,27 @@ function SortableCard({
   } as React.CSSProperties;
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      onMouseDown={(e) => {
+        // Prevent click-through during drag start
+        e.stopPropagation();
+      }}
+      onClick={(e) => {
+        // Suppress click when it comes right after a drag
+        if ((e as any).detail !== 0) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      }}
+      onPointerDown={(e) => {
+        // Avoid triggering inner link activation while initiating drag
+        e.stopPropagation();
+      }}
+    >
       {tab ? (
         <TabCard id={tab.id} url={tab.url} title={tab.title} color={tab.color} />
       ) : (
