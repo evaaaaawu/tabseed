@@ -78,3 +78,44 @@ export async function movePlacement(
     updatedAt: now,
   } as Partial<TabPlacementRecord>);
 }
+
+/**
+ * Ensure placements exist for given tab ids in a column. Skips existing (boardId+tabId) pairs.
+ * Appends new ones at end with sparse orderIndex.
+ */
+export async function ensurePlacementsAtEnd(
+  input: { boardId: string; columnId: string; tabIds: readonly string[] },
+): Promise<number> {
+  const db = getDb();
+  const now = new Date().toISOString();
+  let created = 0;
+  await db.transaction('rw', db.placements, async () => {
+    // Determine start index
+    const rows = await db.placements
+      .where({ boardId: input.boardId, columnId: input.columnId })
+      .reverse()
+      .sortBy('orderIndex');
+    let lastOrder = rows.length > 0 ? rows[0]!.orderIndex : 0;
+    for (const tabId of input.tabIds) {
+      const exists = await db.placements
+        .where('boardId')
+        .equals(input.boardId)
+        .and((p) => p.tabId === tabId)
+        .first();
+      if (exists) continue;
+      lastOrder += 1_000;
+      const rec: TabPlacementRecord = {
+        id: crypto.randomUUID(),
+        tabId,
+        boardId: input.boardId,
+        columnId: input.columnId,
+        orderIndex: lastOrder,
+        createdAt: now,
+        updatedAt: now,
+      };
+      await db.placements.put(rec);
+      created += 1;
+    }
+  });
+  return created;
+}

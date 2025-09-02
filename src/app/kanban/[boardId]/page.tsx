@@ -11,8 +11,8 @@ import { CSS } from '@dnd-kit/utilities';
 import { Plus } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
-import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
 import { ImportToColumnDialog } from '@/components/fab/import-to-column-dialog';
+import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useToast } from '@/components/ui/toast';
@@ -24,6 +24,7 @@ import { type CapturedTab, captureOpenTabs } from '@/lib/extension/bridge';
 import { useColumns } from '@/lib/idb/columns-hooks';
 import { addColumnAtEnd, ensureDefaultColumn, reorderColumns } from '@/lib/idb/columns-repo';
 import { usePlacements } from '@/lib/idb/placements-hooks';
+import { ensurePlacementsAtEnd } from '@/lib/idb/placements-repo';
 
 function SortableColumnShell({
   id,
@@ -150,6 +151,11 @@ export default function KanbanBoardPage({ params }: { params: { boardId: string 
         closeImported,
       },
     );
+    // After syncing tabs to IDB, also ensure placements into this column
+    const tabIds = [...result.raw.created, ...result.raw.reused].map((t) => t.id);
+    if (tabIds.length > 0) {
+      await ensurePlacementsAtEnd({ boardId, columnId, tabIds });
+    }
     try {
       sessionStorage.setItem(
         'tabseed:lastImportResult',
