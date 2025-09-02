@@ -12,6 +12,7 @@ import { Plus } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
 import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
+import { ImportToColumnDialog } from '@/components/fab/import-to-column-dialog';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useToast } from '@/components/ui/toast';
@@ -92,6 +93,7 @@ export default function KanbanBoardPage({ params }: { params: { boardId: string 
   const { addToast } = useToast();
   const extStatus = useExtensionStatus();
   const [openManual, setOpenManual] = useState(false);
+  const [openImportDialog, setOpenImportDialog] = useState(false);
   const [targetColumnId, setTargetColumnId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -158,36 +160,8 @@ export default function KanbanBoardPage({ params }: { params: { boardId: string 
   };
 
   const handleImportToColumn = async (columnId: string): Promise<void> => {
-    try {
-      if (extStatus === 'available') {
-        const tabs = await captureOpenTabs({ closeImported: false });
-        if (tabs.length === 0) {
-          setTargetColumnId(columnId);
-          setOpenManual(true);
-          return;
-        }
-        const r = await submitTabsToColumn(tabs, columnId, false);
-        if (r.created > 0 && r.reused === 0) {
-          addToast({ variant: 'success', title: 'Imported', description: `${r.created} new ${r.created === 1 ? 'tab' : 'tabs'} added`, linkHref: '/import/result', linkLabel: 'View details' });
-        } else if (r.created > 0 && r.reused > 0) {
-          addToast({ variant: 'warning', title: 'Partially imported', description: `${r.created} new, ${r.reused} already exist`, linkHref: '/import/result', linkLabel: 'View details' });
-        } else if (r.created === 0 && r.reused > 0) {
-          addToast({ variant: 'warning', title: 'All duplicates', description: `${r.reused} link${r.reused === 1 ? '' : 's'} already in your library`, linkHref: '/import/result', linkLabel: 'View details' });
-        } else {
-          addToast({ variant: 'default', title: 'Nothing imported' });
-        }
-      } else {
-        setTargetColumnId(columnId);
-        setOpenManual(true);
-      }
-    } catch (err) {
-      if (err instanceof ApiError && err.isUnauthorized) {
-        window.location.href = '/login';
-        return;
-      }
-      addToast({ variant: 'error', title: 'Import failed', description: (err as Error).message });
-      throw err as Error;
-    }
+    setTargetColumnId(columnId);
+    setOpenImportDialog(true);
   };
 
   const gridClass = useMemo(() => 'flex gap-3 overflow-x-auto pb-4', []);
@@ -225,6 +199,52 @@ export default function KanbanBoardPage({ params }: { params: { boardId: string 
           </SortableContext>
         </DndContext>
       )}
+
+      <ImportToColumnDialog
+        open={openImportDialog}
+        onOpenChange={(o) => {
+          setOpenImportDialog(o);
+          if (!o) setTargetColumnId(null);
+        }}
+        onConfirm={async ({ closeImported }) => {
+          const columnId = targetColumnId;
+          if (!columnId) return;
+          try {
+            if (extStatus === 'available') {
+              const tabs = await captureOpenTabs({ closeImported });
+              if (tabs.length === 0) {
+                setOpenImportDialog(false);
+                setOpenManual(true);
+                return;
+              }
+              const r = await submitTabsToColumn(tabs, columnId, closeImported);
+              if (r.created > 0 && r.reused === 0) {
+                addToast({ variant: 'success', title: 'Imported', description: `${r.created} new ${r.created === 1 ? 'tab' : 'tabs'} added`, linkHref: '/import/result', linkLabel: 'View details' });
+              } else if (r.created > 0 && r.reused > 0) {
+                addToast({ variant: 'warning', title: 'Partially imported', description: `${r.created} new, ${r.reused} already exist`, linkHref: '/import/result', linkLabel: 'View details' });
+              } else if (r.created === 0 && r.reused > 0) {
+                addToast({ variant: 'warning', title: 'All duplicates', description: `${r.reused} link${r.reused === 1 ? '' : 's'} already in your library`, linkHref: '/import/result', linkLabel: 'View details' });
+              } else {
+                addToast({ variant: 'default', title: 'Nothing imported' });
+              }
+            } else {
+              setOpenImportDialog(false);
+              setOpenManual(true);
+            }
+          } catch (err) {
+            if (err instanceof ApiError && err.isUnauthorized) {
+              window.location.href = '/login';
+              return;
+            }
+            addToast({ variant: 'error', title: 'Import failed', description: (err as Error).message });
+            throw err as Error;
+          }
+        }}
+        onSwitchToManual={() => {
+          setOpenImportDialog(false);
+          setOpenManual(true);
+        }}
+      />
 
       <ManualImportDialog
         open={openManual}
