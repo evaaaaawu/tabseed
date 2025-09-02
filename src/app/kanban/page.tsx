@@ -75,10 +75,10 @@ export default function KanbanIndexPage() {
       ) : boards.length === 0 ? (
         <EmptyState
           title="No Kanban yet"
-          description="Create your first Kanban space. You can rename it immediately."
           action={
-            <Button onClick={handleCreate} disabled={!canCreate}>
-              Create Kanban
+            <Button size="sm" variant="soft" onClick={handleCreate} disabled={!canCreate}>
+              <Plus className="size-4" strokeWidth={2} />
+              <span className="ml-1">Kanban</span>
             </Button>
           }
         />

@@ -149,7 +149,7 @@ export default function InboxPage() {
             Loading...
           </Text>
         ) : tabs.length === 0 ? (
-          <EmptyState title="No tabs yet" />
+          <EmptyState title="No tabs in inbox" />
         ) : (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {tabs.map((t) => (
