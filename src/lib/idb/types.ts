@@ -48,3 +48,13 @@ export interface TabPlacementRecord {
   readonly createdAt: string; // ISO
   readonly updatedAt: string; // ISO
 }
+
+// --- Inbox entries (per-tab membership in Inbox) ---
+export interface InboxEntryRecord {
+  // Use tabId as the primary key to guarantee uniqueness (a tab is in Inbox at most once)
+  readonly tabId: string;
+  // Support ordering and simple metadata for future features
+  readonly orderIndex: number;
+  readonly createdAt: string; // ISO
+  readonly updatedAt: string; // ISO
+}
