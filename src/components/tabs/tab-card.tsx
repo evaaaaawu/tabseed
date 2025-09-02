@@ -9,15 +9,21 @@ export interface TabCardProps {
   readonly color?: string;
   readonly selected?: boolean;
   readonly onSelect?: (id: string) => void;
+  readonly disableClick?: boolean;
 }
 
-export function TabCard({ id, url, title, color, selected, onSelect }: TabCardProps) {
+export function TabCard({ id, url, title, color, selected, onSelect, disableClick }: TabCardProps) {
   return (
     <a
       href={url}
       target="_blank"
       rel="noreferrer"
       onClick={(e) => {
+        if (disableClick) {
+          e.preventDefault();
+          e.stopPropagation();
+          return;
+        }
         // allow grid selection without navigating when holding meta key
         if (onSelect && (e.metaKey || e.ctrlKey)) {
           e.preventDefault();

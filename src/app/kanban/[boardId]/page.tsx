@@ -58,29 +58,9 @@ function SortableCard({
   } as React.CSSProperties;
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-      onMouseDown={(e) => {
-        // Prevent click-through during drag start
-        e.stopPropagation();
-      }}
-      onClick={(e) => {
-        // Suppress click when it comes right after a drag
-        if ((e as any).detail !== 0) {
-          e.preventDefault();
-          e.stopPropagation();
-        }
-      }}
-      onPointerDown={(e) => {
-        // Avoid triggering inner link activation while initiating drag
-        e.stopPropagation();
-      }}
-    >
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
       {tab ? (
-        <TabCard id={tab.id} url={tab.url} title={tab.title} color={tab.color} />
+        <TabCard id={tab.id} url={tab.url} title={tab.title} color={tab.color} disableClick />
       ) : (
         <div className="rounded border p-2 text-xs text-muted-foreground">Missing tab</div>
       )}
@@ -138,6 +118,7 @@ function SortableColumnShell({
                 className="h-7 w-7 rounded-md p-0"
                 aria-label="Add column"
                 onMouseDown={(e) => e.stopPropagation()}
+                onPointerDown={(e) => e.stopPropagation()}
                 onClick={() => void onAddColumnAfter(id)}
               >
                 <Plus className="size-4" strokeWidth={2.5} />
