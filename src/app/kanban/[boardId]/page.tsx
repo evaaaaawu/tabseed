@@ -15,9 +15,9 @@ import { ImportToColumnDialog } from '@/components/fab/import-to-column-dialog';
 import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
 import { TabCard } from '@/components/tabs/tab-card';
 import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useToast } from '@/components/ui/toast';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Heading, Text } from '@/components/ui/typography';
 import { useExtensionStatus } from '@/hooks/use-extension-status';
 import { ApiError } from '@/lib/api/errors';
@@ -91,8 +91,10 @@ function SortableColumnShell({
           </div>
         ))}
       </div>
-      <button
-        className="mt-3 w-full rounded-md px-2 py-1 text-left text-sm text-muted-foreground hover:bg-accent"
+      <Button
+        size="sm"
+        variant="default"
+        className="mt-3 w-full justify-start"
         onMouseDown={(e) => e.stopPropagation()}
         onPointerDown={(e) => e.stopPropagation()}
         onClick={(e) => {
@@ -100,8 +102,9 @@ function SortableColumnShell({
           void onImportToThisColumn(id);
         }}
       >
-        + Import tabs
-      </button>
+        <Plus className="mr-2 size-4" strokeWidth={2.5} />
+        Import tabs
+      </Button>
     </div>
   );
 }
