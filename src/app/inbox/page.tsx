@@ -136,11 +136,7 @@ export default function InboxPage() {
                 variant="default"
                 className="ml-2 rounded-full"
                 aria-label="Import tabs"
-                onClick={() =>
-                  extStatus === 'available'
-                    ? handleConfirm({ type: 'inbox' }, { closeImported: true })
-                    : setOpenManual(true)
-                }
+                onClick={() => (extStatus === 'available' ? setOpen(true) : setOpenManual(true))}
               >
                 <Plus className="size-4" strokeWidth={2.5} />
               </Button>
