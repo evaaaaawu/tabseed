@@ -3,7 +3,7 @@
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
 
-import { type ImportTarget, ImportTargetDialog } from '@/components/fab/import-target-dialog';
+import { type ImportTarget, ImportTargetDialog } from '@/components/fab/import-to-inbox-dialog';
 import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
 import { TabCard } from '@/components/tabs/tab-card';
 import { Button } from '@/components/ui/button';

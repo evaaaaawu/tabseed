@@ -96,7 +96,7 @@ export function ImportTargetDialog({
                   Importing
                 </Fragment>
               ) : (
-                'Import now'
+                'Import'
               )}
             </Button>
           </div>
