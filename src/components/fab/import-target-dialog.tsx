@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, Inbox, Layout, Loader2 } from 'lucide-react';
+import { Inbox, Loader2 } from 'lucide-react';
 import { Fragment, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -8,9 +8,7 @@ import { Surface } from '@/components/ui/surface';
 import { Heading, Text } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 
-export type ImportTarget =
-  | { type: 'inbox' }
-  | { type: 'kanban'; boardId?: string };
+export type ImportTarget = { type: 'inbox' };
 
 interface ImportTargetDialogProps {
   readonly open: boolean;
@@ -29,13 +27,12 @@ export function ImportTargetDialog({
   onSwitchToManual,
 }: ImportTargetDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const [target, setTarget] = useState<ImportTarget>({ type: 'inbox' });
   const [closeImported, setCloseImported] = useState(false);
 
   const handleConfirm = async () => {
     try {
       setIsLoading(true);
-      await onConfirm(target, { closeImported });
+      await onConfirm({ type: 'inbox' }, { closeImported });
       onOpenChange(false);
     } finally {
       setIsLoading(false);
@@ -49,71 +46,20 @@ export function ImportTargetDialog({
       <div className="absolute inset-0 bg-black/40" onClick={() => onOpenChange(false)} aria-hidden />
       <Surface className="relative z-10 w-full max-w-md p-4 shadow-elev-3">
         <Heading as="h3" className="mb-3">
-          Import Target
+          Import to Inbox
         </Heading>
-        <div className="space-y-2">
-          <button
-            className={cn(
-              'flex w-full items-center gap-3 rounded-md border p-3 text-left transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-              target.type === 'inbox' && 'border-primary bg-primary/5',
-            )}
-            onClick={() => setTarget({ type: 'inbox' })}
-          >
-            <Inbox className="size-5" />
+        <div className="space-y-3">
+          <div className="flex items-start gap-3 rounded-md border p-3">
+            <Inbox className="mt-0.5 size-5" />
             <div>
-              <div className="font-medium">Inbox</div>
+              <div className="font-medium">Capture open tabs to Inbox</div>
               <Text size="xs" muted>
-                Import to inbox
+                Adds all open tabs (except this page) to your Inbox.
               </Text>
             </div>
-          </button>
+          </div>
 
-          <button
-            className={cn(
-              'flex w-full items-center justify-between rounded-md border p-3 text-left transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-              target.type === 'kanban' && 'border-primary bg-primary/5',
-            )}
-            onClick={() => setTarget({ type: 'kanban' })}
-          >
-            <span className="inline-flex items-center gap-3">
-              <Layout className="size-5" />
-              <span>
-                <div className="font-medium">Kanban</div>
-                <Text size="xs" muted>
-                  Import to specific board
-                </Text>
-              </span>
-            </span>
-            <ChevronDown className="size-4 opacity-60" />
-          </button>
-
-          {target.type === 'kanban' ? (
-            <div className="rounded-md border p-3">
-              <label className="mb-1 block text-xs text-muted-foreground">Select board (MVP uses mock data)</label>
-              <div className="grid grid-cols-2 gap-2">
-                {[
-                  { id: 'board-1', name: 'Product' },
-                  { id: 'board-2', name: 'Research' },
-                  { id: 'board-3', name: 'Personal' },
-                ].map((b) => (
-                  <button
-                    key={b.id}
-                    className={cn(
-                      'rounded-md border p-2 text-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-                      target.type === 'kanban' &&
-                        target.boardId === b.id &&
-                        'border-primary bg-primary/5',
-                    )}
-                    onClick={() => setTarget({ type: 'kanban', boardId: b.id })}
-                  >
-                    {b.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ) : null}
-
-          <div className="mt-2 rounded-md border p-3">
+          <div className="rounded-md border p-3">
             <label className="inline-flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
@@ -150,7 +96,7 @@ export function ImportTargetDialog({
                   Importing
                 </Fragment>
               ) : (
-                'Confirm'
+                'Import now'
               )}
             </Button>
           </div>

@@ -105,12 +105,12 @@ export default function InboxPage() {
     }
   };
 
-  const submitTabs = async (tabs: CapturedTab[], target: ImportTarget, closeImported: boolean) => {
+  const submitTabs = async (tabs: CapturedTab[], _target: ImportTarget, closeImported: boolean) => {
     const result = await importTabsAndSyncLocalWithRaw(
       tabs.map((t) => ({ url: t.url, title: t.title })),
       {
         idempotencyKey: crypto.randomUUID(),
-        target: target.type === 'inbox' ? { inbox: true } : { boardId: target.boardId },
+        target: { inbox: true },
         closeImported,
       },
     );
@@ -136,7 +136,11 @@ export default function InboxPage() {
                 variant="default"
                 className="ml-2 rounded-full"
                 aria-label="Import tabs"
-                onClick={() => (extStatus === 'available' ? setOpen(true) : setOpenManual(true))}
+                onClick={() =>
+                  extStatus === 'available'
+                    ? handleConfirm({ type: 'inbox' }, { closeImported: true })
+                    : setOpenManual(true)
+                }
               >
                 <Plus className="size-4" strokeWidth={2.5} />
               </Button>
