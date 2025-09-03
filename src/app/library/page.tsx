@@ -47,6 +47,75 @@ export default function LibraryPage() {
     });
   };
 
+  // Marquee selection state & handlers (mirror Inbox)
+  const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
+  const [dragRect, setDragRect] = useState<{ left: number; top: number; width: number; height: number } | null>(null);
+
+  const onPointerDown: React.PointerEventHandler<HTMLDivElement> = (e) => {
+    if (e.pointerType === 'mouse' && e.buttons !== 1) return;
+    if (e.shiftKey || e.metaKey || e.ctrlKey) return;
+    const isOnCell = (e.target as Element | null)?.closest?.('[role="gridcell"]');
+    if (isOnCell) return;
+
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    setDragStart({ x, y });
+    setDragRect({ left: x, top: y, width: 0, height: 0 });
+    try {
+      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    } catch {}
+    e.preventDefault();
+  };
+
+  const onPointerMove: React.PointerEventHandler<HTMLDivElement> = (e) => {
+    if (!dragStart) return;
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const left = Math.min(dragStart.x, x);
+    const top = Math.min(dragStart.y, y);
+    const width = Math.abs(x - dragStart.x);
+    const height = Math.abs(y - dragStart.y);
+    setDragRect({ left, top, width, height });
+    e.preventDefault();
+  };
+
+  const onPointerUp: React.PointerEventHandler<HTMLDivElement> = (e) => {
+    if (!dragStart) return;
+    const container = e.currentTarget as HTMLElement;
+    const nodes = Array.from(container.querySelectorAll('[role="gridcell"]')) as HTMLElement[];
+    const cRect = container.getBoundingClientRect();
+    const isClick = !!dragRect && dragRect.width < 3 && dragRect.height < 3;
+    if (isClick) {
+      setSelected(new Set());
+    } else {
+      const sel = new Set(selected);
+      nodes.forEach((node) => {
+        const r = node.getBoundingClientRect();
+        const nx = r.left - cRect.left;
+        const ny = r.top - cRect.top;
+        const intersects = dragRect && !(nx > dragRect.left + dragRect.width || nx + r.width < dragRect.left || ny > dragRect.top + dragRect.height || ny + r.height < dragRect.top);
+        if (intersects) sel.add(node.dataset.itemId!);
+      });
+      setSelected(sel);
+    }
+    setDragStart(null);
+    setDragRect(null);
+    try {
+      (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+    } catch {}
+    e.preventDefault();
+  };
+
+  const onPointerCancel: React.PointerEventHandler<HTMLDivElement> = (e) => {
+    setDragStart(null);
+    setDragRect(null);
+    try {
+      (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+    } catch {}
+  };
+
   return (
     <div className="min-h-[60svh] p-6">
       <Heading as="h1" className="mb-8">
@@ -74,6 +143,10 @@ export default function LibraryPage() {
               const isOnCell = (e.target as Element | null)?.closest?.('[role="gridcell"]');
               if (!isOnCell) setSelected(new Set());
             }}
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
+            onPointerCancel={onPointerCancel}
           >
             {tabs.map((t) => (
               <TabCard
@@ -86,6 +159,12 @@ export default function LibraryPage() {
                 onSelect={toggleSelect}
               />
             ))}
+            {dragRect ? (
+              <div
+                className="pointer-events-none absolute z-10 border-2 border-success/70 bg-success/10"
+                style={{ left: dragRect.left, top: dragRect.top, width: dragRect.width, height: dragRect.height }}
+              />
+            ) : null}
           </div>
         )}
       </div>
