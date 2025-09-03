@@ -5,7 +5,7 @@ import { arrayMove, horizontalListSortingStrategy, SortableContext, useSortable,
 import { CSS } from '@dnd-kit/utilities';
 import { liveQuery } from 'dexie';
 import { Plus } from 'lucide-react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
 import { ImportToColumnDialog } from '@/components/fab/import-to-column-dialog';
@@ -156,11 +156,27 @@ export default function KanbanBoardPage() {
   const [openImportDialog, setOpenImportDialog] = useState(false);
   const [targetColumnId, setTargetColumnId] = useState<string | null>(null);
   const [boardName, setBoardName] = useState<string | null>(null);
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     // ensure default column exists
     void ensureDefaultColumn(boardId);
   }, [boardId]);
+  // Open manual dialog when `?manualImport=1` exists, optionally with `columnId`
+  useEffect(() => {
+    const manual = searchParams.get('manualImport');
+    if (manual) {
+      const columnId = searchParams.get('columnId');
+      if (columnId) setTargetColumnId(columnId);
+      setOpenManual(true);
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('manualImport');
+        url.searchParams.delete('columnId');
+        window.history.replaceState(null, '', url.pathname + (url.search ? `?${url.searchParams.toString()}` : ''));
+      } catch {}
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     setIds(columns.map((c) => c.id));
@@ -269,7 +285,12 @@ export default function KanbanBoardPage() {
 
   const handleImportToColumn = async (columnId: string): Promise<void> => {
     setTargetColumnId(columnId);
-    setOpenImportDialog(true);
+    if (extStatus === 'available') {
+      setOpenImportDialog(true);
+    } else {
+      // Extension not detected → behave like inbox: open manual import directly
+      setOpenManual(true);
+    }
   };
 
   const gridClass = useMemo(() => 'flex gap-3 overflow-x-auto pb-4', []);
@@ -322,7 +343,14 @@ export default function KanbanBoardPage() {
               const tabs = await captureOpenTabs({ closeImported });
               if (tabs.length === 0) {
                 setOpenImportDialog(false);
-                setOpenManual(true);
+                addToast({
+                  variant: 'warning',
+                  title: 'No tabs to import',
+                  description: 'There are no importable tabs right now.',
+                  linkHref: `?manualImport=1${columnId ? `&columnId=${encodeURIComponent(columnId)}` : ''}`,
+                  linkLabel: 'Open manual import',
+                  durationMs: 8000,
+                });
                 return;
               }
               const r = await submitTabsToColumn(tabs, columnId, closeImported);
@@ -354,6 +382,7 @@ export default function KanbanBoardPage() {
                 addToast({ variant: 'default', title: 'Nothing imported' });
               }
             } else {
+              // Extension not detected → go to manual import dialog directly
               setOpenImportDialog(false);
               setOpenManual(true);
             }
