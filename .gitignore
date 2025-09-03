@@ -42,10 +42,3 @@ next-env.d.ts
 
 # personal settings
 .cursor
-
-# local temp
-tmp/
-tmp/
-*.zip
-*.tar.gz
-*.rar
