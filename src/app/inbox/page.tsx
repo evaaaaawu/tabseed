@@ -270,8 +270,14 @@ function GridTabs({ tabs }: { tabs: ReadonlyArray<{ id: string; url: string; tit
   const [dragRect, setDragRect] = useState<{ left: number; top: number; width: number; height: number } | null>(null);
 
   const onPointerDown: React.PointerEventHandler<HTMLDivElement> = (e) => {
-    // mouse: only start when primary button is pressed; touch: always allow
+    // mouse: only start when primary button is pressed
     if (e.pointerType === 'mouse' && e.buttons !== 1) return;
+    // Do not start marquee when using selection modifiers; let card click handle shift/meta/ctrl logic
+    if (e.shiftKey || e.metaKey || e.ctrlKey) return;
+    // Do not start marquee if the pointerdown originated on a card
+    const isOnCell = (e.target as Element | null)?.closest?.('[role="gridcell"]');
+    if (isOnCell) return;
+
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
