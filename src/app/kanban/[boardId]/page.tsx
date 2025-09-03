@@ -341,7 +341,7 @@ export default function KanbanBoardPage() {
                 addToast({
                   variant: 'warning',
                   title: 'No tabs to import',
-                  description: 'There are no importable tabs right now. Want to import manually instead?',
+                  description: 'There are no importable tabs right now.',
                   linkHref: `?manualImport=1${columnId ? `&columnId=${encodeURIComponent(columnId)}` : ''}`,
                   linkLabel: 'Open manual import',
                   durationMs: 8000,

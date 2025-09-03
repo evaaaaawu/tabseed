@@ -52,7 +52,7 @@ export default function InboxPage() {
         addToast({
           variant: 'warning',
           title: 'No tabs to import',
-          description: 'There are no importable tabs right now. Want to import manually instead?',
+          description: 'There are no importable tabs right now.',
           linkHref: '?manualImport=1',
           linkLabel: 'Open manual import',
           durationMs: 8000,
