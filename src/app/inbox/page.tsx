@@ -270,11 +270,18 @@ function GridTabs({ tabs }: { tabs: ReadonlyArray<{ id: string; url: string; tit
   const [dragRect, setDragRect] = useState<{ left: number; top: number; width: number; height: number } | null>(null);
 
   const onPointerDown: React.PointerEventHandler<HTMLDivElement> = (e) => {
-    if (e.button !== 0) return; // left only
+    // mouse: only start when primary button is pressed; touch: always allow
+    if (e.pointerType === 'mouse' && e.buttons !== 1) return;
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-    setDragStart({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-    setDragRect({ left: e.clientX - rect.left, top: e.clientY - rect.top, width: 0, height: 0 });
-    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    setDragStart({ x, y });
+    setDragRect({ left: x, top: y, width: 0, height: 0 });
+    try {
+      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    } catch {}
+    // avoid page scroll on touchpad/touch while drawing marquee
+    e.preventDefault();
   };
 
   const onPointerMove: React.PointerEventHandler<HTMLDivElement> = (e) => {
@@ -287,6 +294,7 @@ function GridTabs({ tabs }: { tabs: ReadonlyArray<{ id: string; url: string; tit
     const width = Math.abs(x - dragStart.x);
     const height = Math.abs(y - dragStart.y);
     setDragRect({ left, top, width, height });
+    e.preventDefault();
   };
 
   const onPointerUp: React.PointerEventHandler<HTMLDivElement> = (e) => {
@@ -308,6 +316,15 @@ function GridTabs({ tabs }: { tabs: ReadonlyArray<{ id: string; url: string; tit
     try {
       (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
     } catch {}
+    e.preventDefault();
+  };
+
+  const onPointerCancel: React.PointerEventHandler<HTMLDivElement> = (e) => {
+    setDragStart(null);
+    setDragRect(null);
+    try {
+      (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+    } catch {}
   };
 
   return (
@@ -317,6 +334,7 @@ function GridTabs({ tabs }: { tabs: ReadonlyArray<{ id: string; url: string; tit
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
+      onPointerCancel={onPointerCancel}
     >
       {tabs.map((t) => (
         <TabCard
