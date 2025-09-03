@@ -308,15 +308,21 @@ function GridTabs({ tabs }: { tabs: ReadonlyArray<{ id: string; url: string; tit
     const container = e.currentTarget as HTMLElement;
     const nodes = Array.from(container.querySelectorAll('[role="gridcell"]')) as HTMLElement[];
     const cRect = container.getBoundingClientRect();
-    const sel = new Set(selected);
-    nodes.forEach((node) => {
-      const r = node.getBoundingClientRect();
-      const nx = r.left - cRect.left;
-      const ny = r.top - cRect.top;
-      const intersects = dragRect && !(nx > dragRect.left + dragRect.width || nx + r.width < dragRect.left || ny > dragRect.top + dragRect.height || ny + r.height < dragRect.top);
-      if (intersects) sel.add(node.dataset.itemId!);
-    });
-    setSelected(sel);
+    const isClick = !!dragRect && dragRect.width < 3 && dragRect.height < 3;
+    if (isClick) {
+      // Empty click clears selection (started only when not on a cell)
+      setSelected(new Set());
+    } else {
+      const sel = new Set(selected);
+      nodes.forEach((node) => {
+        const r = node.getBoundingClientRect();
+        const nx = r.left - cRect.left;
+        const ny = r.top - cRect.top;
+        const intersects = dragRect && !(nx > dragRect.left + dragRect.width || nx + r.width < dragRect.left || ny > dragRect.top + dragRect.height || ny + r.height < dragRect.top);
+        if (intersects) sel.add(node.dataset.itemId!);
+      });
+      setSelected(sel);
+    }
     setDragStart(null);
     setDragRect(null);
     try {

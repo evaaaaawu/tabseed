@@ -61,7 +61,14 @@ export default function LibraryPage() {
             title="No tabs yet"
           />
         ) : (
-          <div className="relative grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+          <div
+            className="relative grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+            onClick={(e) => {
+              // click empty area clears selection
+              const isOnCell = (e.target as Element | null)?.closest?.('[role="gridcell"]');
+              if (!isOnCell) setSelected(new Set());
+            }}
+          >
             {tabs.map((t) => (
               <TabCard
                 key={t.id}
