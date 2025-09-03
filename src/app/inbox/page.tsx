@@ -4,7 +4,7 @@ import { Plus } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import { type ImportTarget, ImportTargetDialog } from '@/components/fab/import-to-inbox-dialog';
+import { ImportTargetDialog, type ImportTarget } from '@/components/fab/import-to-inbox-dialog';
 import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
 import { TabCard } from '@/components/tabs/tab-card';
 import { Button } from '@/components/ui/button';
@@ -12,13 +12,16 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { useToast } from '@/components/ui/toast';
 import { Heading, Text } from '@/components/ui/typography';
 import { useExtensionStatus } from '@/hooks/use-extension-status';
+import { useGridMultiSelect } from '@/hooks/use-grid-multi-select';
+import { useHydrated } from '@/hooks/use-hydrated';
 import { ApiError } from '@/lib/api/errors';
 import { importTabsAndSyncLocalWithRaw } from '@/lib/data/import-tabs';
-import { type CapturedTab, captureOpenTabs } from '@/lib/extension/bridge';
+import { captureOpenTabs, type CapturedTab } from '@/lib/extension/bridge';
 import { useInboxTabsNewest } from '@/lib/idb/hooks';
 import { ensureInboxAtEnd } from '@/lib/idb/inbox-repo';
 
 export default function InboxPage() {
+  const hydrated = useHydrated();
   const [open, setOpen] = useState(false);
   const [openManual, setOpenManual] = useState(false);
   const extStatus = useExtensionStatus();
@@ -167,19 +170,19 @@ export default function InboxPage() {
         </Button>
       </div>
 
-      <div className="mt-4">
+      <div className="mt-4" role="grid" aria-label="Inbox tabs">
         {loading ? (
+          <Text size="sm" muted>
+            Loading...
+          </Text>
+        ) : !hydrated ? (
           <Text size="sm" muted>
             Loading...
           </Text>
         ) : tabs.length === 0 ? (
           <EmptyState title="No tabs in inbox" />
         ) : (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-            {tabs.map((t) => (
-              <TabCard key={t.id} id={t.id} url={t.url} title={t.title} color={t.color} />
-            ))}
-          </div>
+          <GridTabs tabs={tabs} />
         )}
       </div>
 
@@ -194,6 +197,76 @@ export default function InboxPage() {
         onOpenChange={setOpenManual}
         onSubmit={handleManualSubmit}
       />
+    </div>
+  );
+}
+
+function GridTabs({ tabs }: { tabs: ReadonlyArray<{ id: string; url: string; title?: string; color?: string }> }) {
+  const { selectedIds, handleCardSelect, containerProps, dragRect } = useGridMultiSelect(tabs);
+
+  const onKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (e) => {
+    if (tabs.length === 0) return;
+    const focused = document.activeElement as HTMLElement | null;
+    const cell = focused?.closest('[role="gridcell"]') as HTMLElement | null;
+    const currentIndex = cell ? Array.from(cell.parentElement?.children ?? []).indexOf(cell) : -1;
+    const cols =
+      getComputedStyle(cell?.parentElement as Element)
+        .getPropertyValue('grid-template-columns')
+        .split(' ').length || 1;
+
+    let nextIndex = -1;
+    switch (e.key) {
+      case 'ArrowRight':
+        nextIndex = Math.min(tabs.length - 1, currentIndex + 1);
+        break;
+      case 'ArrowLeft':
+        nextIndex = Math.max(0, currentIndex - 1);
+        break;
+      case 'ArrowDown':
+        nextIndex = Math.min(tabs.length - 1, currentIndex + cols);
+        break;
+      case 'ArrowUp':
+        nextIndex = Math.max(0, currentIndex - cols);
+        break;
+      default:
+        return;
+    }
+    if (nextIndex >= 0 && nextIndex !== currentIndex) {
+      e.preventDefault();
+      const grid = cell?.parentElement;
+      const target = grid?.children.item(nextIndex) as HTMLElement | null;
+      target?.focus();
+    }
+  };
+
+  return (
+    <div
+      className="relative grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+      onKeyDown={onKeyDown}
+      {...containerProps}
+    >
+      {tabs.map((t) => (
+        <TabCard
+          key={t.id}
+          id={t.id}
+          url={t.url}
+          title={t.title}
+          color={t.color}
+          selected={selectedIds.has(t.id)}
+          onSelect={handleCardSelect}
+        />
+      ))}
+      {dragRect ? (
+        <div
+          className="pointer-events-none absolute z-10 border-2 border-success/70 bg-success/10"
+          style={{
+            left: dragRect.left,
+            top: dragRect.top,
+            width: dragRect.width,
+            height: dragRect.height,
+          }}
+        />
+      ) : null}
     </div>
   );
 }

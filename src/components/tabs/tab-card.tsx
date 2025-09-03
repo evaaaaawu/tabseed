@@ -1,5 +1,7 @@
 'use client';
+import React from 'react';
 
+import { postUiEvent } from '@/lib/observability/ui';
 import { cn } from '@/lib/utils';
 
 export interface TabCardProps {
@@ -8,29 +10,43 @@ export interface TabCardProps {
   readonly title?: string;
   readonly color?: string;
   readonly selected?: boolean;
-  readonly onSelect?: (id: string) => void;
+  readonly onSelect?: (
+    id: string,
+    modifiers?: { readonly shiftKey?: boolean; readonly metaKey?: boolean; readonly ctrlKey?: boolean; readonly via?: 'click' | 'space' }
+  ) => void;
   readonly disableClick?: boolean;
 }
 
 export function TabCard({ id, url, title, color, selected, onSelect, disableClick }: TabCardProps) {
   return (
     <div
-      onClick={() => {
+      data-item-id={id}
+      role="gridcell"
+      aria-selected={onSelect ? (selected ? true : false) : undefined}
+      onClick={(e) => {
         if (onSelect) {
-          onSelect(id);
+          onSelect(id, { shiftKey: e.shiftKey, metaKey: e.metaKey, ctrlKey: e.ctrlKey, via: 'click' });
         }
       }}
-      role={onSelect ? 'button' : undefined}
       tabIndex={onSelect ? 0 : undefined}
       onKeyDown={(e) => {
         if (!onSelect) return;
-        if (e.key === 'Enter' || e.key === ' ') {
+        if (e.key === ' ') {
           e.preventDefault();
-          onSelect(id);
+          onSelect(id, { shiftKey: e.shiftKey, metaKey: e.metaKey, ctrlKey: e.ctrlKey, via: 'space' });
+          return;
+        }
+        if (e.key === 'Enter') {
+          // Enter 開啟 title 連結（新分頁）
+          e.preventDefault();
+          try {
+            window.open(url, '_blank', 'noopener,noreferrer');
+            void postUiEvent('card.open_link', { id, via: 'enter' });
+          } catch {}
         }
       }}
       className={cn(
-        'group block rounded-lg border bg-card p-3 text-card-foreground shadow-elev-1 transition-[transform,box-shadow] duration-200 ease-emphasized hover:-translate-y-0.5 hover:shadow-elev-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+        'group block rounded-lg border bg-card p-3 text-card-foreground shadow-elev-1 transition-[transform,box-shadow] duration-200 ease-emphasized hover:-translate-y-0.5 hover:shadow-elev-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-success focus-visible:ring-offset-2',
         selected && 'ring-2 ring-success',
       )}
       style={color ? ({ borderColor: color } as React.CSSProperties) : undefined}
@@ -46,6 +62,7 @@ export function TabCard({ id, url, title, color, selected, onSelect, disableClic
               e.preventDefault();
               return;
             }
+            void postUiEvent('card.open_link', { id, via: 'click' });
           }}
           onMouseDown={(e) => {
             // Prevent drag handlers in parent contexts (e.g., Kanban) from capturing pointer

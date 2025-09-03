@@ -16,17 +16,33 @@ const STORAGE_KEY = "tabseed.sidebar.collapsed";
 export function AppSidebar() {
   const pathname = usePathname();
   const extStatus = useExtensionStatus();
+  // IMPORTANT: Use a deterministic SSR initial state to avoid hydration mismatch.
+  // On client navigations (not initial SSR), restore from localStorage immediately using a session marker.
   const [collapsed, setCollapsed] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
+    if (typeof window === 'undefined') return false;
+    try {
+      // If this is a client navigation after hydration, restore instantly to avoid flicker
+      if (sessionStorage.getItem('tabseed.__hydrated') === '1') {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw != null) return raw === '1';
+        const prefersNarrow = window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
+        return prefersNarrow;
+      }
+    } catch {}
+    return false;
+  });
+
+  useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw != null) return raw === "1";
+      if (raw != null) {
+        setCollapsed(raw === "1");
+        return;
+      }
       const prefersNarrow = window.matchMedia && window.matchMedia("(max-width: 768px)").matches;
-      return prefersNarrow;
-    } catch {
-      return false;
-    }
-  });
+      setCollapsed(prefersNarrow);
+    } catch {}
+  }, []);
 
   useEffect(() => {
     try {
