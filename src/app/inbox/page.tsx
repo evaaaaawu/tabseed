@@ -347,6 +347,10 @@ function GridTabs({ tabs }: { tabs: ReadonlyArray<{ id: string; url: string; tit
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
       onPointerCancel={onPointerCancel}
+      onClick={(e) => {
+        const isOnCell = (e.target as Element | null)?.closest?.('[role="gridcell"]');
+        if (!isOnCell) setSelected(new Set());
+      }}
     >
       {tabs.map((t) => (
         <TabCard
