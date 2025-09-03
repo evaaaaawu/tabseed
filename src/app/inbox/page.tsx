@@ -1,7 +1,8 @@
 "use client";
 
 import { Plus } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 import { type ImportTarget, ImportTargetDialog } from '@/components/fab/import-to-inbox-dialog';
 import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
@@ -25,14 +26,37 @@ export default function InboxPage() {
   const { tabs, loading } = useInboxTabsNewest();
   // store raw result to sessionStorage for details page
 
+  const searchParams = useSearchParams();
+
+  // Open manual import dialog when query `?manualImport=1` is present
+  useEffect(() => {
+    const manual = searchParams.get('manualImport');
+    if (manual) {
+      setOpenManual(true);
+      // Clean the query to avoid reopening on refresh/back
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('manualImport');
+        window.history.replaceState(null, '', url.pathname + (url.search ? `?${url.searchParams.toString()}` : ''));
+      } catch {}
+    }
+  }, [searchParams]);
+
   const handleConfirm = async (target: ImportTarget, options: { closeImported: boolean }) => {
     try {
       const tabs = await captureOpenTabs({ closeImported: options.closeImported });
 
-      // If no tabs captured (extension unavailable), open manual import dialog
+      // If no tabs captured, show toast with link to manual import instead of opening it directly
       if (tabs.length === 0) {
         setOpen(false);
-        setOpenManual(true);
+        addToast({
+          variant: 'warning',
+          title: '找不到可匯入的分頁',
+          description: '目前沒有可匯入的分頁。要改用手動匯入嗎？',
+          linkHref: '?manualImport=1',
+          linkLabel: '開啟手動匯入',
+          durationMs: 8000,
+        });
         return;
       }
 
