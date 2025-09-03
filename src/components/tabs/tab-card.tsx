@@ -14,18 +14,17 @@ export interface TabCardProps {
 
 export function TabCard({ id, url, title, color, selected, onSelect, disableClick }: TabCardProps) {
   return (
-    <a
-      href={url}
-      target="_blank"
-      rel="noreferrer"
-      onClick={(e) => {
-        if (disableClick) {
-          e.preventDefault();
-          e.stopPropagation();
-          return;
+    <div
+      onClick={() => {
+        if (onSelect) {
+          onSelect(id);
         }
-        // allow grid selection without navigating when holding meta key
-        if (onSelect && (e.metaKey || e.ctrlKey)) {
+      }}
+      role={onSelect ? 'button' : undefined}
+      tabIndex={onSelect ? 0 : undefined}
+      onKeyDown={(e) => {
+        if (!onSelect) return;
+        if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           onSelect(id);
         }
@@ -36,10 +35,31 @@ export function TabCard({ id, url, title, color, selected, onSelect, disableClic
       )}
       style={color ? ({ borderColor: color } as React.CSSProperties) : undefined}
     >
-      <div className="mb-2 line-clamp-2 break-words text-sm font-medium underline decoration-transparent transition-colors group-hover:decoration-current">
-        {title ?? url}
+      <div className="mb-2 line-clamp-2 break-words text-sm font-medium">
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (disableClick) {
+              e.preventDefault();
+              return;
+            }
+          }}
+          onMouseDown={(e) => {
+            // Prevent drag handlers in parent contexts (e.g., Kanban) from capturing pointer
+            e.stopPropagation();
+          }}
+          onPointerDown={(e) => {
+            e.stopPropagation();
+          }}
+          className="underline decoration-transparent transition-colors group-hover:decoration-current"
+        >
+          {title ?? url}
+        </a>
       </div>
       <div className="truncate text-xs text-muted-foreground">{url}</div>
-    </a>
+    </div>
   );
 }

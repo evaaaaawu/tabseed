@@ -1,21 +1,9 @@
 'use client';
 
-import {
-  DndContext,
-  type DragEndEvent,
-  PointerSensor,
-  useDroppable,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core';
-import {
-  arrayMove,
-  horizontalListSortingStrategy,
-  SortableContext,
-  useSortable,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
+import { DndContext, type DragEndEvent, PointerSensor, useDroppable, useSensor, useSensors } from '@dnd-kit/core';
+import { arrayMove, horizontalListSortingStrategy, SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { liveQuery } from 'dexie';
 import { Plus } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
@@ -38,7 +26,6 @@ import { getDb } from '@/lib/idb/db';
 import { usePlacementsWithTabs } from '@/lib/idb/placements-hooks';
 import { ensurePlacementsAtEnd, movePlacement } from '@/lib/idb/placements-repo';
 import type { TabPlacementRecord, TabRecord } from '@/lib/idb/types';
-import { liveQuery } from 'dexie';
 
 function SortableCard({
   placement,
@@ -61,7 +48,7 @@ function SortableCard({
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
       {tab ? (
-        <TabCard id={tab.id} url={tab.url} title={tab.title} color={tab.color} disableClick />
+        <TabCard id={tab.id} url={tab.url} title={tab.title} color={tab.color} />
       ) : (
         <div className="rounded border p-2 text-xs text-muted-foreground">Missing tab</div>
       )}
@@ -116,7 +103,7 @@ function SortableColumnShell({
               <Button
                 size="sm"
                 variant="ghost"
-                className="h-7 w-7 rounded-md p-0"
+                className="size-7 rounded-md p-0"
                 aria-label="Add column"
                 onMouseDown={(e) => e.stopPropagation()}
                 onPointerDown={(e) => e.stopPropagation()}
@@ -191,8 +178,8 @@ export default function KanbanBoardPage() {
   const handleDragEnd = async (event: DragEndEvent): Promise<void> => {
     const { active, over } = event;
     if (!over) return;
-    const activeData = (active.data.current ?? {}) as any;
-    const overData = (over.data.current ?? {}) as any;
+    const activeData = (active.data.current ?? {}) as { type?: string; placementId?: string };
+    const overData = (over.data.current ?? {}) as { type?: string; columnId?: string; placementId?: string };
 
     if (activeData.type === 'column') {
       if (active.id === over.id) return;
@@ -208,15 +195,15 @@ export default function KanbanBoardPage() {
     }
 
     if (activeData.type === 'card') {
-      const placementId: string = activeData.placementId as string;
+      const placementId: string = String(activeData.placementId);
       let targetColumnId: string | undefined;
       let beforeId: string | undefined;
 
       if (overData.type === 'card') {
-        targetColumnId = overData.columnId as string;
-        beforeId = overData.placementId as string;
+        targetColumnId = overData.columnId;
+        beforeId = overData.placementId;
       } else if (overData.type === 'column-dropzone') {
-        targetColumnId = overData.columnId as string;
+        targetColumnId = overData.columnId;
       }
 
       if (!targetColumnId) return;
