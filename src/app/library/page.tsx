@@ -11,11 +11,28 @@ export default function LibraryPage() {
   const { tabs, loading } = useAllTabsNewest();
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
-  const toggleSelect = (id: string) => {
+  const toggleSelect = (
+    id: string,
+    modifiers?: { shiftKey?: boolean; metaKey?: boolean; ctrlKey?: boolean },
+  ) => {
     setSelected((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      if (modifiers?.shiftKey && next.size > 0) {
+        // 簡化：用當前列表最後選取為 anchor
+        const indices = [...next].map((x) => tabs.findIndex((t) => t.id === x)).filter((i) => i >= 0).sort((a, b) => a - b);
+        const anchor = indices.length > 0 ? indices[indices.length - 1] : 0;
+        const target = tabs.findIndex((t) => t.id === id);
+        const [start, end] = anchor <= target ? [anchor, target] : [target, anchor];
+        for (let i = start; i <= end; i++) next.add(tabs[i]!.id);
+        return next;
+      }
+      if (modifiers?.metaKey || modifiers?.ctrlKey) {
+        if (next.has(id)) next.delete(id);
+        else next.add(id);
+        return next;
+      }
+      next.clear();
+      next.add(id);
       return next;
     });
   };

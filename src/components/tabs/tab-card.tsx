@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 
 import { cn } from '@/lib/utils';
 import { postUiEvent } from '@/lib/observability/ui';
@@ -9,7 +10,10 @@ export interface TabCardProps {
   readonly title?: string;
   readonly color?: string;
   readonly selected?: boolean;
-  readonly onSelect?: (id: string) => void;
+  readonly onSelect?: (
+    id: string,
+    modifiers?: { readonly shiftKey?: boolean; readonly metaKey?: boolean; readonly ctrlKey?: boolean; readonly via?: 'click' | 'space' }
+  ) => void;
   readonly disableClick?: boolean;
 }
 
@@ -18,9 +22,9 @@ export function TabCard({ id, url, title, color, selected, onSelect, disableClic
     <div
       role="gridcell"
       aria-selected={onSelect ? (selected ? true : false) : undefined}
-      onClick={() => {
+      onClick={(e) => {
         if (onSelect) {
-          onSelect(id);
+          onSelect(id, { shiftKey: e.shiftKey, metaKey: e.metaKey, ctrlKey: e.ctrlKey, via: 'click' });
         }
       }}
       tabIndex={onSelect ? 0 : undefined}
@@ -28,7 +32,7 @@ export function TabCard({ id, url, title, color, selected, onSelect, disableClic
         if (!onSelect) return;
         if (e.key === ' ') {
           e.preventDefault();
-          onSelect(id);
+          onSelect(id, { shiftKey: e.shiftKey, metaKey: e.metaKey, ctrlKey: e.ctrlKey, via: 'space' });
           return;
         }
         if (e.key === 'Enter') {

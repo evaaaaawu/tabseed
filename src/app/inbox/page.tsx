@@ -197,11 +197,27 @@ export default function InboxPage() {
 function GridTabs({ tabs }: { tabs: ReadonlyArray<{ id: string; url: string; title?: string; color?: string }> }) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
-  const onSelect = (id: string) => {
+  const onSelect = (id: string, modifiers?: { shiftKey?: boolean; metaKey?: boolean; ctrlKey?: boolean }) => {
     setSelected((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      // Shift 多選：連續區間（簡化：若有已選，取最後一個的 index 作區間）
+      if (modifiers?.shiftKey && next.size > 0) {
+        const indices = [...next].map((x) => tabs.findIndex((t) => t.id === x)).filter((i) => i >= 0).sort((a, b) => a - b);
+        const anchor = indices.length > 0 ? indices[indices.length - 1] : 0;
+        const target = tabs.findIndex((t) => t.id === id);
+        const [start, end] = anchor <= target ? [anchor, target] : [target, anchor];
+        for (let i = start; i <= end; i++) next.add(tabs[i]!.id);
+        return next;
+      }
+      // Meta/Ctrl：切換單一
+      if (modifiers?.metaKey || modifiers?.ctrlKey) {
+        if (next.has(id)) next.delete(id);
+        else next.add(id);
+        return next;
+      }
+      // 單選：只保留此項
+      next.clear();
+      next.add(id);
       return next;
     });
   };
