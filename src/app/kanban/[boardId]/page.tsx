@@ -1,12 +1,12 @@
 'use client';
 
-import { type DragEndEvent, DndContext, PointerSensor, useDroppable, useSensor, useSensors } from '@dnd-kit/core';
+import { DndContext, type DragEndEvent, PointerSensor, useDroppable, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, horizontalListSortingStrategy, SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { liveQuery } from 'dexie';
 import { Plus } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
-import { liveQuery } from 'dexie';
 
 import { ImportToColumnDialog } from '@/components/fab/import-to-column-dialog';
 import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
@@ -103,7 +103,7 @@ function SortableColumnShell({
               <Button
                 size="sm"
                 variant="ghost"
-                className="h-7 w-7 rounded-md p-0"
+                className="size-7 rounded-md p-0"
                 aria-label="Add column"
                 onMouseDown={(e) => e.stopPropagation()}
                 onPointerDown={(e) => e.stopPropagation()}
