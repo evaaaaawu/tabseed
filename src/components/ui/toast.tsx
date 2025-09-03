@@ -90,7 +90,7 @@ function variantClasses(variant: ToastVariant): string {
 
 function Toaster({ toasts, onClose }: { readonly toasts: readonly Toast[]; readonly onClose: (id: string) => void }) {
   return (
-    <div className="pointer-events-none fixed left-1/2 top-4 z-[100] flex w-full max-w-lg -translate-x-1/2 flex-col items-center gap-2 px-3">
+    <div className="pointer-events-none fixed left-1/2 top-4 z-[100] flex w-full max-w-2xl -translate-x-1/2 flex-col items-center gap-2 px-3">
       {toasts.map((t) => (
         <div
           key={t.id}
@@ -105,17 +105,17 @@ function Toaster({ toasts, onClose }: { readonly toasts: readonly Toast[]; reado
                 <div className="mt-0.5 truncate text-xs opacity-80">{t.description}</div>
               ) : null}
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex shrink-0 items-center gap-2 whitespace-nowrap">
               {t.linkHref ? (
                 <a
                   href={t.linkHref}
-                  className="rounded-md border px-2 py-1 text-xs text-foreground/80 hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  className="rounded-md border px-2 py-1 text-xs text-foreground/80 hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 whitespace-nowrap"
                 >
                   {t.linkLabel ?? 'View'}
                 </a>
               ) : null}
               <button
-                className="rounded-md border px-2 py-1 text-xs text-foreground/80 hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="rounded-md border px-2 py-1 text-xs text-foreground/80 hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 whitespace-nowrap"
                 onClick={() => onClose(t.id)}
               >
                 Close
