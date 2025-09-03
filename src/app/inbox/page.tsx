@@ -200,6 +200,15 @@ function GridTabs({ tabs }: { tabs: ReadonlyArray<{ id: string; url: string; tit
   const onSelect = (id: string, modifiers?: { shiftKey?: boolean; metaKey?: boolean; ctrlKey?: boolean }) => {
     setSelected((prev) => {
       const next = new Set(prev);
+      // 已選且有 Ctrl/Meta 或無修飾 → 允許取消選取
+      if ((modifiers?.metaKey || modifiers?.ctrlKey) && next.has(id)) {
+        next.delete(id);
+        return next;
+      }
+      if (!modifiers?.shiftKey && !modifiers?.metaKey && !modifiers?.ctrlKey && next.has(id)) {
+        next.delete(id);
+        return next;
+      }
       // Shift 多選：連續區間（簡化：若有已選，取最後一個的 index 作區間）
       if (modifiers?.shiftKey && next.size > 0) {
         const indices = [...next].map((x) => tabs.findIndex((t) => t.id === x)).filter((i) => i >= 0).sort((a, b) => a - b);
@@ -256,10 +265,58 @@ function GridTabs({ tabs }: { tabs: ReadonlyArray<{ id: string; url: string; tit
     }
   };
 
+  // Marquee selection state
+  const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
+  const [dragRect, setDragRect] = useState<{ left: number; top: number; width: number; height: number } | null>(null);
+
+  const onPointerDown: React.PointerEventHandler<HTMLDivElement> = (e) => {
+    if (e.button !== 0) return; // left only
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    setDragStart({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+    setDragRect({ left: e.clientX - rect.left, top: e.clientY - rect.top, width: 0, height: 0 });
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+  };
+
+  const onPointerMove: React.PointerEventHandler<HTMLDivElement> = (e) => {
+    if (!dragStart) return;
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const left = Math.min(dragStart.x, x);
+    const top = Math.min(dragStart.y, y);
+    const width = Math.abs(x - dragStart.x);
+    const height = Math.abs(y - dragStart.y);
+    setDragRect({ left, top, width, height });
+  };
+
+  const onPointerUp: React.PointerEventHandler<HTMLDivElement> = (e) => {
+    if (!dragStart) return;
+    const container = e.currentTarget as HTMLElement;
+    const nodes = Array.from(container.querySelectorAll('[role="gridcell"]')) as HTMLElement[];
+    const cRect = container.getBoundingClientRect();
+    const sel = new Set(selected);
+    nodes.forEach((node) => {
+      const r = node.getBoundingClientRect();
+      const nx = r.left - cRect.left;
+      const ny = r.top - cRect.top;
+      const intersects = dragRect && !(nx > dragRect.left + dragRect.width || nx + r.width < dragRect.left || ny > dragRect.top + dragRect.height || ny + r.height < dragRect.top);
+      if (intersects) sel.add(node.dataset.itemId!);
+    });
+    setSelected(sel);
+    setDragStart(null);
+    setDragRect(null);
+    try {
+      (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+    } catch {}
+  };
+
   return (
     <div
-      className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+      className="relative grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
       onKeyDown={onKeyDown}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
     >
       {tabs.map((t) => (
         <TabCard
@@ -272,6 +329,12 @@ function GridTabs({ tabs }: { tabs: ReadonlyArray<{ id: string; url: string; tit
           onSelect={onSelect}
         />
       ))}
+      {dragRect ? (
+        <div
+          className="pointer-events-none absolute z-10 border-2 border-success/70 bg-success/10"
+          style={{ left: dragRect.left, top: dragRect.top, width: dragRect.width, height: dragRect.height }}
+        />
+      ) : null}
     </div>
   );
 }

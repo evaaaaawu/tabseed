@@ -20,6 +20,7 @@ export interface TabCardProps {
 export function TabCard({ id, url, title, color, selected, onSelect, disableClick }: TabCardProps) {
   return (
     <div
+      data-item-id={id}
       role="gridcell"
       aria-selected={onSelect ? (selected ? true : false) : undefined}
       onClick={(e) => {

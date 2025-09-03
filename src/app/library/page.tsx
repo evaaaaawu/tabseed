@@ -17,6 +17,14 @@ export default function LibraryPage() {
   ) => {
     setSelected((prev) => {
       const next = new Set(prev);
+      if ((modifiers?.metaKey || modifiers?.ctrlKey) && next.has(id)) {
+        next.delete(id);
+        return next;
+      }
+      if (!modifiers?.shiftKey && !modifiers?.metaKey && !modifiers?.ctrlKey && next.has(id)) {
+        next.delete(id);
+        return next;
+      }
       if (modifiers?.shiftKey && next.size > 0) {
         // 簡化：用當前列表最後選取為 anchor
         const indices = [...next].map((x) => tabs.findIndex((t) => t.id === x)).filter((i) => i >= 0).sort((a, b) => a - b);
@@ -53,7 +61,7 @@ export default function LibraryPage() {
             title="No tabs yet"
           />
         ) : (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+          <div className="relative grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {tabs.map((t) => (
               <TabCard
                 key={t.id}
