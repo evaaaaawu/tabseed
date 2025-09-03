@@ -1,6 +1,6 @@
 'use client';
 
-import { DndContext, type DragEndEvent, PointerSensor, useDroppable, useSensor, useSensors } from '@dnd-kit/core';
+import { type DragEndEvent, DndContext, PointerSensor, useDroppable, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, horizontalListSortingStrategy, SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Plus } from 'lucide-react';
@@ -178,8 +178,8 @@ export default function KanbanBoardPage() {
   const handleDragEnd = async (event: DragEndEvent): Promise<void> => {
     const { active, over } = event;
     if (!over) return;
-    const activeData = (active.data.current ?? {}) as any;
-    const overData = (over.data.current ?? {}) as any;
+    const activeData = (active.data.current ?? {}) as { type?: string; placementId?: string };
+    const overData = (over.data.current ?? {}) as { type?: string; columnId?: string; placementId?: string };
 
     if (activeData.type === 'column') {
       if (active.id === over.id) return;
@@ -195,15 +195,15 @@ export default function KanbanBoardPage() {
     }
 
     if (activeData.type === 'card') {
-      const placementId: string = activeData.placementId as string;
+      const placementId: string = String(activeData.placementId);
       let targetColumnId: string | undefined;
       let beforeId: string | undefined;
 
       if (overData.type === 'card') {
-        targetColumnId = overData.columnId as string;
-        beforeId = overData.placementId as string;
+        targetColumnId = overData.columnId;
+        beforeId = overData.placementId;
       } else if (overData.type === 'column-dropzone') {
-        targetColumnId = overData.columnId as string;
+        targetColumnId = overData.columnId;
       }
 
       if (!targetColumnId) return;
