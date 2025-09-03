@@ -3,6 +3,23 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { TabCard } from './tab-card';
 
 describe('TabCard', () => {
+  it('renders gridcell role and data-item-id, toggles aria-selected with selection', () => {
+    const onSelect = vi.fn();
+    render(
+      <TabCard
+        id="abc"
+        url="https://example.com"
+        title="Example"
+        selected={true}
+        onSelect={onSelect}
+      />,
+    );
+    const cell = screen.getByRole('gridcell');
+    expect(cell).toBeInTheDocument();
+    expect(cell).toHaveAttribute('data-item-id', 'abc');
+    expect(cell).toHaveAttribute('aria-selected', 'true');
+  });
+
   it('toggles selection on Space and opens link on Enter', () => {
     const onSelect = vi.fn();
     render(<TabCard id="1" url="https://example.com" title="Example" onSelect={onSelect} />);
