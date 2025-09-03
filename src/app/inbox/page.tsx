@@ -51,10 +51,10 @@ export default function InboxPage() {
         setOpen(false);
         addToast({
           variant: 'warning',
-          title: '找不到可匯入的分頁',
-          description: '目前沒有可匯入的分頁。要改用手動匯入嗎？',
+          title: 'No tabs to import',
+          description: 'There are no importable tabs right now. Want to import manually instead?',
           linkHref: '?manualImport=1',
-          linkLabel: '開啟手動匯入',
+          linkLabel: 'Open manual import',
           durationMs: 8000,
         });
         return;

@@ -340,10 +340,10 @@ export default function KanbanBoardPage() {
                 setOpenImportDialog(false);
                 addToast({
                   variant: 'warning',
-                  title: '找不到可匯入的分頁',
-                  description: '目前沒有可匯入的分頁。要改用手動匯入嗎？',
+                  title: 'No tabs to import',
+                  description: 'There are no importable tabs right now. Want to import manually instead?',
                   linkHref: `?manualImport=1${columnId ? `&columnId=${encodeURIComponent(columnId)}` : ''}`,
-                  linkLabel: '開啟手動匯入',
+                  linkLabel: 'Open manual import',
                   durationMs: 8000,
                 });
                 return;
@@ -380,10 +380,10 @@ export default function KanbanBoardPage() {
               setOpenImportDialog(false);
               addToast({
                 variant: 'warning',
-                title: '未偵測到擴充或分頁',
-                description: '請改用手動匯入將連結加入此欄位。',
+                title: 'Extension not detected',
+                description: 'Please use manual import to add links into this column.',
                 linkHref: `?manualImport=1${targetColumnId ? `&columnId=${encodeURIComponent(targetColumnId)}` : ''}`,
-                linkLabel: '開啟手動匯入',
+                linkLabel: 'Open manual import',
                 durationMs: 8000,
               });
             }
