@@ -285,7 +285,12 @@ export default function KanbanBoardPage() {
 
   const handleImportToColumn = async (columnId: string): Promise<void> => {
     setTargetColumnId(columnId);
-    setOpenImportDialog(true);
+    if (extStatus === 'available') {
+      setOpenImportDialog(true);
+    } else {
+      // Extension not detected → behave like inbox: open manual import directly
+      setOpenManual(true);
+    }
   };
 
   const gridClass = useMemo(() => 'flex gap-3 overflow-x-auto pb-4', []);
@@ -377,15 +382,9 @@ export default function KanbanBoardPage() {
                 addToast({ variant: 'default', title: 'Nothing imported' });
               }
             } else {
+              // Extension not detected → go to manual import dialog directly
               setOpenImportDialog(false);
-              addToast({
-                variant: 'warning',
-                title: 'Extension not detected',
-                description: 'Please use manual import to add links into this column.',
-                linkHref: `?manualImport=1${targetColumnId ? `&columnId=${encodeURIComponent(targetColumnId)}` : ''}`,
-                linkLabel: 'Open manual import',
-                durationMs: 8000,
-              });
+              setOpenManual(true);
             }
           } catch (err) {
             if (err instanceof ApiError && err.isUnauthorized) {
