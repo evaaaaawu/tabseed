@@ -5,7 +5,7 @@ import { arrayMove, horizontalListSortingStrategy, SortableContext, useSortable,
 import { CSS } from '@dnd-kit/utilities';
 import { liveQuery } from 'dexie';
 import { Plus } from 'lucide-react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
 import { ImportToColumnDialog } from '@/components/fab/import-to-column-dialog';
@@ -156,11 +156,27 @@ export default function KanbanBoardPage() {
   const [openImportDialog, setOpenImportDialog] = useState(false);
   const [targetColumnId, setTargetColumnId] = useState<string | null>(null);
   const [boardName, setBoardName] = useState<string | null>(null);
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     // ensure default column exists
     void ensureDefaultColumn(boardId);
   }, [boardId]);
+  // Open manual dialog when `?manualImport=1` exists, optionally with `columnId`
+  useEffect(() => {
+    const manual = searchParams.get('manualImport');
+    if (manual) {
+      const columnId = searchParams.get('columnId');
+      if (columnId) setTargetColumnId(columnId);
+      setOpenManual(true);
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('manualImport');
+        url.searchParams.delete('columnId');
+        window.history.replaceState(null, '', url.pathname + (url.search ? `?${url.searchParams.toString()}` : ''));
+      } catch {}
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     setIds(columns.map((c) => c.id));
@@ -322,7 +338,14 @@ export default function KanbanBoardPage() {
               const tabs = await captureOpenTabs({ closeImported });
               if (tabs.length === 0) {
                 setOpenImportDialog(false);
-                setOpenManual(true);
+                addToast({
+                  variant: 'warning',
+                  title: '找不到可匯入的分頁',
+                  description: '目前沒有可匯入的分頁。要改用手動匯入嗎？',
+                  linkHref: `?manualImport=1${columnId ? `&columnId=${encodeURIComponent(columnId)}` : ''}`,
+                  linkLabel: '開啟手動匯入',
+                  durationMs: 8000,
+                });
                 return;
               }
               const r = await submitTabsToColumn(tabs, columnId, closeImported);
@@ -355,7 +378,14 @@ export default function KanbanBoardPage() {
               }
             } else {
               setOpenImportDialog(false);
-              setOpenManual(true);
+              addToast({
+                variant: 'warning',
+                title: '未偵測到擴充或分頁',
+                description: '請改用手動匯入將連結加入此欄位。',
+                linkHref: `?manualImport=1${targetColumnId ? `&columnId=${encodeURIComponent(targetColumnId)}` : ''}`,
+                linkLabel: '開啟手動匯入',
+                durationMs: 8000,
+              });
             }
           } catch (err) {
             if (err instanceof ApiError && err.isUnauthorized) {

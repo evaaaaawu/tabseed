@@ -1,8 +1,8 @@
 "use client";
 
 import { Plus } from 'lucide-react';
-import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 import { type ImportTarget, ImportTargetDialog } from '@/components/fab/import-to-inbox-dialog';
 import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
