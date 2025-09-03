@@ -45,7 +45,7 @@ export function TabCard({ id, url, title, color, selected, onSelect, disableClic
         }
       }}
       className={cn(
-        'group block rounded-lg border bg-card p-3 text-card-foreground shadow-elev-1 transition-[transform,box-shadow] duration-200 ease-emphasized hover:-translate-y-0.5 hover:shadow-elev-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+        'group block rounded-lg border bg-card p-3 text-card-foreground shadow-elev-1 transition-[transform,box-shadow] duration-200 ease-emphasized hover:-translate-y-0.5 hover:shadow-elev-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-success focus-visible:ring-offset-2',
         selected && 'ring-2 ring-success',
       )}
       style={color ? ({ borderColor: color } as React.CSSProperties) : undefined}
