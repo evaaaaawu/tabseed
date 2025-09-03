@@ -17,8 +17,10 @@ import { importTabsAndSyncLocalWithRaw } from '@/lib/data/import-tabs';
 import { type CapturedTab, captureOpenTabs } from '@/lib/extension/bridge';
 import { useInboxTabsNewest } from '@/lib/idb/hooks';
 import { ensureInboxAtEnd } from '@/lib/idb/inbox-repo';
+import { useHydrated } from '@/hooks/use-hydrated';
 
 export default function InboxPage() {
+  const hydrated = useHydrated();
   const [open, setOpen] = useState(false);
   const [openManual, setOpenManual] = useState(false);
   const extStatus = useExtensionStatus();
@@ -169,6 +171,10 @@ export default function InboxPage() {
 
       <div className="mt-4" role="grid" aria-label="Inbox tabs">
         {loading ? (
+          <Text size="sm" muted>
+            Loading...
+          </Text>
+        ) : !hydrated ? (
           <Text size="sm" muted>
             Loading...
           </Text>

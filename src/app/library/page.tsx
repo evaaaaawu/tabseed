@@ -6,8 +6,10 @@ import { TabCard } from '@/components/tabs/tab-card';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Heading, Text } from '@/components/ui/typography';
 import { useAllTabsNewest } from '@/lib/idb/hooks';
+import { useHydrated } from '@/hooks/use-hydrated';
 
 export default function LibraryPage() {
+  const hydrated = useHydrated();
   const { tabs, loading } = useAllTabsNewest();
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
@@ -53,6 +55,10 @@ export default function LibraryPage() {
 
       <div className="mt-4" role="grid" aria-label="Library tabs">
         {loading ? (
+          <Text size="sm" muted>
+            Loading...
+          </Text>
+        ) : !hydrated ? (
           <Text size="sm" muted>
             Loading...
           </Text>
