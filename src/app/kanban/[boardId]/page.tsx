@@ -6,6 +6,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { Plus } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
+import { liveQuery } from 'dexie';
 
 import { ImportToColumnDialog } from '@/components/fab/import-to-column-dialog';
 import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
@@ -25,7 +26,6 @@ import { getDb } from '@/lib/idb/db';
 import { usePlacementsWithTabs } from '@/lib/idb/placements-hooks';
 import { ensurePlacementsAtEnd, movePlacement } from '@/lib/idb/placements-repo';
 import type { TabPlacementRecord, TabRecord } from '@/lib/idb/types';
-import { liveQuery } from 'dexie';
 
 function SortableCard({
   placement,
