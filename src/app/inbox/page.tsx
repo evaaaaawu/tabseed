@@ -2,9 +2,9 @@
 
 import { Plus } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { type ImportTarget, ImportTargetDialog } from '@/components/fab/import-to-inbox-dialog';
+import { ImportTargetDialog, type ImportTarget } from '@/components/fab/import-to-inbox-dialog';
 import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
 import { TabCard } from '@/components/tabs/tab-card';
 import { Button } from '@/components/ui/button';
@@ -12,10 +12,11 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { useToast } from '@/components/ui/toast';
 import { Heading, Text } from '@/components/ui/typography';
 import { useExtensionStatus } from '@/hooks/use-extension-status';
+import { useGridMultiSelect } from '@/hooks/use-grid-multi-select';
 import { useHydrated } from '@/hooks/use-hydrated';
 import { ApiError } from '@/lib/api/errors';
 import { importTabsAndSyncLocalWithRaw } from '@/lib/data/import-tabs';
-import { type CapturedTab, captureOpenTabs } from '@/lib/extension/bridge';
+import { captureOpenTabs, type CapturedTab } from '@/lib/extension/bridge';
 import { useInboxTabsNewest } from '@/lib/idb/hooks';
 import { ensureInboxAtEnd } from '@/lib/idb/inbox-repo';
 
@@ -201,50 +202,17 @@ export default function InboxPage() {
 }
 
 function GridTabs({ tabs }: { tabs: ReadonlyArray<{ id: string; url: string; title?: string; color?: string }> }) {
-  const [selected, setSelected] = useState<Set<string>>(new Set());
-
-  const onSelect = (id: string, modifiers?: { shiftKey?: boolean; metaKey?: boolean; ctrlKey?: boolean }) => {
-    setSelected((prev) => {
-      const next = new Set(prev);
-      // 已選且有 Ctrl/Meta 或無修飾 → 允許取消選取
-      if ((modifiers?.metaKey || modifiers?.ctrlKey) && next.has(id)) {
-        next.delete(id);
-        return next;
-      }
-      if (!modifiers?.shiftKey && !modifiers?.metaKey && !modifiers?.ctrlKey && next.has(id)) {
-        next.delete(id);
-        return next;
-      }
-      // Shift 多選：連續區間（簡化：若有已選，取最後一個的 index 作區間）
-      if (modifiers?.shiftKey && next.size > 0) {
-        const indices = [...next].map((x) => tabs.findIndex((t) => t.id === x)).filter((i) => i >= 0).sort((a, b) => a - b);
-        const anchor = indices.length > 0 ? indices[indices.length - 1] : 0;
-        const target = tabs.findIndex((t) => t.id === id);
-        const [start, end] = anchor <= target ? [anchor, target] : [target, anchor];
-        for (let i = start; i <= end; i++) next.add(tabs[i]!.id);
-        return next;
-      }
-      // Meta/Ctrl：切換單一
-      if (modifiers?.metaKey || modifiers?.ctrlKey) {
-        if (next.has(id)) next.delete(id);
-        else next.add(id);
-        return next;
-      }
-      // 單選：只保留此項
-      next.clear();
-      next.add(id);
-      return next;
-    });
-  };
-
-  const idToIndex = useMemo(() => new Map(tabs.map((t, i) => [t.id, i])), [tabs]);
+  const { selectedIds, handleCardSelect, containerProps, dragRect } = useGridMultiSelect(tabs);
 
   const onKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (e) => {
     if (tabs.length === 0) return;
     const focused = document.activeElement as HTMLElement | null;
     const cell = focused?.closest('[role="gridcell"]') as HTMLElement | null;
     const currentIndex = cell ? Array.from(cell.parentElement?.children ?? []).indexOf(cell) : -1;
-    const cols = getComputedStyle(cell?.parentElement as Element).getPropertyValue('grid-template-columns').split(' ').length || 1;
+    const cols =
+      getComputedStyle(cell?.parentElement as Element)
+        .getPropertyValue('grid-template-columns')
+        .split(' ').length || 1;
 
     let nextIndex = -1;
     switch (e.key) {
@@ -271,92 +239,11 @@ function GridTabs({ tabs }: { tabs: ReadonlyArray<{ id: string; url: string; tit
     }
   };
 
-  // Marquee selection state
-  const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
-  const [dragRect, setDragRect] = useState<{ left: number; top: number; width: number; height: number } | null>(null);
-
-  const onPointerDown: React.PointerEventHandler<HTMLDivElement> = (e) => {
-    // mouse: only start when primary button is pressed
-    if (e.pointerType === 'mouse' && e.buttons !== 1) return;
-    // Do not start marquee when using selection modifiers; let card click handle shift/meta/ctrl logic
-    if (e.shiftKey || e.metaKey || e.ctrlKey) return;
-    // Do not start marquee if the pointerdown originated on a card
-    const isOnCell = (e.target as Element | null)?.closest?.('[role="gridcell"]');
-    if (isOnCell) return;
-
-    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    setDragStart({ x, y });
-    setDragRect({ left: x, top: y, width: 0, height: 0 });
-    try {
-      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-    } catch {}
-    // avoid page scroll on touchpad/touch while drawing marquee
-    e.preventDefault();
-  };
-
-  const onPointerMove: React.PointerEventHandler<HTMLDivElement> = (e) => {
-    if (!dragStart) return;
-    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const left = Math.min(dragStart.x, x);
-    const top = Math.min(dragStart.y, y);
-    const width = Math.abs(x - dragStart.x);
-    const height = Math.abs(y - dragStart.y);
-    setDragRect({ left, top, width, height });
-    e.preventDefault();
-  };
-
-  const onPointerUp: React.PointerEventHandler<HTMLDivElement> = (e) => {
-    if (!dragStart) return;
-    const container = e.currentTarget as HTMLElement;
-    const nodes = Array.from(container.querySelectorAll('[role="gridcell"]')) as HTMLElement[];
-    const cRect = container.getBoundingClientRect();
-    const isClick = !!dragRect && dragRect.width < 3 && dragRect.height < 3;
-    if (isClick) {
-      // Empty click clears selection (started only when not on a cell)
-      setSelected(new Set());
-    } else {
-      const sel = new Set(selected);
-      nodes.forEach((node) => {
-        const r = node.getBoundingClientRect();
-        const nx = r.left - cRect.left;
-        const ny = r.top - cRect.top;
-        const intersects = dragRect && !(nx > dragRect.left + dragRect.width || nx + r.width < dragRect.left || ny > dragRect.top + dragRect.height || ny + r.height < dragRect.top);
-        if (intersects) sel.add(node.dataset.itemId!);
-      });
-      setSelected(sel);
-    }
-    setDragStart(null);
-    setDragRect(null);
-    try {
-      (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
-    } catch {}
-    e.preventDefault();
-  };
-
-  const onPointerCancel: React.PointerEventHandler<HTMLDivElement> = (e) => {
-    setDragStart(null);
-    setDragRect(null);
-    try {
-      (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
-    } catch {}
-  };
-
   return (
     <div
       className="relative grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
       onKeyDown={onKeyDown}
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={onPointerUp}
-      onPointerCancel={onPointerCancel}
-      onClick={(e) => {
-        const isOnCell = (e.target as Element | null)?.closest?.('[role="gridcell"]');
-        if (!isOnCell) setSelected(new Set());
-      }}
+      {...containerProps}
     >
       {tabs.map((t) => (
         <TabCard
@@ -365,14 +252,19 @@ function GridTabs({ tabs }: { tabs: ReadonlyArray<{ id: string; url: string; tit
           url={t.url}
           title={t.title}
           color={t.color}
-          selected={selected.has(t.id)}
-          onSelect={onSelect}
+          selected={selectedIds.has(t.id)}
+          onSelect={handleCardSelect}
         />
       ))}
       {dragRect ? (
         <div
           className="pointer-events-none absolute z-10 border-2 border-success/70 bg-success/10"
-          style={{ left: dragRect.left, top: dragRect.top, width: dragRect.width, height: dragRect.height }}
+          style={{
+            left: dragRect.left,
+            top: dragRect.top,
+            width: dragRect.width,
+            height: dragRect.height,
+          }}
         />
       ) : null}
     </div>
