@@ -61,7 +61,7 @@ function SortableCard({
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
       {tab ? (
-        <TabCard id={tab.id} url={tab.url} title={tab.title} color={tab.color} disableClick />
+        <TabCard id={tab.id} url={tab.url} title={tab.title} color={tab.color} />
       ) : (
         <div className="rounded border p-2 text-xs text-muted-foreground">Missing tab</div>
       )}
