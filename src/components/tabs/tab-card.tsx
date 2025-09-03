@@ -1,6 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/utils';
+import { postUiEvent } from '@/lib/observability/ui';
 
 export interface TabCardProps {
   readonly id: string;
@@ -15,18 +16,28 @@ export interface TabCardProps {
 export function TabCard({ id, url, title, color, selected, onSelect, disableClick }: TabCardProps) {
   return (
     <div
+      role="gridcell"
+      aria-selected={onSelect ? (selected ? true : false) : undefined}
       onClick={() => {
         if (onSelect) {
           onSelect(id);
         }
       }}
-      role={onSelect ? 'button' : undefined}
       tabIndex={onSelect ? 0 : undefined}
       onKeyDown={(e) => {
         if (!onSelect) return;
-        if (e.key === 'Enter' || e.key === ' ') {
+        if (e.key === ' ') {
           e.preventDefault();
           onSelect(id);
+          return;
+        }
+        if (e.key === 'Enter') {
+          // Enter 開啟 title 連結（新分頁）
+          e.preventDefault();
+          try {
+            window.open(url, '_blank', 'noopener,noreferrer');
+            void postUiEvent('card.open_link', { id, via: 'enter' });
+          } catch {}
         }
       }}
       className={cn(
@@ -46,6 +57,7 @@ export function TabCard({ id, url, title, color, selected, onSelect, disableClic
               e.preventDefault();
               return;
             }
+            void postUiEvent('card.open_link', { id, via: 'click' });
           }}
           onMouseDown={(e) => {
             // Prevent drag handlers in parent contexts (e.g., Kanban) from capturing pointer

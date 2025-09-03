@@ -26,7 +26,7 @@ export default function LibraryPage() {
         Library
       </Heading>
 
-      <div className="mt-4">
+      <div className="mt-4" role="grid" aria-label="Library tabs">
         {loading ? (
           <Text size="sm" muted>
             Loading...

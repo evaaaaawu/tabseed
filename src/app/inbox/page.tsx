@@ -2,7 +2,7 @@
 
 import { Plus } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { type ImportTarget, ImportTargetDialog } from '@/components/fab/import-to-inbox-dialog';
 import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
@@ -167,7 +167,7 @@ export default function InboxPage() {
         </Button>
       </div>
 
-      <div className="mt-4">
+      <div className="mt-4" role="grid" aria-label="Inbox tabs">
         {loading ? (
           <Text size="sm" muted>
             Loading...
@@ -175,11 +175,7 @@ export default function InboxPage() {
         ) : tabs.length === 0 ? (
           <EmptyState title="No tabs in inbox" />
         ) : (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-            {tabs.map((t) => (
-              <TabCard key={t.id} id={t.id} url={t.url} title={t.title} color={t.color} />
-            ))}
-          </div>
+          <GridTabs tabs={tabs} />
         )}
       </div>
 
@@ -194,6 +190,72 @@ export default function InboxPage() {
         onOpenChange={setOpenManual}
         onSubmit={handleManualSubmit}
       />
+    </div>
+  );
+}
+
+function GridTabs({ tabs }: { tabs: ReadonlyArray<{ id: string; url: string; title?: string; color?: string }> }) {
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+
+  const onSelect = (id: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const idToIndex = useMemo(() => new Map(tabs.map((t, i) => [t.id, i])), [tabs]);
+
+  const onKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (e) => {
+    if (tabs.length === 0) return;
+    const focused = document.activeElement as HTMLElement | null;
+    const cell = focused?.closest('[role="gridcell"]') as HTMLElement | null;
+    const currentIndex = cell ? Array.from(cell.parentElement?.children ?? []).indexOf(cell) : -1;
+    const cols = getComputedStyle(cell?.parentElement as Element).getPropertyValue('grid-template-columns').split(' ').length || 1;
+
+    let nextIndex = -1;
+    switch (e.key) {
+      case 'ArrowRight':
+        nextIndex = Math.min(tabs.length - 1, currentIndex + 1);
+        break;
+      case 'ArrowLeft':
+        nextIndex = Math.max(0, currentIndex - 1);
+        break;
+      case 'ArrowDown':
+        nextIndex = Math.min(tabs.length - 1, currentIndex + cols);
+        break;
+      case 'ArrowUp':
+        nextIndex = Math.max(0, currentIndex - cols);
+        break;
+      default:
+        return;
+    }
+    if (nextIndex >= 0 && nextIndex !== currentIndex) {
+      e.preventDefault();
+      const grid = cell?.parentElement;
+      const target = grid?.children.item(nextIndex) as HTMLElement | null;
+      target?.focus();
+    }
+  };
+
+  return (
+    <div
+      className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+      onKeyDown={onKeyDown}
+    >
+      {tabs.map((t) => (
+        <TabCard
+          key={t.id}
+          id={t.id}
+          url={t.url}
+          title={t.title}
+          color={t.color}
+          selected={selected.has(t.id)}
+          onSelect={onSelect}
+        />
+      ))}
     </div>
   );
 }
