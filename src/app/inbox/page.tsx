@@ -12,12 +12,12 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { useToast } from '@/components/ui/toast';
 import { Heading, Text } from '@/components/ui/typography';
 import { useExtensionStatus } from '@/hooks/use-extension-status';
+import { useHydrated } from '@/hooks/use-hydrated';
 import { ApiError } from '@/lib/api/errors';
 import { importTabsAndSyncLocalWithRaw } from '@/lib/data/import-tabs';
 import { type CapturedTab, captureOpenTabs } from '@/lib/extension/bridge';
 import { useInboxTabsNewest } from '@/lib/idb/hooks';
 import { ensureInboxAtEnd } from '@/lib/idb/inbox-repo';
-import { useHydrated } from '@/hooks/use-hydrated';
 
 export default function InboxPage() {
   const hydrated = useHydrated();

@@ -9,5 +9,3 @@ export function useHydrated(): boolean {
   }, []);
   return hydrated;
 }
-
-

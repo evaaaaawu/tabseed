@@ -16,17 +16,21 @@ const STORAGE_KEY = "tabseed.sidebar.collapsed";
 export function AppSidebar() {
   const pathname = usePathname();
   const extStatus = useExtensionStatus();
-  const [collapsed, setCollapsed] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
+  // IMPORTANT: Use a deterministic SSR initial state to avoid hydration mismatch.
+  // Read localStorage/matchMedia only after hydration.
+  const [collapsed, setCollapsed] = useState<boolean>(false);
+
+  useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw != null) return raw === "1";
+      if (raw != null) {
+        setCollapsed(raw === "1");
+        return;
+      }
       const prefersNarrow = window.matchMedia && window.matchMedia("(max-width: 768px)").matches;
-      return prefersNarrow;
-    } catch {
-      return false;
-    }
-  });
+      setCollapsed(prefersNarrow);
+    } catch {}
+  }, []);
 
   useEffect(() => {
     try {
