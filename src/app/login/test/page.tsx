@@ -31,27 +31,46 @@ export default function TestLoginPage() {
 	};
 
 	return (
-		<div className="mx-auto max-w-md p-6">
-			<h1 className="mb-4 text-2xl font-bold">Test Login</h1>
-			<p className="mb-4 text-sm text-muted-foreground">Enter test code to log in to TabSeed.</p>
-			<form onSubmit={handleSubmit} className="space-y-3">
-				<Input
-					placeholder="Enter test code"
-					value={code}
-					onChange={(e) => setCode(e.target.value)}
-					autoFocus
-					required
-				/>
-				<div className="flex items-center gap-2">
-					<Button type="submit" disabled={isLoading || !code.trim()}>
-						{isLoading ? "Logging in..." : "Login"}
+		<div className="mx-auto flex min-h-[100dvh] max-w-lg flex-col justify-center px-6 py-8 sm:py-12">
+			<div className="mb-8 text-center">
+				<h1 className="text-3xl font-bold tracking-tight md:text-4xl">Sign in with a test code</h1>
+				<p className="mt-2 text-sm text-muted-foreground sm:text-base">
+					Early alpha access using a one-time test code.
+				</p>
+			</div>
+
+			<div className="rounded-xl border bg-card p-5 shadow-sm sm:p-6">
+				<form onSubmit={handleSubmit} className="space-y-3">
+					<Input
+						placeholder="Enter test code"
+						value={code}
+						onChange={(e) => setCode(e.target.value)}
+						autoFocus
+						required
+					/>
+					<Button className="w-full" type="submit" disabled={isLoading || !code.trim()}>
+						{isLoading ? "Logging in..." : "Continue"}
 					</Button>
-					<Link className="text-sm text-primary underline" href="/login">
-						Back to Login
-					</Link>
+					{error ? <div className="text-sm text-destructive">{error}</div> : null}
+				</form>
+
+				<div className="mt-5 space-y-2 text-sm text-muted-foreground sm:mt-6">
+					<p>
+						Prefer Google? Go back to the{' '}
+						<Link className="text-primary underline hover:text-primary/90" href="/login">
+							main login
+						</Link>
+						.
+					</p>
+					<p className="text-xs">
+						No code yet? Join the{' '}
+						<Link className="text-primary underline hover:text-primary/90" href="/waitlist">
+							waitlist
+						</Link>
+						.
+					</p>
 				</div>
-				{error ? <div className="text-sm text-destructive">{error}</div> : null}
-			</form>
+			</div>
 		</div>
 	);
 }
