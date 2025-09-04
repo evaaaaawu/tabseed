@@ -20,7 +20,7 @@ export default function LoginPage() {
         </div>
 
         <div className="mt-5 space-y-2 text-sm text-muted-foreground sm:mt-6">
-          <p>
+          <p className="font-semibold text-foreground">
             TabSeed is currently in an early experimental phase with limited access. If you're
             interested, please apply to the{' '}
             <a className="text-primary underline hover:text-primary/90" href="/waitlist">
