@@ -38,5 +38,3 @@ export async function POST(req: NextRequest) {
   }
   return new Response(JSON.stringify({ ok: true }));
 }
-
-
