@@ -41,17 +41,30 @@ export default function TestLoginPage() {
 
 			<div className="rounded-xl border bg-card p-5 shadow-sm sm:p-6">
 				<form onSubmit={handleSubmit} className="space-y-3">
+					<label htmlFor="test-code" className="block text-sm font-medium">
+						Test code
+					</label>
 					<Input
+						id="test-code"
 						placeholder="Enter test code"
 						value={code}
 						onChange={(e) => setCode(e.target.value)}
 						autoFocus
 						required
+						aria-invalid={Boolean(error) || undefined}
+						aria-describedby={error ? 'test-code-error' : 'test-code-hint'}
 					/>
+					<p id="test-code-hint" className="text-xs text-muted-foreground">
+						Use the one-time code you received from onboarding.
+					</p>
 					<Button className="w-full" type="submit" disabled={isLoading || !code.trim()}>
 						{isLoading ? "Logging in..." : "Continue"}
 					</Button>
-					{error ? <div className="text-sm text-destructive">{error}</div> : null}
+					{error ? (
+						<div id="test-code-error" role="alert" className="text-sm text-destructive">
+							{error}
+						</div>
+					) : null}
 				</form>
 
 				<div className="mt-5 space-y-2 text-sm text-muted-foreground sm:mt-6">
