@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 
-import { Badge } from '@/components/ui/badge';
+import { AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { postTestLogin } from '@/lib/api/auth-client';
@@ -40,10 +40,13 @@ export default function TestLoginPage() {
         </p>
         <div
           role="alert"
-          className="mt-3 rounded-lg border border-warning/50 bg-warning p-3 text-sm text-warning-foreground shadow-sm"
+          className="mt-3 flex items-start gap-2 rounded-lg border border-warning/50 bg-warning p-3 text-sm text-warning-foreground shadow-sm"
         >
-          This test-code page is temporary and may be removed at any time. Do not store important
-          data under a test-code account, and remember to back up regularly.
+          <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+          <p className="flex-1">
+            This test-code page is temporary and may be removed at any time. Do not store important
+            data under a test-code account, and remember to back up regularly.
+          </p>
         </div>
       </div>
 
