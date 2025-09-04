@@ -28,7 +28,8 @@ export async function setSession(session: Session): Promise<void> {
     httpOnly: true,
     sameSite: 'lax',
     path: '/',
-    secure: true,
+    // Only set Secure in production; localhost over HTTP won't accept Secure cookies
+    secure: process.env.NODE_ENV === 'production',
   });
 }
 
