@@ -1,3 +1,4 @@
+import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 
 import { BoardCard } from './board-card';
@@ -24,7 +25,8 @@ describe('BoardCard', () => {
 
   it('calls onOpen on Enter and double click', () => {
     const onOpen = vi.fn();
-    render(<BoardCard id="b1" name="Board" onOpen={onOpen} />);
+    const onSelect = vi.fn();
+    render(<BoardCard id="b1" name="Board" onOpen={onOpen} onSelect={onSelect} />);
     const cell = screen.getByRole('gridcell');
     fireEvent.keyDown(cell, { key: 'Enter' });
     expect(onOpen).toHaveBeenCalledWith('b1');
