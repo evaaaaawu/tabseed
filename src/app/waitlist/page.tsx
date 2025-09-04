@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +8,13 @@ import { Input } from '@/components/ui/input';
 export default function WaitlistPage() {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const q = new URLSearchParams(window.location.search);
+      const e = q.get('email');
+      if (e) setEmail(e);
+    }
+  }, []);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);

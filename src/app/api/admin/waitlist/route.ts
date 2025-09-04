@@ -39,5 +39,3 @@ export async function PATCH(req: NextRequest) {
     .where((t, { eq }) => eq(t.email, email));
   return new Response(JSON.stringify({ ok: true }));
 }
-
-

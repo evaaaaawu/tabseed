@@ -78,8 +78,11 @@ export async function GET(req: NextRequest) {
     const entry = await db.query.waitlistEntries.findFirst({
       where: (t, { eq }) => eq(t.email, email),
     });
-    if (!entry || entry.status !== 'approved') {
-      return Response.redirect('/pending');
+    if (!entry) {
+      return Response.redirect(`/waitlist/need-join?email=${encodeURIComponent(email)}`);
+    }
+    if (entry.status !== 'approved') {
+      return Response.redirect(`/waitlist/pending?email=${encodeURIComponent(email)}`);
     }
   }
 
