@@ -17,6 +17,10 @@ export default function LoginPage() {
 		setError(null);
 		setIsLoading(true);
 		try {
+			if (!code.trim()) {
+				setError("Please enter a test code.");
+				return;
+			}
 			await postTestLogin({ code });
 			window.location.href = "/inbox";
 		} catch (err) {
@@ -35,10 +39,11 @@ export default function LoginPage() {
 					placeholder="Enter test code"
 					value={code}
 					onChange={(e) => setCode(e.target.value)}
+					autoFocus
 					required
 				/>
 				<div className="flex items-center gap-2">
-					<Button type="submit" disabled={isLoading}>
+					<Button type="submit" disabled={isLoading || !code.trim()}>
 						{isLoading ? "Logging in..." : "Login"}
 					</Button>
 					<Link className="text-sm text-primary underline" href="/">
