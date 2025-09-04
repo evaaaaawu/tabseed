@@ -1,17 +1,32 @@
 "use client";
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, type ReactElement } from 'react';
 
-import { AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { postTestLogin } from '@/lib/api/auth-client';
+import { AlertTriangle, Info } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export default function TestLoginPage() {
   const [code, setCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Callout tone variants
+  type NoticeTone = 'warning' | 'info' | 'destructive';
+  const NOTICE_TONE: NoticeTone = 'warning';
+  const TONE_STYLES: Record<NoticeTone, string> = {
+    warning: 'border-warning/50 bg-warning text-warning-foreground',
+    info: 'border-info/50 bg-info text-info-foreground',
+    destructive: 'border-destructive/50 bg-destructive text-destructive-foreground',
+  } as const;
+  const TONE_ICON: Record<NoticeTone, ReactElement> = {
+    warning: <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />,
+    info: <Info className="mt-0.5 size-4 shrink-0" aria-hidden="true" />,
+    destructive: <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />,
+  } as const;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,9 +55,12 @@ export default function TestLoginPage() {
         </p>
         <div
           role="alert"
-          className="mt-3 flex items-start gap-2 rounded-lg border border-warning/50 bg-warning p-3 text-sm text-warning-foreground shadow-sm"
+          className={cn(
+            'mt-3 flex items-start gap-2 rounded-lg border p-3 text-sm shadow-sm',
+            TONE_STYLES[NOTICE_TONE],
+          )}
         >
-          <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+          {TONE_ICON[NOTICE_TONE]}
           <p className="flex-1">
             This test-code page is temporary and may be removed at any time. Do not store important
             data under a test-code account, and remember to back up regularly.
