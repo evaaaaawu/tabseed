@@ -6,8 +6,8 @@ import { useState, type ReactElement } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { postTestLogin } from '@/lib/api/auth-client';
-import { AlertTriangle, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { AlertTriangle, Info } from 'lucide-react';
 
 export default function TestLoginPage() {
   const [code, setCode] = useState('');
