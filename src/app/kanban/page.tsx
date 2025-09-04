@@ -4,12 +4,12 @@ import { Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
+import { BoardCard } from '@/components/boards/board-card';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/toast';
 import { Heading, Text } from '@/components/ui/typography';
-import { BoardCard } from '@/components/boards/board-card';
 import { useGridMultiSelect } from '@/hooks/use-grid-multi-select';
 import { useBoardsCount, useBoardsNewest } from '@/lib/idb/boards-hooks';
 import { createBoardDraft, renameBoard } from '@/lib/idb/boards-repo';
@@ -49,6 +49,41 @@ export default function KanbanIndexPage() {
   const gridCols = useMemo(() => 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4', []);
   const { selectedIds, handleCardSelect, containerProps, dragRect } = useGridMultiSelect(boards);
 
+  const onKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (e) => {
+    if (boards.length === 0) return;
+    const focused = document.activeElement as HTMLElement | null;
+    const cell = focused?.closest('[role="gridcell"]') as HTMLElement | null;
+    const currentIndex = cell ? Array.from(cell.parentElement?.children ?? []).indexOf(cell) : -1;
+    const cols =
+      getComputedStyle(cell?.parentElement as Element)
+        .getPropertyValue('grid-template-columns')
+        .split(' ').length || 1;
+
+    let nextIndex = -1;
+    switch (e.key) {
+      case 'ArrowRight':
+        nextIndex = Math.min(boards.length - 1, currentIndex + 1);
+        break;
+      case 'ArrowLeft':
+        nextIndex = Math.max(0, currentIndex - 1);
+        break;
+      case 'ArrowDown':
+        nextIndex = Math.min(boards.length - 1, currentIndex + cols);
+        break;
+      case 'ArrowUp':
+        nextIndex = Math.max(0, currentIndex - cols);
+        break;
+      default:
+        return;
+    }
+    if (nextIndex >= 0 && nextIndex !== currentIndex) {
+      e.preventDefault();
+      const grid = cell?.parentElement;
+      const target = grid?.children.item(nextIndex) as HTMLElement | null;
+      target?.focus();
+    }
+  };
+
   return (
     <div className="min-h-[60svh] p-6">
       <div className="mb-2 flex items-center justify-between gap-3">
@@ -86,7 +121,13 @@ export default function KanbanIndexPage() {
           }
         />
       ) : (
-        <div className={`relative grid gap-3 ${gridCols}`} {...containerProps}>
+        <div
+          className={`relative grid gap-3 ${gridCols}`}
+          role="grid"
+          aria-label="Kanban boards"
+          onKeyDown={onKeyDown}
+          {...containerProps}
+        >
           {boards.map((b) => (
             <BoardCard
               key={b.id}
