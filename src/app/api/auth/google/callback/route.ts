@@ -1,8 +1,8 @@
 import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
 
+import { db } from '@/lib/db/client';
 import { setSession } from '@/lib/session';
-import { db, schema } from '@/lib/db/client';
 
 type GoogleTokenResponse = {
   access_token: string;

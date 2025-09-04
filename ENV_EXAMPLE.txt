@@ -8,3 +8,4 @@ GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 # For dev: http://localhost:3000
 OAUTH_REDIRECT_BASE_URL=http://localhost:3000
+ADMIN_TOKEN=dev-admin-token
