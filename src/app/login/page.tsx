@@ -1,7 +1,7 @@
 "use client";
 
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 export default function LoginPage() {
 	return (
@@ -16,16 +16,12 @@ export default function LoginPage() {
           <Button asChild className="w-full">
             <a href="/api/auth/google">Continue with Google</a>
           </Button>
-
-          <Button asChild variant="outline" className="w-full">
-            <Link href="/login/test">Use a test code</Link>
-          </Button>
         </div>
 
         <div className="mt-6 space-y-2 text-sm text-muted-foreground">
           <p>
-            TabSeed is currently in an early experimental phase with limited access. If youre interested, please apply to the{' '}
-            <a className="underline" href="/waitlist">waitlist</a> and well notify you once approved.
+            TabSeed is currently in an early experimental phase with limited access. If you're interested, please apply to the{' '}
+            <a className="underline text-primary hover:text-primary/90" href="/waitlist">waitlist</a> and we'll notify you once approved.
           </p>
           <p className="text-xs">By continuing, you agree to our Terms and Privacy Policy.</p>
         </div>
