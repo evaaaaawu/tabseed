@@ -52,6 +52,16 @@ export default function LoginPage() {
 				</div>
 				{error ? <div className="text-sm text-destructive">{error}</div> : null}
 			</form>
+			<div className="my-6 h-px bg-border" />
+			<div className="space-y-2">
+				<p className="text-sm text-muted-foreground">Or continue with</p>
+				<a
+					className="inline-flex items-center justify-center rounded-md border px-3 py-2 text-sm font-medium hover:bg-accent"
+					href="/api/auth/google"
+				>
+					Continue with Google
+				</a>
+			</div>
 		</div>
 	);
 }
