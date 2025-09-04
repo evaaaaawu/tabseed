@@ -74,3 +74,30 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 4. Without the extension installed, the app falls back to capturing only the current tab.
 
 > Files: `extensions/chrome/manifest.json`, `background.js`, `content.js`.
+
+## Auth
+
+- Routes
+  - `GET /api/auth/google` → redirect to Google OAuth
+  - `GET /api/auth/google/callback` → exchange code, validate state, check allowlist, set session
+  - `GET /api/auth/session` → return current session JSON
+  - `POST /api/auth/test-login` → test code login (early alpha)
+  - `GET /api/waitlist` (not used) / `POST /api/waitlist` → submit waitlist entry
+- Pages
+  - `/login` → main login (Google + link to waitlist and test login)
+  - `/login/test` → test-code login page (temporary)
+  - `/waitlist` → public waitlist page
+- Middleware
+  - Protects private routes and redirects unauthenticated users to `/login`
+  - Public paths include `/`, `/login`, `/login/test`, `/waitlist`, and auth/waitlist APIs
+- Env
+  - `ALLOWLIST_EMAILS=you@example.com,teammate@example.com`
+  - `GOOGLE_CLIENT_ID=...`
+  - `GOOGLE_CLIENT_SECRET=...`
+  - `OAUTH_REDIRECT_BASE_URL=http://localhost:3000`
+  - `TEST_LOGIN_CODES=dev123,dev456`
+
+Notes
+- In development, session cookies are not `Secure`; in production they are.
+- Not on allowlist → Google callback redirects to `/waitlist?status=pending`.
+- Replace or extend allowlist with DB-driven approval if needed.
