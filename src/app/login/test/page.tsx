@@ -48,7 +48,7 @@ export default function TestLoginPage() {
 
   return (
     <div className="mx-auto flex min-h-[100dvh] max-w-lg flex-col justify-center px-6 py-8 sm:py-12">
-      <div className="mb-8 text-center">
+      <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight md:text-4xl">Sign in with a test code</h1>
         <p className="mt-2 text-sm text-muted-foreground sm:text-base">
           Early alpha access using a test code.
@@ -61,7 +61,7 @@ export default function TestLoginPage() {
           )}
         >
           {TONE_ICON[NOTICE_TONE]}
-          <p className="flex-1">
+          <p className="text-xs flex-1">
             This test-code page is temporary and may be removed at any time. Do not store important
             data under a test-code account, and remember to back up regularly.
           </p>
