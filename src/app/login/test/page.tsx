@@ -48,7 +48,7 @@ export default function TestLoginPage() {
 
   return (
     <div className="mx-auto flex min-h-[100dvh] max-w-lg flex-col justify-center px-6 py-8 sm:py-12">
-      <div className="mb-8">
+      <div className="mb-8 text-center">
         <h1 className="text-3xl font-bold tracking-tight md:text-4xl">Sign in with a test code</h1>
         <p className="mt-2 text-sm text-muted-foreground sm:text-base">
           Early alpha access using a test code.
@@ -56,7 +56,7 @@ export default function TestLoginPage() {
         <div
           role="alert"
           className={cn(
-            'mt-3 flex items-start gap-2 rounded-lg border p-3 text-sm shadow-sm',
+            'mt-3 flex items-start gap-2 rounded-lg border p-3 text-sm shadow-sm text-left',
             TONE_STYLES[NOTICE_TONE],
           )}
         >
