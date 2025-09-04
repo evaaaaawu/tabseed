@@ -2,6 +2,7 @@ import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
 
 import { setSession } from '@/lib/session';
+import { db, schema } from '@/lib/db/client';
 
 type GoogleTokenResponse = {
   access_token: string;
@@ -73,8 +74,13 @@ export async function GET(req: NextRequest) {
     .map((s) => s.trim().toLowerCase())
     .filter(Boolean);
   if (!allowlist.includes(email.toLowerCase())) {
-    // Not approved yet → send to waitlist page (to be implemented)
-    return Response.redirect('/waitlist?status=pending');
+    // Check waitlist DB for approved status
+    const entry = await db.query.waitlistEntries.findFirst({
+      where: (t, { eq }) => eq(t.email, email),
+    });
+    if (!entry || entry.status !== 'approved') {
+      return Response.redirect('/pending');
+    }
   }
 
   await setSession({ userId: `google_${email}`, email, name });
