@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { postTestLogin } from '@/lib/api/auth-client';
 
@@ -31,59 +32,67 @@ export default function TestLoginPage() {
 	};
 
 	return (
-		<div className="mx-auto flex min-h-[100dvh] max-w-lg flex-col justify-center px-6 py-8 sm:py-12">
-			<div className="mb-8 text-center">
-				<h1 className="text-3xl font-bold tracking-tight md:text-4xl">Sign in with a test code</h1>
-				<p className="mt-2 text-sm text-muted-foreground sm:text-base">
-					Early alpha access using a one-time test code.
-				</p>
-			</div>
+    <div className="mx-auto flex min-h-[100dvh] max-w-lg flex-col justify-center px-6 py-8 sm:py-12">
+      <div className="mb-8 text-center">
+        <h1 className="text-3xl font-bold tracking-tight md:text-4xl">Sign in with a test code</h1>
+        <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+          Early alpha access using a test code.
+        </p>
+        <div className="mt-3 inline-flex flex-wrap items-center gap-2">
+          <Badge tone="warning" variant="soft">Temporary</Badge>
+          <Badge tone="info" variant="soft">Alpha</Badge>
+        </div>
+        <div
+          role="alert"
+          className="mt-3 rounded-lg border border-warning/40 bg-warning/10 p-3 text-sm text-warning-foreground"
+        >
+          This test-code page is temporary and may be removed at any time. Do not store important
+          data under a test-code account, and remember to back up regularly.
+        </div>
+      </div>
 
-			<div className="rounded-xl border bg-card p-5 shadow-sm sm:p-6">
-				<form onSubmit={handleSubmit} className="space-y-3">
-					<label htmlFor="test-code" className="block text-sm font-medium">
-						Test code
-					</label>
-					<Input
-						id="test-code"
-						placeholder="Enter test code"
-						value={code}
-						onChange={(e) => setCode(e.target.value)}
-						autoFocus
-						required
-						aria-invalid={Boolean(error) || undefined}
-						aria-describedby={error ? 'test-code-error' : 'test-code-hint'}
-					/>
-					<p id="test-code-hint" className="text-xs text-muted-foreground">
-						Use the one-time code you received from onboarding.
-					</p>
-					<Button className="w-full" type="submit" disabled={isLoading || !code.trim()}>
-						{isLoading ? "Logging in..." : "Continue"}
-					</Button>
-					{error ? (
-						<div id="test-code-error" role="alert" className="text-sm text-destructive">
-							{error}
-						</div>
-					) : null}
-				</form>
+      <div className="rounded-xl border bg-card p-5 shadow-sm sm:p-6">
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <label htmlFor="test-code" className="block text-sm font-medium">
+            Test code
+          </label>
+          <Input
+            id="test-code"
+            placeholder="Enter test code"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            autoFocus
+            required
+            aria-invalid={Boolean(error) || undefined}
+            aria-describedby={error ? 'test-code-error' : 'test-code-hint'}
+          />
+          <p id="test-code-hint" className="text-xs text-muted-foreground">
+            Use the code you received from TabSeed.
+          </p>
+          <Button className="w-full" type="submit" disabled={isLoading || !code.trim()}>
+            {isLoading ? 'Logging in...' : 'Continue'}
+          </Button>
+          {error ? (
+            <div id="test-code-error" role="alert" className="text-sm text-destructive">
+              {error}
+            </div>
+          ) : null}
+        </form>
 
-				<div className="mt-5 space-y-2 text-sm text-muted-foreground sm:mt-6">
-					<p>
-						Prefer Google? Go back to the{' '}
-						<Link className="text-primary underline hover:text-primary/90" href="/login">
-							main login
-						</Link>
-						.
-					</p>
-					<p className="text-xs">
-						No code yet? Join the{' '}
-						<Link className="text-primary underline hover:text-primary/90" href="/waitlist">
-							waitlist
-						</Link>
-						.
-					</p>
-				</div>
-			</div>
-		</div>
-	);
+        <div className="mt-5 space-y-2 text-sm text-muted-foreground sm:mt-6">
+          <p>
+            Want to join the{' '}
+            <Link className="text-primary underline hover:text-primary/90" href="/waitlist">
+              waitlist
+            </Link>
+            ? Or go back to the{' '}
+            <Link className="text-primary underline hover:text-primary/90" href="/login">
+              main login
+            </Link>
+            .
+          </p>
+        </div>
+      </div>
+    </div>
+  );
 }
