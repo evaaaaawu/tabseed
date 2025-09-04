@@ -1,3 +1,4 @@
+import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
 
 import { setSession } from '@/lib/session';
@@ -21,7 +22,14 @@ type GoogleIdToken = {
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const code = url.searchParams.get('code');
+  const state = url.searchParams.get('state');
   if (!code) return new Response('Missing code', { status: 400 });
+  const cookieStore = await cookies();
+  const cookieState = cookieStore.get('ts_oauth_state')?.value;
+  if (!state || !cookieState || state !== cookieState) {
+    return new Response('Invalid OAuth state', { status: 400 });
+  }
+  cookieStore.delete('ts_oauth_state');
 
   const clientId = process.env.GOOGLE_CLIENT_ID;
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
@@ -72,5 +80,3 @@ export async function GET(req: NextRequest) {
   await setSession({ userId: `google_${email}`, email, name });
   return Response.redirect('/inbox');
 }
-
-
