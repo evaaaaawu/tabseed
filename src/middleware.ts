@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { bindRequestId } from '@/lib/observability/logger';
 
 const PUBLIC_PATHS = [
   '/',
@@ -19,34 +20,31 @@ function isPublicPath(pathname: string): boolean {
 }
 
 export function middleware(req: NextRequest) {
+  const requestId = bindRequestId(req.headers);
   const { pathname } = req.nextUrl;
+
+  // Allow public paths
   if (isPublicPath(pathname)) {
-    return NextResponse.next();
+    const res = NextResponse.next();
+    res.headers.set('TS-Request-Id', requestId);
+    return res;
   }
+
+  // Auth guard for private paths
   const cookie = req.cookies.get('ts_session')?.value;
   if (!cookie) {
     const loginUrl = new URL('/login', req.url);
     loginUrl.searchParams.set('from', pathname);
-    return NextResponse.redirect(loginUrl);
+    const res = NextResponse.redirect(loginUrl);
+    res.headers.set('TS-Request-Id', requestId);
+    return res;
   }
-  return NextResponse.next();
-}
 
-export const config = {
-  matcher: ['/((?!_next/static|_next/image|images|public).*)'],
-};
-
-import { NextRequest, NextResponse } from 'next/server';
-
-import { bindRequestId } from '@/lib/observability/logger';
-
-export function middleware(req: NextRequest) {
-  const requestId = bindRequestId(req.headers);
   const res = NextResponse.next();
   res.headers.set('TS-Request-Id', requestId);
   return res;
 }
 
 export const config = {
-  matcher: ['/((?!_next|static|favicon.ico).*)'],
+  matcher: ['/((?!_next/static|_next/image|images|public|favicon.ico).*)'],
 };
