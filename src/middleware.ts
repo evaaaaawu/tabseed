@@ -8,7 +8,6 @@ const PUBLIC_PATHS = [
   '/waitlist',
   '/waitlist/need-join',
   '/waitlist/pending',
-  '/pending',
   '/admin/waitlist',
   '/api/auth/test-login',
   '/api/auth/google',
