@@ -9,6 +9,8 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/toast';
 import { Heading, Text } from '@/components/ui/typography';
+import { BoardCard } from '@/components/boards/board-card';
+import { useGridMultiSelect } from '@/hooks/use-grid-multi-select';
 import { useBoardsCount, useBoardsNewest } from '@/lib/idb/boards-hooks';
 import { createBoardDraft, renameBoard } from '@/lib/idb/boards-repo';
 
@@ -45,6 +47,7 @@ export default function KanbanIndexPage() {
   };
 
   const gridCols = useMemo(() => 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4', []);
+  const { selectedIds, handleCardSelect, containerProps, dragRect } = useGridMultiSelect(boards);
 
   return (
     <div className="min-h-[60svh] p-6">
@@ -83,12 +86,15 @@ export default function KanbanIndexPage() {
           }
         />
       ) : (
-        <div className={`grid gap-3 ${gridCols}`}>
+        <div className={`relative grid gap-3 ${gridCols}`} {...containerProps}>
           {boards.map((b) => (
-            <div
+            <BoardCard
               key={b.id}
-              className="group cursor-default rounded-md border p-3 transition-colors hover:bg-accent/40"
-              onDoubleClick={() => router.push(`/kanban/${b.id}`)}
+              id={b.id}
+              name={b.name}
+              selected={selectedIds.has(b.id)}
+              onSelect={handleCardSelect}
+              onOpen={(id) => router.push(`/kanban/${id}`)}
             >
               {editingId === b.id ? (
                 <form
@@ -99,6 +105,9 @@ export default function KanbanIndexPage() {
                     const value = String(data.get('name') ?? '');
                     void handleCommitName(b.id, value);
                   }}
+                  // 防止在輸入時觸發父層選取
+                  onClick={(e) => e.stopPropagation()}
+                  onDoubleClick={(e) => e.stopPropagation()}
                 >
                   <Input
                     ref={inputRef}
@@ -106,23 +115,28 @@ export default function KanbanIndexPage() {
                     defaultValue={b.name}
                     placeholder="Untitled"
                     onBlur={(e) => void handleCommitName(b.id, e.currentTarget.value)}
+                    onPointerDown={(e) => e.stopPropagation()}
                   />
                 </form>
               ) : (
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <div className="line-clamp-2 text-base font-medium">{b.name}</div>
-                    <div className="mt-1 text-xs text-muted-foreground">
-                      {new Date(b.createdAt).toLocaleString()}
-                    </div>
+                    <div className="mt-1 text-xs text-muted-foreground">{new Date(b.createdAt).toLocaleString()}</div>
                   </div>
-                  <Button variant="ghost" size="sm" onClick={() => setEditingId(b.id)}>
+                  <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); setEditingId(b.id); }}>
                     Rename
                   </Button>
                 </div>
               )}
-            </div>
+            </BoardCard>
           ))}
+          {dragRect ? (
+            <div
+              className="pointer-events-none absolute z-10 border-2 border-success/70 bg-success/10"
+              style={{ left: dragRect.left, top: dragRect.top, width: dragRect.width, height: dragRect.height }}
+            />
+          ) : null}
         </div>
       )}
     </div>

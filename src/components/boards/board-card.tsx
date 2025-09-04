@@ -60,5 +60,3 @@ export function BoardCard({ id, name, color, selected, onSelect, onOpen, childre
     </div>
   );
 }
-
-
