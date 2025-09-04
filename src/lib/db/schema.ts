@@ -28,3 +28,18 @@ export const idempotencyRecords = pgTable(
     expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(), // TTL for cleanup
   },
 );
+
+export const waitlistEntries = pgTable(
+  'waitlist_entries',
+  {
+    id: text('id').primaryKey(),
+    email: text('email').notNull(),
+    name: text('name'),
+    status: text('status').notNull().default('pending'), // pending | approved | rejected
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => ({
+    uniqEmail: uniqueIndex('uniq_waitlist_email').on(t.email),
+  }),
+);

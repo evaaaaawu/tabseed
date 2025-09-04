@@ -61,6 +61,10 @@ export default function LoginPage() {
 				>
 					Continue with Google
 				</a>
+				<div className="text-sm">
+					Don\'t have access yet?{' '}
+					<a className="underline" href="/waitlist">Join the waitlist</a>.
+				</div>
 			</div>
 		</div>
 	);
