@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 
-type Entry = { id: string; email: string; name?: string | null; status: string };
+type Entry = { id: string; email: string; name?: string | null; reason?: string | null; status: string };
 
 export default function AdminWaitlistPage() {
 	const [token, setToken] = useState<string | null>(null);
@@ -70,6 +70,9 @@ export default function AdminWaitlistPage() {
 						<div>
 							<div className="font-medium">{it.email}</div>
 							<div className="text-sm text-muted-foreground">{it.name ?? '—'}</div>
+							{it.reason ? (
+								<div className="mt-1 text-xs text-muted-foreground">Reason: {it.reason}</div>
+							) : null}
 						</div>
 						<div className="flex items-center gap-2">
 							<span className="text-sm">{it.status}</span>
