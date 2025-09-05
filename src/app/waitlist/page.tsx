@@ -41,9 +41,9 @@ export default function WaitlistPage() {
       if (res.ok) {
         addToast({
           variant: 'success',
-          title: 'Joined the waitlist',
-          description: "Thanks for joining! We'll notify you once you're approved.",
-          durationMs: 5000,
+          title: "You're on the list!",
+          description: "🥰Thanks for joining! We'll notify you once you're approved.",
+          durationMs: 10000,
         });
         setMessage(null);
         setEmail('');
