@@ -20,11 +20,15 @@ export default function WaitlistPage() {
   const [isGmail, setIsGmail] = useState<boolean>(true);
   const [reason, setReason] = useState('');
   const isReasonValid = reason.trim().length >= 5 && reason.trim().length <= 1000;
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [reasonError, setReasonError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage(null);
     setError(null);
+    setEmailError(null);
+    setReasonError(null);
     setIsLoading(true);
     try {
       const res = await fetch('/api/waitlist', {
@@ -55,7 +59,16 @@ export default function WaitlistPage() {
         const text = await res.text();
         let msg = `Submit failed: ${res.status} ${text}`;
         try {
-          const json = JSON.parse(text) as unknown as { error?: { message?: string; requestId?: string } };
+          const json = JSON.parse(text) as unknown as {
+            error?: { code?: string; message?: string; requestId?: string; details?: any };
+          };
+          if (json?.error?.code === 'validation_failed' && json.error.details) {
+            const fieldErrors = json.error.details.fieldErrors ?? {};
+            const emailErrArr = fieldErrors.email as string[] | undefined;
+            const reasonErrArr = fieldErrors.reason as string[] | undefined;
+            if (emailErrArr?.length) setEmailError(emailErrArr[0]);
+            if (reasonErrArr?.length) setReasonError(reasonErrArr[0]);
+          }
           if (json?.error?.message) {
             msg = `${json.error.message}${json.error.requestId ? ` (req: ${json.error.requestId})` : ''}`;
           }
@@ -97,6 +110,7 @@ export default function WaitlistPage() {
             aria-invalid={Boolean(error) || !isGmail || undefined}
             aria-busy={isLoading || undefined}
           />
+          {emailError ? <div className="text-xs text-destructive">{emailError}</div> : null}
           <p className="text-xs text-muted-foreground">
             TabSeed is in an early experimental phase and currently only accepts Google sign-in via
             Gmail. Sorry for the inconvenience.
@@ -115,6 +129,7 @@ export default function WaitlistPage() {
               aria-busy={isLoading || undefined}
             />
             <p className="text-xs text-muted-foreground">5–1000 characters.</p>
+            {reasonError ? <div className="text-xs text-destructive">{reasonError}</div> : null}
           </div>
           <Button
             className="w-full"
