@@ -51,7 +51,9 @@ export default function WaitlistPage() {
     <div className="mx-auto flex min-h-[100dvh] max-w-lg flex-col justify-center px-6 py-8 sm:py-12">
       <div className="mb-8 text-center">
         <h1 className="text-3xl font-bold tracking-tight md:text-4xl">Join the TabSeed waitlist</h1>
-        <p className="mt-2 text-sm text-muted-foreground sm:text-base">Get notified when you are approved.</p>
+        <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+          Get notified when you are approved.
+        </p>
       </div>
 
       <div className="rounded-xl border bg-card p-5 shadow-sm sm:p-6">
@@ -76,11 +78,12 @@ export default function WaitlistPage() {
             aria-busy={isLoading || undefined}
           />
           <p className="text-xs text-muted-foreground">
-            TabSeed is in an early experimental phase and currently only accepts Google sign-in via Gmail. Sorry for the inconvenience.
+            TabSeed is in an early experimental phase and currently only accepts Google sign-in via
+            Gmail. Sorry for the inconvenience.
           </p>
           <div className="space-y-1">
             <label htmlFor="waitlist-reason" className="block text-sm font-medium">
-              Why do you want to use TabSeed?
+              What makes you want to try tabseed? Is there any problem you hope tabseed can help you with?
             </label>
             <textarea
               id="waitlist-reason"
