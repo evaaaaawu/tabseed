@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server';
+import { ulid } from 'ulid';
 import { z } from 'zod';
 
 import { db, schema } from '@/lib/db/client';
@@ -14,32 +15,59 @@ const Body = z.object({
 });
 
 export async function POST(req: NextRequest) {
+  const requestId = `req_${ulid()}`;
+  const jsonResponse = (body: unknown, status = 200) =>
+    new Response(JSON.stringify(body), {
+      status,
+      headers: {
+        'Content-Type': 'application/json',
+        'TS-Request-Id': requestId,
+      },
+    });
+
   let json: unknown;
   try {
     json = await req.json();
   } catch {
-    return new Response(
-      JSON.stringify({ error: { code: 'validation_failed', message: 'invalid JSON' } }),
-      { status: 400 },
+    return jsonResponse(
+      { error: { code: 'validation_failed', message: 'invalid JSON', requestId, retryable: false } },
+      400,
     );
   }
+
   const parsed = Body.safeParse(json);
   if (!parsed.success) {
-    return new Response(
-      JSON.stringify({ error: { code: 'validation_failed', message: 'invalid body' } }),
-      { status: 400 },
+    return jsonResponse(
+      {
+        error: {
+          code: 'validation_failed',
+          message: 'invalid body',
+          details: parsed.error.flatten(),
+          requestId,
+          retryable: false,
+        },
+      },
+      400,
     );
   }
+
   const { email, name, reason } = parsed.data;
   const id = `wl_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
   try {
     await db.insert(schema.waitlistEntries).values({ id, email, name, reason, status: 'pending' });
   } catch (err) {
-    // Unique key or others
-    return new Response(
-      JSON.stringify({ error: { code: 'conflict', message: 'already submitted' } }),
-      { status: 409 },
+    return jsonResponse(
+      {
+        error: {
+          code: 'conflict',
+          message: 'Email already on the waitlist',
+          details: { field: 'email' },
+          requestId,
+          retryable: false,
+        },
+      },
+      409,
     );
   }
-  return new Response(JSON.stringify({ ok: true }));
+  return jsonResponse({ ok: true });
 }
