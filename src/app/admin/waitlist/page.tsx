@@ -55,7 +55,7 @@ export default function AdminWaitlistPage() {
 		return (
 			<div className="mx-auto max-w-md p-6">
 				<h1 className="mb-4 text-2xl font-bold">Admin Token</h1>
-				<p className="mb-2 text-sm text-muted-foreground">Set your admin token to continue.</p>
+				<p className="mb-2 text-sm text-muted-foreground">Please enter admin token to continue.</p>
 				<input
 					className="mb-2 w-full rounded border p-2"
 					placeholder="Enter admin token"
