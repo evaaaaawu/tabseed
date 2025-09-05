@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from 'react';
+import { X } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Surface } from '@/components/ui/surface';
 import { useToast } from '@/components/ui/toast';
 import { Heading, Text } from '@/components/ui/typography';
-import { X } from 'lucide-react';
 
 type Entry = {
   id: string;

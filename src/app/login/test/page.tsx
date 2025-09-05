@@ -1,5 +1,6 @@
 "use client";
 
+import { AlertTriangle, Info } from 'lucide-react';
 import Link from 'next/link';
 import { useState, type ReactElement } from 'react';
 
@@ -7,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { HttpError, postTestLogin } from '@/lib/api/auth-client';
 import { cn } from '@/lib/utils';
-import { AlertTriangle, Info } from 'lucide-react';
 
 export default function TestLoginPage() {
   const [code, setCode] = useState('');
@@ -60,17 +60,21 @@ export default function TestLoginPage() {
       if (status === 429) return 'Too many attempts. Please wait a moment and try again.';
       if (status >= 500) return 'Server error. Please try again later.';
       // Fallback to server-provided message if present
-      const body = err.body as any;
-      if (body && typeof body === 'object' && typeof body.error?.message === 'string') {
-        return body.error.message as string;
-      }
+      const body = err.body as unknown;
+      const hasErrorMessage = (input: unknown): input is { error: { message: string } } => {
+        if (typeof input !== 'object' || input === null) return false;
+        const errorProp = (input as { error?: unknown }).error;
+        if (typeof errorProp !== 'object' || errorProp === null) return false;
+        return typeof (errorProp as { message?: unknown }).message === 'string';
+      };
+      if (hasErrorMessage(body)) return body.error.message;
       return `Login failed (${status}). Please try again.`;
     }
     return (err as Error).message || 'Unexpected error. Please try again.';
   }
 
   return (
-    <div className="mx-auto flex min-h-[100dvh] max-w-lg flex-col justify-center px-6 py-8 sm:py-12">
+    <div className="mx-auto flex min-h-dvh max-w-lg flex-col justify-center px-6 py-8 sm:py-12">
       <div className="mb-8 text-center">
         <h1 className="text-3xl font-bold tracking-tight md:text-4xl">Sign in with a test code</h1>
         <p className="mt-2 text-sm text-muted-foreground sm:text-base">

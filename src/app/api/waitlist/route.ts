@@ -1,9 +1,9 @@
+import { eq } from 'drizzle-orm';
 import { NextRequest } from 'next/server';
 import { ulid } from 'ulid';
 import { z } from 'zod';
 
 import { db, schema } from '@/lib/db/client';
-import { eq } from 'drizzle-orm';
 
 const Body = z.object({
   email: z
@@ -31,10 +31,8 @@ export async function POST(req: NextRequest) {
   const now = Date.now();
   const WINDOW_MS = 60_000;
   const LIMIT = 100;
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const rate = (global as unknown as { __ts_waitlist_rate__?: Map<string, { c: number; t: number }> }).__ts_waitlist_rate__ ||
     new Map<string, { c: number; t: number }>();
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   (global as unknown as { __ts_waitlist_rate__?: Map<string, { c: number; t: number }> }).__ts_waitlist_rate__ = rate;
   const rec = rate.get(ip);
   if (!rec || now - rec.t > WINDOW_MS) {
