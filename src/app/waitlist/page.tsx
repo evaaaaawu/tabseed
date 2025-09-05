@@ -151,7 +151,7 @@ export default function WaitlistPage() {
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               className="min-h-24 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              placeholder="Tell us about your workflow, problems you\'re facing, or what you\'d like TabSeed to help with."
+              placeholder="Tell us about your workflow, problems you're facing, or what you'd like TabSeed to help with."
               aria-invalid={!isReasonValid || undefined}
               aria-busy={isLoading || undefined}
             />
