@@ -172,7 +172,6 @@ export default function AdminWaitlistPage() {
           <thead className="bg-muted/40">
             <tr>
               <th className="px-3 py-2">Email</th>
-              <th className="px-3 py-2">Name</th>
               <th className="px-3 py-2">Reason</th>
               <th className="px-3 py-2">Status</th>
               <th className="px-3 py-2 text-right">Actions</th>
@@ -182,7 +181,6 @@ export default function AdminWaitlistPage() {
             {filtered.map((it) => (
               <tr key={it.id} className="border-t">
                 <td className="px-3 py-2 font-medium">{it.email}</td>
-                <td className="px-3 py-2 text-muted-foreground">{it.name ?? '—'}</td>
                 <td
                   className="max-w-[24rem] truncate px-3 py-2 text-muted-foreground"
                   title={it.reason ?? ''}
