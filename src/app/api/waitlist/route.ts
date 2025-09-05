@@ -3,6 +3,7 @@ import { ulid } from 'ulid';
 import { z } from 'zod';
 
 import { db, schema } from '@/lib/db/client';
+import { eq } from 'drizzle-orm';
 
 const Body = z.object({
   email: z
@@ -24,6 +25,36 @@ export async function POST(req: NextRequest) {
         'TS-Request-Id': requestId,
       },
     });
+
+  // Naive in-memory rate limit per IP (window 60s, 100 req)
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+  const now = Date.now();
+  const WINDOW_MS = 60_000;
+  const LIMIT = 100;
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  const rate = (global as unknown as { __ts_waitlist_rate__?: Map<string, { c: number; t: number }> }).__ts_waitlist_rate__ ||
+    new Map<string, { c: number; t: number }>();
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  (global as unknown as { __ts_waitlist_rate__?: Map<string, { c: number; t: number }> }).__ts_waitlist_rate__ = rate;
+  const rec = rate.get(ip);
+  if (!rec || now - rec.t > WINDOW_MS) {
+    rate.set(ip, { c: 1, t: now });
+  } else {
+    if (rec.c >= LIMIT) {
+      return new Response(
+        JSON.stringify({
+          error: {
+            code: 'rate_limited',
+            message: 'Too many requests. Please try again later.',
+            requestId,
+            retryable: true,
+          },
+        }),
+        { status: 429, headers: { 'Retry-After': '60', 'TS-Request-Id': requestId, 'Content-Type': 'application/json' } },
+      );
+    }
+    rec.c += 1;
+  }
 
   let json: unknown;
   try {
@@ -52,10 +83,28 @@ export async function POST(req: NextRequest) {
   }
 
   const { email, name, reason } = parsed.data;
-  const id = `wl_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-  try {
-    await db.insert(schema.waitlistEntries).values({ id, email, name, reason, status: 'pending' });
-  } catch (err) {
+  // Check existing entry to split responses
+  const existed = await db
+    .select({ id: schema.waitlistEntries.id, status: schema.waitlistEntries.status })
+    .from(schema.waitlistEntries)
+    .where(eq(schema.waitlistEntries.email, email))
+    .limit(1);
+  if (existed.length > 0) {
+    const st = existed[0].status;
+    if (st === 'approved') {
+      return jsonResponse(
+        {
+          error: {
+            code: 'already_approved',
+            message: 'This email has been approved. You can sign in with Google now.',
+            details: { field: 'email' },
+            requestId,
+            retryable: false,
+          },
+        },
+        409,
+      );
+    }
     return jsonResponse(
       {
         error: {
@@ -69,5 +118,8 @@ export async function POST(req: NextRequest) {
       409,
     );
   }
+
+  const id = `wl_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  await db.insert(schema.waitlistEntries).values({ id, email, name, reason, status: 'pending' });
   return jsonResponse({ ok: true });
 }
