@@ -1,52 +1,36 @@
 "use client";
 
-import Link from 'next/link';
-import { useState } from 'react';
-
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { postTestLogin } from '@/lib/api/auth-client';
 
 export default function LoginPage() {
-	const [code, setCode] = useState("");
-	const [isLoading, setIsLoading] = useState(false);
-	const [error, setError] = useState<string | null>(null);
+  return (
+    <div className="mx-auto flex min-h-dvh max-w-lg flex-col justify-center px-6 py-8 sm:py-12">
+      <div className="mb-8 text-center">
+        <h1 className="text-3xl font-bold tracking-tight md:text-4xl">Sign in to TabSeed</h1>
+        <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+          Capture tabs effortlessly. Organize with zero friction.
+        </p>
+      </div>
 
-	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault();
-		setError(null);
-		setIsLoading(true);
-		try {
-			await postTestLogin({ code });
-			window.location.href = "/inbox";
-		} catch (err) {
-			setError((err as Error).message);
-		} finally {
-			setIsLoading(false);
-		}
-	};
+      <div className="rounded-xl border bg-card p-5 shadow-sm sm:p-6">
+        <div className="space-y-3">
+          <Button asChild className="w-full">
+            <a href="/api/auth/google">Continue with Google</a>
+          </Button>
+        </div>
 
-	return (
-		<div className="mx-auto max-w-md p-6">
-			<h1 className="mb-4 text-2xl font-bold">Login</h1>
-			<p className="mb-4 text-sm text-muted-foreground">Enter test code to log in to TabSeed.</p>
-			<form onSubmit={handleSubmit} className="space-y-3">
-				<Input
-					placeholder="Enter test code"
-					value={code}
-					onChange={(e) => setCode(e.target.value)}
-					required
-				/>
-				<div className="flex items-center gap-2">
-					<Button type="submit" disabled={isLoading}>
-						{isLoading ? "Logging in..." : "Login"}
-					</Button>
-					<Link className="text-sm text-primary underline" href="/">
-						Back to Home
-					</Link>
-				</div>
-				{error ? <div className="text-sm text-destructive">{error}</div> : null}
-			</form>
-		</div>
-	);
+        <div className="mt-5 space-y-2 text-sm text-muted-foreground sm:mt-6">
+          <p className="font-semibold text-foreground">
+            TabSeed is currently in an early experimental phase with limited access. If you&apos;re
+            interested, please apply to the{' '}
+            <a className="text-primary underline hover:text-primary/90" href="/waitlist">
+              waitlist
+            </a>{' '}
+            and we&apos;ll notify you once approved.
+          </p>
+          <p className="text-xs">By continuing, you agree to our Terms and Privacy Policy.</p>
+        </div>
+      </div>
+    </div>
+  );
 }

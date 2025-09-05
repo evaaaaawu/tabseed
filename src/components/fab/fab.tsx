@@ -17,6 +17,7 @@ export const Fab = forwardRef<HTMLButtonElement, FabProps>(function Fab(
       <TooltipTrigger asChild>
         <button
           ref={ref}
+          aria-label={label}
           className={cn(
             'duration-[var(--dur-2)] fixed bottom-8 right-8 inline-flex items-center justify-center rounded-full bg-primary p-4 text-primary-foreground shadow-elev-3 transition-[transform,shadow] ease-emphasized hover:scale-105 hover:bg-primary/90 hover:shadow-elev-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
             className,

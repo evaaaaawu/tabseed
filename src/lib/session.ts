@@ -1,5 +1,4 @@
 import { cookies } from 'next/headers';
-import type { NextRequest } from 'next/server';
 
 export interface Session {
   readonly userId: string;
@@ -9,7 +8,7 @@ export interface Session {
 
 const SESSION_COOKIE = 'ts_session';
 
-export async function getSessionOrNull(_req?: NextRequest): Promise<Session | null> {
+export async function getSessionOrNull(): Promise<Session | null> {
   const cookieStore = await cookies();
   const raw = cookieStore.get(SESSION_COOKIE)?.value;
   if (!raw) return null;
@@ -28,7 +27,8 @@ export async function setSession(session: Session): Promise<void> {
     httpOnly: true,
     sameSite: 'lax',
     path: '/',
-    secure: true,
+    // Only set Secure in production; localhost over HTTP won't accept Secure cookies
+    secure: process.env.NODE_ENV === 'production',
   });
 }
 

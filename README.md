@@ -74,3 +74,37 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 4. Without the extension installed, the app falls back to capturing only the current tab.
 
 > Files: `extensions/chrome/manifest.json`, `background.js`, `content.js`.
+
+## Auth
+
+- Routes
+  - `GET /api/auth/google` → redirect to Google OAuth
+  - `GET /api/auth/google/callback` → exchange code, validate state, check allowlist, set session
+  - `GET /api/auth/session` → return current session JSON
+  - `POST /api/auth/test-login` → test code login (early alpha)
+  - `POST /api/waitlist` → submit waitlist entry
+  - `GET /api/admin/waitlist?token=...` → list waitlist entries (admin)
+  - `PATCH /api/admin/waitlist?token=...` → approve/reject entry (admin)
+- Pages
+  - `/login` → main login (Google + link to waitlist and test login)
+  - `/login/test` → test-code login page (temporary)
+  - `/waitlist` → public waitlist page（支援 `?email=` 預填）
+  - `/waitlist/need-join` → 尚未加入 waitlist 時的引導頁（帶 email 參數）
+  - `/waitlist/pending` → 已在 waitlist 但尚未核准的提示頁（帶 email 參數）
+- Middleware
+  - Protects private routes and redirects unauthenticated users to `/login`
+  - Public paths include `/`, `/login`, `/login/test`, `/waitlist`, `/waitlist/need-join`, `/waitlist/pending`, and auth/waitlist/admin APIs
+- Env
+  - `ALLOWLIST_EMAILS=you@example.com,teammate@example.com`
+  - `GOOGLE_CLIENT_ID=...`
+  - `GOOGLE_CLIENT_SECRET=...`
+  - `OAUTH_REDIRECT_BASE_URL=http://localhost:3000`
+  - `TEST_LOGIN_CODES=dev123,dev456`
+  - `ADMIN_TOKEN=dev-admin-token`
+
+Notes
+- In development, session cookies are not `Secure`; in production they are.
+- Not on allowlist → Google callback 會檢查 DB：
+  - 無 waitlist 記錄 → redirect `/waitlist/need-join?email=...`
+  - 已存在但未核准 → redirect `/waitlist/pending?email=...`
+- Replace or extend allowlist with DB-driven approval if needed.
