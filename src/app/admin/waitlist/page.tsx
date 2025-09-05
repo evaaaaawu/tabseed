@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Surface } from '@/components/ui/surface';
 import { Heading, Text } from '@/components/ui/typography';
+import { useToast } from '@/components/ui/toast';
 import { X } from 'lucide-react';
 
 type Entry = {
@@ -25,6 +26,8 @@ export default function AdminWaitlistPage() {
   const [sortBy, setSortBy] = useState<'createdAt' | 'email' | 'status'>('createdAt');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
   const [viewing, setViewing] = useState<Entry | null>(null);
+  const { addToast } = useToast();
+  const [tokenEditing, setTokenEditing] = useState<string>('');
 
   // Focus trap and ESC to close for the dialog
   const dialogRef = useRef<HTMLDivElement | null>(null);
@@ -73,6 +76,7 @@ export default function AdminWaitlistPage() {
   useEffect(() => {
     const t = localStorage.getItem('ts_admin_token');
     setToken(t);
+    setTokenEditing(t ?? '');
   }, []);
 
   useEffect(() => {
@@ -94,10 +98,18 @@ export default function AdminWaitlistPage() {
       body: JSON.stringify({ email, status }),
     });
     if (!res.ok) {
-      setError(await res.text());
+      const msg = await res.text();
+      setError(msg);
+      addToast({ variant: 'error', title: 'Action failed', description: msg, durationMs: 5000 });
       return;
     }
     setItems((prev) => prev.map((it) => (it.email === email ? { ...it, status } : it)));
+    addToast({
+      variant: 'success',
+      title: status === 'approved' ? 'Approved' : 'Rejected',
+      description: email,
+      durationMs: 3000,
+    });
   };
 
   if (!token) {
@@ -142,6 +154,37 @@ export default function AdminWaitlistPage() {
   return (
     <div className="mx-auto max-w-2xl p-6">
       <h1 className="mb-4 text-2xl font-bold">Waitlist Admin</h1>
+      {/* Token bar */}
+      <div className="mb-3 flex items-center gap-2">
+        <input
+          className="w-full rounded border p-2 text-sm"
+          placeholder="Admin token"
+          type="password"
+          value={tokenEditing}
+          onChange={(e) => setTokenEditing(e.target.value)}
+        />
+        <Button
+          variant="secondary"
+          onClick={() => {
+            localStorage.setItem('ts_admin_token', tokenEditing);
+            setToken(tokenEditing);
+            addToast({ variant: 'success', title: 'Token updated', durationMs: 2000 });
+          }}
+        >
+          Update
+        </Button>
+        <Button
+          variant="ghost"
+          onClick={() => {
+            localStorage.removeItem('ts_admin_token');
+            setToken(null);
+            setTokenEditing('');
+            addToast({ variant: 'warning', title: 'Token cleared', durationMs: 2000 });
+          }}
+        >
+          Clear
+        </Button>
+      </div>
       {error ? <div className="mb-2 text-sm text-destructive">{error}</div> : null}
       <div className="mb-3 flex items-center gap-2">
         <input
@@ -167,8 +210,8 @@ export default function AdminWaitlistPage() {
           <option value="status:desc">Status Z→A</option>
         </select>
       </div>
-      <div className="overflow-hidden rounded-xl border">
-        <table className="w-full text-left text-sm">
+      <div className="overflow-x-auto rounded-xl border">
+        <table className="min-w-[720px] w-full text-left text-sm">
           <thead className="bg-muted/40">
             <tr>
               <th className="px-3 py-2">Email</th>
@@ -241,12 +284,6 @@ export default function AdminWaitlistPage() {
                     Status
                   </Text>
                   <div>{viewing.status}</div>
-                </div>
-                <div>
-                  <Text size="xs" muted>
-                    Name
-                  </Text>
-                  <div className="text-muted-foreground">{viewing.name ?? '—'}</div>
                 </div>
               </div>
 
