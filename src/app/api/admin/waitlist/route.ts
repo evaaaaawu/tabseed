@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server';
+import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 
 import { db, schema } from '@/lib/db/client';
@@ -36,6 +37,6 @@ export async function PATCH(req: NextRequest) {
   await db
     .update(schema.waitlistEntries)
     .set({ status })
-    .where((t, { eq }) => eq(t.email, email));
+    .where(eq(schema.waitlistEntries.email, email));
   return new Response(JSON.stringify({ ok: true }));
 }

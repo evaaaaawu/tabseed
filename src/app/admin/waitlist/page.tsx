@@ -267,7 +267,7 @@ export default function AdminWaitlistPage() {
                       View
                     </Button>
                     <Button
-                      variant="secondary"
+                      variant="default"
                       onClick={() => {
                         if (!confirm(`Approve ${it.email}?`)) return;
                         update(it.email, 'approved');
@@ -276,7 +276,7 @@ export default function AdminWaitlistPage() {
                       Approve
                     </Button>
                     <Button
-                      variant="ghost"
+                      variant="destructive"
                       onClick={() => {
                         if (!confirm(`Reject ${it.email}?`)) return;
                         update(it.email, 'rejected');
