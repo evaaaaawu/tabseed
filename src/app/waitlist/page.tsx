@@ -37,23 +37,25 @@ export default function WaitlistPage() {
         body: JSON.stringify({ email, reason }),
       });
       if (res.ok) {
-        setMessage("Thanks! We'll email you after approval.");
+        setMessage(
+          "🥰Thanks for joining! You're on the waitlist—we'll notify you as soon as you're approved.",
+        );
         setEmail('');
         setReason('');
       } else if (res.status === 409) {
         const json = await res.json().catch(() => null);
         const requestId = json?.error?.requestId ? ` (req: ${json.error.requestId})` : '';
         if (json?.error?.code === 'already_approved') {
-          setError(`This email has already been approved. You can now use this email to log in to TabSeed${requestId}`);
+          setError('This email has already been approved. You can now use this email to log in to TabSeed.');
           setMessage(
             <span>
               Approved: Please go to <a className="text-primary underline" href="/login">/login</a> and use Google login.
             </span> as unknown as string,
           );
         } else if (json?.error?.code === 'conflict') {
-          setError(`This email is already on the waitlist${requestId}`);
+          setError('This email is already on the waitlist.');
         } else {
-          setError(`You're already on the waitlist${requestId}`);
+          setError('You\'re already on the waitlist.');
         }
       } else {
         const text = await res.text();
