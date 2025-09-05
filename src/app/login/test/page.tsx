@@ -28,9 +28,11 @@ export default function TestLoginPage() {
     destructive: <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />,
   } as const;
 
+  let debounceTimer: number | undefined;
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    if (isLoading) return; // prevent rapid double submit
     setIsLoading(true);
     try {
       if (!code.trim()) {
@@ -43,7 +45,9 @@ export default function TestLoginPage() {
       const message = getReadableError(err);
       setError(message);
     } finally {
-      setIsLoading(false);
+      // small debounce to avoid flicker when responses are very fast
+      window.clearTimeout(debounceTimer);
+      debounceTimer = window.setTimeout(() => setIsLoading(false), 150);
     }
   };
 
