@@ -141,6 +141,7 @@ export default function AdminWaitlistPage() {
 								<td className="px-3 py-2">{it.status}</td>
 								<td className="px-3 py-2">
 									<div className="flex items-center justify-end gap-2">
+										<Button variant="ghost" onClick={() => alert(`${it.email}\n\nReason:\n${it.reason ?? '—'}`)}>View</Button>
 										<Button variant="secondary" onClick={() => update(it.email, 'approved')}>Approve</Button>
 										<Button variant="ghost" onClick={() => update(it.email, 'rejected')}>Reject</Button>
 									</div>
