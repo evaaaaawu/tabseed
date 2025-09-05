@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { bindRequestId } from '@/lib/observability/logger';
+import { NextRequest, NextResponse } from 'next/server';
 
 const PUBLIC_PATHS = [
   '/',
