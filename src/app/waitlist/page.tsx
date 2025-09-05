@@ -71,7 +71,11 @@ export default function WaitlistPage() {
             if (emailErrArr?.length) setEmailError(emailErrArr[0]);
             if (reasonErrArr?.length) setReasonError(reasonErrArr[0]);
           }
-          if (json?.error?.message) {
+          if (res.status === 500 && json?.error?.code === 'internal_error') {
+            msg = `We couldn't save your request due to a server issue. Please try again in a moment${
+              json.error.requestId ? ` (req: ${json.error.requestId})` : ''
+            }.`;
+          } else if (json?.error?.message) {
             msg = `${json.error.message}${json.error.requestId ? ` (req: ${json.error.requestId})` : ''}`;
           }
         } catch {}
