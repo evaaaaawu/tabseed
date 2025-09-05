@@ -11,13 +11,17 @@ export interface ToastOptions {
   readonly durationMs?: number; // If undefined, persists until closed
   readonly linkHref?: string;
   readonly linkLabel?: string;
+  readonly actionLabel?: string;
+  readonly onAction?: () => void;
 }
 
-export interface Toast extends Required<Omit<ToastOptions, 'durationMs' | 'linkHref' | 'linkLabel'>> {
+export interface Toast extends Required<Omit<ToastOptions, 'durationMs' | 'linkHref' | 'linkLabel' | 'onAction' | 'actionLabel'>> {
   readonly id: string;
   readonly durationMs?: number;
   readonly linkHref?: string;
   readonly linkLabel?: string;
+  readonly actionLabel?: string;
+  readonly onAction?: () => void;
 }
 
 interface ToastContextValue {
@@ -55,6 +59,8 @@ export function ToastProvider({ children }: { readonly children: React.ReactNode
         durationMs: opts.durationMs,
         linkHref: opts.linkHref,
         linkLabel: opts.linkLabel,
+        actionLabel: opts.actionLabel,
+        onAction: opts.onAction,
       };
       setToasts((prev) => [...prev, toast]);
       if (typeof toast.durationMs === 'number' && toast.durationMs > 0) {
@@ -113,6 +119,14 @@ function Toaster({ toasts, onClose }: { readonly toasts: readonly Toast[]; reado
                 >
                   {t.linkLabel ?? 'View'}
                 </a>
+              ) : null}
+              {t.actionLabel ? (
+                <button
+                  className="rounded-md border px-2 py-1 text-xs text-foreground/80 hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 whitespace-nowrap"
+                  onClick={() => t.onAction?.()}
+                >
+                  {t.actionLabel}
+                </button>
               ) : null}
               <button
                 className="rounded-md border px-2 py-1 text-xs text-foreground/80 hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 whitespace-nowrap"

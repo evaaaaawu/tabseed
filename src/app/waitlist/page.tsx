@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useToast } from '@/components/ui/toast';
 
 export default function WaitlistPage() {
   const [email, setEmail] = useState('');
@@ -22,6 +23,7 @@ export default function WaitlistPage() {
   const isReasonValid = reason.trim().length >= 5 && reason.trim().length <= 1000;
   const [emailError, setEmailError] = useState<string | null>(null);
   const [reasonError, setReasonError] = useState<string | null>(null);
+  const { addToast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,9 +39,13 @@ export default function WaitlistPage() {
         body: JSON.stringify({ email, reason }),
       });
       if (res.ok) {
-        setMessage(
-          "🥰Thanks for joining! You're on the waitlist—we'll notify you as soon as you're approved.",
-        );
+        addToast({
+          variant: 'success',
+          title: 'Joined the waitlist',
+          description: "Thanks for joining! We'll notify you once you're approved.",
+          durationMs: 5000,
+        });
+        setMessage(null);
         setEmail('');
         setReason('');
       } else if (res.status === 409) {
@@ -57,6 +63,16 @@ export default function WaitlistPage() {
         } else {
           setError('You\'re already on the waitlist.');
         }
+      } else if (res.status === 429) {
+        const json = await res.json().catch(() => null);
+        const requestId = json?.error?.requestId ? ` (req: ${json.error.requestId})` : '';
+        setError(`Too many requests. Please wait a minute and try again${requestId}`);
+        addToast({
+          variant: 'warning',
+          title: 'Rate limited',
+          description: 'Please wait about 60 seconds before trying again.',
+          durationMs: 4000,
+        });
       } else {
         const text = await res.text();
         let msg = `Submit failed: ${res.status} ${text}`;
@@ -73,8 +89,15 @@ export default function WaitlistPage() {
           }
           if (res.status === 500 && json?.error?.code === 'internal_error') {
             msg = `We couldn't save your request due to a server issue. Please try again in a moment${
-              json.error.requestId ? ` (req: ${json.error.requestId})` : ''
+              json?.error?.requestId ? ` (req: ${json.error.requestId})` : ''
             }.`;
+            addToast({
+              variant: 'error',
+              title: 'Submission failed',
+              description: `Please try again shortly${json?.error?.requestId ? ` (req: ${json.error.requestId})` : ''}.`,
+              actionLabel: 'Copy ID',
+              onAction: () => navigator.clipboard.writeText(json?.error?.requestId ?? ''),
+            });
           } else if (json?.error?.message) {
             msg = `${json.error.message}${json.error.requestId ? ` (req: ${json.error.requestId})` : ''}`;
           }
