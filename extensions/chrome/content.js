@@ -28,9 +28,9 @@
           chrome.runtime.sendMessage({ type: 'capture-tabs', closeImported }, (response) => {
             try {
               // lastError indicates background unavailable or other runtime errors
-               
-              chrome.runtime.lastError; // access to trigger potential errors visibility in devtools
-            } catch (_) {
+              // access property to trigger potential errors visibility in devtools
+              void chrome.runtime.lastError;
+            } catch {
               // ignore
             }
             window.postMessage(

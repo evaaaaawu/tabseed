@@ -226,7 +226,7 @@ export default function KanbanBoardPage() {
 
       try {
         await movePlacement(placementId, { toColumnId: targetColumnId, beforeId });
-      } catch (e) {
+      } catch {
         addToast({ variant: 'error', title: 'Failed to move card' });
       }
     }

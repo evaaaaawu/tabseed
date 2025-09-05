@@ -50,7 +50,6 @@ export default function WaitlistPage() {
         setReason('');
       } else if (res.status === 409) {
         const json = await res.json().catch(() => null);
-        const requestId = json?.error?.requestId ? ` (req: ${json.error.requestId})` : '';
         if (json?.error?.code === 'already_approved') {
           setError('This email has already been approved. You can now use this email to log in to TabSeed.');
           setMessage(

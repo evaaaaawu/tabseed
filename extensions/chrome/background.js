@@ -24,14 +24,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             if (typeof t.id === 'number') {
               try {
                 await chrome.tabs.remove(t.id);
-              } catch (e) {
+              } catch {
                 // ignore close failures
               }
             }
           }
         }
 
-        sendResponse({ ok: true, tabs: items.map(({ id, ...rest }) => rest) });
+        sendResponse({ ok: true, tabs: items.map((t) => ({ url: t.url, title: t.title })) });
         return;
       }
       default: {

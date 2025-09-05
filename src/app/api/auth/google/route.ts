@@ -1,10 +1,9 @@
 import { cookies } from 'next/headers';
-import { NextRequest } from 'next/server';
 
 const GOOGLE_AUTH_BASE = 'https://accounts.google.com/o/oauth2/v2/auth';
 const GOOGLE_SCOPE = 'openid email profile';
 
-export async function GET(_req: NextRequest) {
+export async function GET(): Promise<Response> {
   const clientId = process.env.GOOGLE_CLIENT_ID;
   const redirectBase = process.env.OAUTH_REDIRECT_BASE_URL;
   if (!clientId || !redirectBase) {

@@ -223,7 +223,7 @@ export default function AdminWaitlistPage() {
                 </td>
                 <td className="px-3 py-2">{it.status}</td>
                 <td
-                  className="max-w-[24rem] truncate px-3 py-2 text-muted-foreground"
+                  className="max-w-96 truncate px-3 py-2 text-muted-foreground"
                   title={it.reason ?? ''}
                 >
                   {it.reason ?? '—'}

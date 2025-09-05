@@ -1,10 +1,8 @@
-import { NextRequest } from 'next/server';
-
 import { getMetrics } from '@/lib/observability/metrics';
 
 export const runtime = 'nodejs';
 
-export async function GET(_req: NextRequest): Promise<Response> {
+export async function GET(): Promise<Response> {
   const { register } = getMetrics();
   const body = await register.metrics();
   return new Response(body, {

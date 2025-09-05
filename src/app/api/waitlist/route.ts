@@ -121,7 +121,7 @@ export async function POST(req: NextRequest) {
     const id = `wl_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
     await db.insert(schema.waitlistEntries).values({ id, email, name, reason, status: 'pending' });
     return jsonResponse({ ok: true });
-  } catch (err) {
+  } catch {
     return jsonResponse(
       {
         error: {
