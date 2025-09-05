@@ -109,7 +109,7 @@ export default function WaitlistPage() {
   };
 
   return (
-    <div className="mx-auto flex min-h-[100dvh] max-w-lg flex-col justify-center px-6 py-8 sm:py-12">
+    <div className="mx-auto flex min-h-dvh max-w-lg flex-col justify-center px-6 py-8 sm:py-12">
       <div className="mb-8 text-center">
         <h1 className="text-3xl font-bold tracking-tight md:text-4xl">Join the TabSeed waitlist</h1>
         <p className="mt-2 text-sm text-muted-foreground sm:text-base">

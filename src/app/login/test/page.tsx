@@ -2,7 +2,7 @@
 
 import { AlertTriangle, Info } from 'lucide-react';
 import Link from 'next/link';
-import { useState, type ReactElement } from 'react';
+import { type ReactElement,useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

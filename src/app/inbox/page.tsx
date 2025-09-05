@@ -4,7 +4,7 @@ import { Plus } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import { ImportTargetDialog, type ImportTarget } from '@/components/fab/import-to-inbox-dialog';
+import { type ImportTarget,ImportTargetDialog } from '@/components/fab/import-to-inbox-dialog';
 import { ManualImportDialog } from '@/components/fab/manual-import-dialog';
 import { TabCard } from '@/components/tabs/tab-card';
 import { Button } from '@/components/ui/button';
@@ -16,7 +16,7 @@ import { useGridMultiSelect } from '@/hooks/use-grid-multi-select';
 import { useHydrated } from '@/hooks/use-hydrated';
 import { ApiError } from '@/lib/api/errors';
 import { importTabsAndSyncLocalWithRaw } from '@/lib/data/import-tabs';
-import { captureOpenTabs, type CapturedTab } from '@/lib/extension/bridge';
+import { type CapturedTab,captureOpenTabs } from '@/lib/extension/bridge';
 import { useInboxTabsNewest } from '@/lib/idb/hooks';
 import { ensureInboxAtEnd } from '@/lib/idb/inbox-repo';
 

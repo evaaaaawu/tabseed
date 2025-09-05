@@ -115,21 +115,21 @@ function Toaster({ toasts, onClose }: { readonly toasts: readonly Toast[]; reado
               {t.linkHref ? (
                 <a
                   href={t.linkHref}
-                  className="rounded-md border px-2 py-1 text-xs text-foreground/80 hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 whitespace-nowrap"
+                  className="whitespace-nowrap rounded-md border px-2 py-1 text-xs text-foreground/80 hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
                   {t.linkLabel ?? 'View'}
                 </a>
               ) : null}
               {t.actionLabel ? (
                 <button
-                  className="rounded-md border px-2 py-1 text-xs text-foreground/80 hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 whitespace-nowrap"
+                  className="whitespace-nowrap rounded-md border px-2 py-1 text-xs text-foreground/80 hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   onClick={() => t.onAction?.()}
                 >
                   {t.actionLabel}
                 </button>
               ) : null}
               <button
-                className="rounded-md border px-2 py-1 text-xs text-foreground/80 hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 whitespace-nowrap"
+                className="whitespace-nowrap rounded-md border px-2 py-1 text-xs text-foreground/80 hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 onClick={() => onClose(t.id)}
               >
                 Close
