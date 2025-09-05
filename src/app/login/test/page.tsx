@@ -5,7 +5,7 @@ import { useState, type ReactElement } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { postTestLogin, HttpError } from '@/lib/api/auth-client';
+import { HttpError, postTestLogin } from '@/lib/api/auth-client';
 import { cn } from '@/lib/utils';
 import { AlertTriangle, Info } from 'lucide-react';
 
@@ -55,7 +55,8 @@ export default function TestLoginPage() {
     if (err instanceof HttpError) {
       const status = err.status;
       if (status === 400) return 'Invalid or expired test code. Please check and try again.';
-      if (status === 401) return 'This code is not authorized yet. Please join the waitlist or contact us.';
+      if (status === 401)
+        return 'This code is not authorized yet. Please join the waitlist or contact us.';
       if (status === 429) return 'Too many attempts. Please wait a moment and try again.';
       if (status >= 500) return 'Server error. Please try again later.';
       // Fallback to server-provided message if present
@@ -78,12 +79,12 @@ export default function TestLoginPage() {
         <div
           role="alert"
           className={cn(
-            'mt-3 flex items-start gap-2 rounded-lg border p-3 text-sm shadow-sm text-left',
+            'mt-3 flex items-start gap-2 rounded-lg border p-3 text-left text-sm shadow-sm',
             TONE_STYLES[NOTICE_TONE],
           )}
         >
           {TONE_ICON[NOTICE_TONE]}
-          <p className="text-xs flex-1">
+          <p className="flex-1 text-xs">
             This test-code page is temporary and may be removed at any time. Do not store important
             data under a test-code account, and remember to back up regularly.
           </p>
@@ -109,7 +110,13 @@ export default function TestLoginPage() {
           <p id="test-code-hint" className="text-xs text-muted-foreground">
             Use the code you received from TabSeed.
           </p>
-          <Button className="w-full" type="submit" disabled={isLoading || !code.trim()} aria-disabled={isLoading || !code.trim() || undefined} aria-busy={isLoading || undefined}>
+          <Button
+            className="w-full"
+            type="submit"
+            disabled={isLoading || !code.trim()}
+            aria-disabled={isLoading || !code.trim() || undefined}
+            aria-busy={isLoading || undefined}
+          >
             {isLoading ? (
               <span className="inline-flex items-center gap-2">
                 <span className="size-3 animate-pulse rounded-full bg-foreground/40" />
