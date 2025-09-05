@@ -1,5 +1,5 @@
-import { NextRequest } from 'next/server';
 import { eq } from 'drizzle-orm';
+import { NextRequest } from 'next/server';
 import { z } from 'zod';
 
 import { db, schema } from '@/lib/db/client';

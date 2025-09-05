@@ -11,7 +11,6 @@ import { X } from 'lucide-react';
 type Entry = {
   id: string;
   email: string;
-  name?: string | null;
   reason?: string | null;
   status: string;
   createdAt?: string;
@@ -23,13 +22,14 @@ export default function AdminWaitlistPage() {
   const [items, setItems] = useState<Entry[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>(
+    'all',
+  );
   const [regexMode, setRegexMode] = useState(false);
   const [sortBy, setSortBy] = useState<'createdAt' | 'email' | 'status'>('createdAt');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
   const [viewing, setViewing] = useState<Entry | null>(null);
   const { addToast } = useToast();
-  const [tokenEditing, setTokenEditing] = useState<string>('');
 
   // Focus trap and ESC to close for the dialog
   const dialogRef = useRef<HTMLDivElement | null>(null);
@@ -74,12 +74,6 @@ export default function AdminWaitlistPage() {
       previousActive?.focus?.();
     };
   }, [viewing]);
-
-  useEffect(() => {
-    const t = localStorage.getItem('ts_admin_token');
-    setToken(t);
-    setTokenEditing(t ?? '');
-  }, []);
 
   useEffect(() => {
     if (!token) return;
@@ -170,37 +164,6 @@ export default function AdminWaitlistPage() {
   return (
     <div className="mx-auto max-w-2xl p-6">
       <h1 className="mb-4 text-2xl font-bold">Waitlist Admin</h1>
-      {/* Token bar */}
-      <div className="mb-3 flex items-center gap-2">
-        <input
-          className="w-full rounded border p-2 text-sm"
-          placeholder="Admin token"
-          type="password"
-          value={tokenEditing}
-          onChange={(e) => setTokenEditing(e.target.value)}
-        />
-        <Button
-          variant="secondary"
-          onClick={() => {
-            localStorage.setItem('ts_admin_token', tokenEditing);
-            setToken(tokenEditing);
-            addToast({ variant: 'success', title: 'Token updated', durationMs: 2000 });
-          }}
-        >
-          Update
-        </Button>
-        <Button
-          variant="ghost"
-          onClick={() => {
-            localStorage.removeItem('ts_admin_token');
-            setToken(null);
-            setTokenEditing('');
-            addToast({ variant: 'warning', title: 'Token cleared', durationMs: 2000 });
-          }}
-        >
-          Clear
-        </Button>
-      </div>
       {error ? <div className="mb-2 text-sm text-destructive">{error}</div> : null}
       <div className="mb-3 flex items-center gap-2">
         <input
@@ -210,7 +173,11 @@ export default function AdminWaitlistPage() {
           onChange={(e) => setQuery(e.target.value)}
         />
         <label className="flex items-center gap-1 text-xs">
-          <input type="checkbox" checked={regexMode} onChange={(e) => setRegexMode(e.target.checked)} />
+          <input
+            type="checkbox"
+            checked={regexMode}
+            onChange={(e) => setRegexMode(e.target.checked)}
+          />
           Regex
         </label>
         <select
@@ -241,31 +208,22 @@ export default function AdminWaitlistPage() {
         </select>
       </div>
       <div className="overflow-x-auto rounded-xl border">
-        <table className="min-w-[720px] w-full text-left text-sm">
+        <table className="w-full min-w-[720px] text-left text-sm">
           <thead className="bg-muted/40">
             <tr>
               <th className="px-3 py-2">Email</th>
-              <th className="px-3 py-2">Reason</th>
+              <th className="px-3 py-2">Actions</th>
               <th className="px-3 py-2">Status</th>
-              <th className="px-3 py-2 text-right">Actions</th>
+              <th className="px-3 py-2">Reason</th>
+              <th className="px-3 py-2">Details</th>
             </tr>
           </thead>
           <tbody>
             {filtered.map((it) => (
               <tr key={it.id} className="border-t">
                 <td className="px-3 py-2 font-medium">{it.email}</td>
-                <td
-                  className="max-w-[24rem] truncate px-3 py-2 text-muted-foreground"
-                  title={it.reason ?? ''}
-                >
-                  {it.reason ?? '—'}
-                </td>
-                <td className="px-3 py-2">{it.status}</td>
                 <td className="px-3 py-2">
                   <div className="flex items-center justify-end gap-2">
-                    <Button variant="ghost" onClick={() => setViewing(it)}>
-                      View
-                    </Button>
                     <Button
                       variant="default"
                       onClick={() => {
@@ -285,6 +243,18 @@ export default function AdminWaitlistPage() {
                       Reject
                     </Button>
                   </div>
+                </td>
+                <td className="px-3 py-2">{it.status}</td>
+                <td
+                  className="max-w-[24rem] truncate px-3 py-2 text-muted-foreground"
+                  title={it.reason ?? ''}
+                >
+                  {it.reason ?? '—'}
+                </td>
+                <td className="px-3 py-2">
+                  <Button variant="ghost" onClick={() => setViewing(it)}>
+                    View
+                  </Button>
                 </td>
               </tr>
             ))}
@@ -307,8 +277,15 @@ export default function AdminWaitlistPage() {
           />
           <Surface className="relative z-10 w-full max-w-lg p-4 shadow-elev-3" ref={dialogRef}>
             <div className="mb-4 flex items-center justify-between">
-              <Heading as="h3" id="waitlist-entry-title">Waitlist Entry</Heading>
-              <Button variant="ghost" size="icon" aria-label="Close dialog" onClick={() => setViewing(null)}>
+              <Heading as="h3" id="waitlist-entry-title">
+                Waitlist Entry
+              </Heading>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label="Close dialog"
+                onClick={() => setViewing(null)}
+              >
                 <X className="size-4" aria-hidden="true" />
               </Button>
             </div>
