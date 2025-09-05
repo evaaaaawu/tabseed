@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Surface } from '@/components/ui/surface';
-import { Heading, Text } from '@/components/ui/typography';
 import { useToast } from '@/components/ui/toast';
+import { Heading, Text } from '@/components/ui/typography';
 import { X } from 'lucide-react';
 
 type Entry = {
@@ -23,6 +23,8 @@ export default function AdminWaitlistPage() {
   const [items, setItems] = useState<Entry[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
+  const [regexMode, setRegexMode] = useState(false);
   const [sortBy, setSortBy] = useState<'createdAt' | 'email' | 'status'>('createdAt');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
   const [viewing, setViewing] = useState<Entry | null>(null);
@@ -133,11 +135,25 @@ export default function AdminWaitlistPage() {
 
   const filtered = items
     .filter((it) => {
-      const q = query.trim().toLowerCase();
-      if (!q) return true;
+      if (statusFilter !== 'all' && it.status !== statusFilter) return false;
+      const raw = query.trim();
+      if (!raw) return true;
+      if (regexMode) {
+        try {
+          const re = new RegExp(raw, 'i');
+          return re.test(it.email) || re.test(it.reason ?? '') || re.test(it.status);
+        } catch {
+          const q = raw.toLowerCase();
+          return (
+            it.email.toLowerCase().includes(q) ||
+            (it.reason ?? '').toLowerCase().includes(q) ||
+            it.status.toLowerCase().includes(q)
+          );
+        }
+      }
+      const q = raw.toLowerCase();
       return (
         it.email.toLowerCase().includes(q) ||
-        (it.name ?? '').toLowerCase().includes(q) ||
         (it.reason ?? '').toLowerCase().includes(q) ||
         it.status.toLowerCase().includes(q)
       );
@@ -189,10 +205,24 @@ export default function AdminWaitlistPage() {
       <div className="mb-3 flex items-center gap-2">
         <input
           className="w-full rounded border p-2 text-sm"
-          placeholder="Search by email, name, reason, status"
+          placeholder={regexMode ? 'Search (RegExp)' : 'Search by email, reason, status'}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
+        <label className="flex items-center gap-1 text-xs">
+          <input type="checkbox" checked={regexMode} onChange={(e) => setRegexMode(e.target.checked)} />
+          Regex
+        </label>
+        <select
+          className="rounded border p-2 text-sm"
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
+        >
+          <option value="all">All</option>
+          <option value="pending">Pending</option>
+          <option value="approved">Approved</option>
+          <option value="rejected">Rejected</option>
+        </select>
         <select
           className="rounded border p-2 text-sm"
           value={`${sortBy}:${sortDir}`}
@@ -236,10 +266,22 @@ export default function AdminWaitlistPage() {
                     <Button variant="ghost" onClick={() => setViewing(it)}>
                       View
                     </Button>
-                    <Button variant="secondary" onClick={() => update(it.email, 'approved')}>
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        if (!confirm(`Approve ${it.email}?`)) return;
+                        update(it.email, 'approved');
+                      }}
+                    >
                       Approve
                     </Button>
-                    <Button variant="ghost" onClick={() => update(it.email, 'rejected')}>
+                    <Button
+                      variant="ghost"
+                      onClick={() => {
+                        if (!confirm(`Reject ${it.email}?`)) return;
+                        update(it.email, 'rejected');
+                      }}
+                    >
                       Reject
                     </Button>
                   </div>
