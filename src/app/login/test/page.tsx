@@ -54,9 +54,9 @@ export default function TestLoginPage() {
   function getReadableError(err: unknown): string {
     if (err instanceof HttpError) {
       const status = err.status;
-      if (status === 400) return 'Invalid or expired test code. Please check and try again.';
+      if (status === 400) return 'Invalid or expired test code. Please check or contact us if you need help.';
       if (status === 401)
-        return 'This code is not authorized yet. Please join the waitlist or contact us.';
+        return 'This code is not authorized yet. Please check or contact us if you need help.';
       if (status === 429) return 'Too many attempts. Please wait a moment and try again.';
       if (status >= 500) return 'Server error. Please try again later.';
       // Fallback to server-provided message if present
