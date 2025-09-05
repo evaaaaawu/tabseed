@@ -44,10 +44,10 @@ export default function WaitlistPage() {
         const json = await res.json().catch(() => null);
         const requestId = json?.error?.requestId ? ` (req: ${json.error.requestId})` : '';
         if (json?.error?.code === 'already_approved') {
-          setError(`此 Email 已被 approved，您現在可以使用此 Email 登入 TabSeed${requestId}`);
+          setError(`This email has already been approved. You can now use this email to log in to TabSeed${requestId}`);
           setMessage(
             <span>
-              已核准：請前往 <a className="text-primary underline" href="/login">/login</a> 使用 Google 登入。
+              Approved: Please go to <a className="text-primary underline" href="/login">/login</a> and use Google login.
             </span> as unknown as string,
           );
         } else if (json?.error?.code === 'conflict') {

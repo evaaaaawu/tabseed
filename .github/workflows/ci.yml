@@ -54,4 +54,3 @@ jobs:
         run: echo "DATABASE_URL=postgres://tabseed:postgres@localhost:5432/tabseed" >> $GITHUB_ENV
       - name: Run migrations (drizzle-kit push)
         run: pnpm db:push
-
