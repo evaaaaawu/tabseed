@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { Surface } from '@/components/ui/surface';
+import { Heading, Text } from '@/components/ui/typography';
 
 type Entry = {
 	id: string;
@@ -11,6 +13,7 @@ type Entry = {
 	reason?: string | null;
 	status: string;
 	createdAt?: string;
+	updatedAt?: string;
 };
 
 export default function AdminWaitlistPage() {
@@ -20,6 +23,7 @@ export default function AdminWaitlistPage() {
 	const [query, setQuery] = useState('');
 	const [sortBy, setSortBy] = useState<'createdAt' | 'email' | 'status'>('createdAt');
 	const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
+	const [viewing, setViewing] = useState<Entry | null>(null);
 
 	useEffect(() => {
 		const t = localStorage.getItem('ts_admin_token');
@@ -140,7 +144,7 @@ export default function AdminWaitlistPage() {
 								<td className="px-3 py-2">{it.status}</td>
 								<td className="px-3 py-2">
 									<div className="flex items-center justify-end gap-2">
-										<Button variant="ghost" onClick={() => alert(`${it.email}\n\nReason:\n${it.reason ?? '—'}`)}>View</Button>
+										<Button variant="ghost" onClick={() => setViewing(it)}>View</Button>
 										<Button variant="secondary" onClick={() => update(it.email, 'approved')}>Approve</Button>
 										<Button variant="ghost" onClick={() => update(it.email, 'rejected')}>Reject</Button>
 									</div>
@@ -150,6 +154,54 @@ export default function AdminWaitlistPage() {
 					</tbody>
 				</table>
 			</div>
+
+			{/* Detail Dialog */}
+			{viewing ? (
+				<div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
+					<div className="absolute inset-0 bg-black/40" onClick={() => setViewing(null)} aria-hidden />
+					<Surface className="relative z-10 w-full max-w-lg p-4 shadow-elev-3">
+						<div className="mb-4 flex items-center justify-between">
+							<Heading as="h3">Waitlist Entry</Heading>
+							<Button variant="ghost" size="sm" onClick={() => setViewing(null)}>Close</Button>
+						</div>
+
+						<div className="space-y-3 text-sm">
+							<div>
+								<Text size="xs" muted>Email</Text>
+								<div className="font-medium">{viewing.email}</div>
+							</div>
+							<div className="grid grid-cols-2 gap-3">
+								<div>
+									<Text size="xs" muted>Status</Text>
+									<div>{viewing.status}</div>
+								</div>
+								<div>
+									<Text size="xs" muted>Name</Text>
+									<div className="text-muted-foreground">{viewing.name ?? '—'}</div>
+								</div>
+							</div>
+
+							<div className="grid grid-cols-2 gap-3">
+								<div>
+									<Text size="xs" muted>Created at</Text>
+									<div>{viewing.createdAt ? new Date(viewing.createdAt).toLocaleString() : '—'}</div>
+								</div>
+								<div>
+									<Text size="xs" muted>Updated at</Text>
+									<div>{viewing.updatedAt ? new Date(viewing.updatedAt).toLocaleString() : '—'}</div>
+								</div>
+							</div>
+
+							<div>
+								<Text size="xs" muted>Reason</Text>
+								<div className="whitespace-pre-wrap rounded-md border bg-muted/20 p-3 text-muted-foreground">
+									{viewing.reason || '—'}
+								</div>
+							</div>
+						</div>
+					</Surface>
+				</div>
+			) : null}
 		</div>
 	);
 }
