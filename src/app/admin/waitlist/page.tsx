@@ -4,12 +4,22 @@ import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 
-type Entry = { id: string; email: string; name?: string | null; reason?: string | null; status: string };
+type Entry = {
+	id: string;
+	email: string;
+	name?: string | null;
+	reason?: string | null;
+	status: string;
+	createdAt?: string;
+};
 
 export default function AdminWaitlistPage() {
 	const [token, setToken] = useState<string | null>(null);
 	const [items, setItems] = useState<Entry[]>([]);
 	const [error, setError] = useState<string | null>(null);
+	const [query, setQuery] = useState('');
+	const [sortBy, setSortBy] = useState<'createdAt' | 'email' | 'status'>('createdAt');
+	const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
 
 	useEffect(() => {
 		const t = localStorage.getItem('ts_admin_token');
@@ -60,27 +70,84 @@ export default function AdminWaitlistPage() {
 		);
 	}
 
+	const filtered = items
+		.filter((it) => {
+			const q = query.trim().toLowerCase();
+			if (!q) return true;
+			return (
+				it.email.toLowerCase().includes(q) ||
+				(it.name ?? '').toLowerCase().includes(q) ||
+				(it.reason ?? '').toLowerCase().includes(q) ||
+				it.status.toLowerCase().includes(q)
+			);
+		})
+		.sort((a, b) => {
+			const dir = sortDir === 'asc' ? 1 : -1;
+			if (sortBy === 'email') return a.email.localeCompare(b.email) * dir;
+			if (sortBy === 'status') return a.status.localeCompare(b.status) * dir;
+			const atA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+			const atB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+			return (atA - atB) * dir;
+		});
+
 	return (
 		<div className="mx-auto max-w-2xl p-6">
 			<h1 className="mb-4 text-2xl font-bold">Waitlist Admin</h1>
 			{error ? <div className="mb-2 text-sm text-destructive">{error}</div> : null}
-			<div className="space-y-2">
-				{items.map((it) => (
-					<div key={it.id} className="flex items-center justify-between rounded border p-3">
-						<div>
-							<div className="font-medium">{it.email}</div>
-							<div className="text-sm text-muted-foreground">{it.name ?? '—'}</div>
-							{it.reason ? (
-								<div className="mt-1 text-xs text-muted-foreground">Reason: {it.reason}</div>
-							) : null}
-						</div>
-						<div className="flex items-center gap-2">
-							<span className="text-sm">{it.status}</span>
-							<Button variant="secondary" onClick={() => update(it.email, 'approved')}>Approve</Button>
-							<Button variant="ghost" onClick={() => update(it.email, 'rejected')}>Reject</Button>
-						</div>
-					</div>
-				))}
+			<div className="mb-3 flex items-center gap-2">
+				<input
+					className="w-full rounded border p-2 text-sm"
+					placeholder="Search by email, name, reason, status"
+					value={query}
+					onChange={(e) => setQuery(e.target.value)}
+				/>
+				<select
+					className="rounded border p-2 text-sm"
+					value={`${sortBy}:${sortDir}`}
+					onChange={(e) => {
+						const [by, dir] = e.target.value.split(':') as [typeof sortBy, typeof sortDir];
+						setSortBy(by);
+						setSortDir(dir);
+					}}
+				>
+					<option value="createdAt:desc">Newest</option>
+					<option value="createdAt:asc">Oldest</option>
+					<option value="email:asc">Email A→Z</option>
+					<option value="email:desc">Email Z→A</option>
+					<option value="status:asc">Status A→Z</option>
+					<option value="status:desc">Status Z→A</option>
+				</select>
+			</div>
+			<div className="overflow-hidden rounded-xl border">
+				<table className="w-full text-left text-sm">
+					<thead className="bg-muted/40">
+						<tr>
+							<th className="px-3 py-2">Email</th>
+							<th className="px-3 py-2">Name</th>
+							<th className="px-3 py-2">Reason</th>
+							<th className="px-3 py-2">Status</th>
+							<th className="px-3 py-2 text-right">Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						{filtered.map((it) => (
+							<tr key={it.id} className="border-t">
+								<td className="px-3 py-2 font-medium">{it.email}</td>
+								<td className="px-3 py-2 text-muted-foreground">{it.name ?? '—'}</td>
+								<td className="max-w-[24rem] truncate px-3 py-2 text-muted-foreground" title={it.reason ?? ''}>
+									{it.reason ?? '—'}
+								</td>
+								<td className="px-3 py-2">{it.status}</td>
+								<td className="px-3 py-2">
+									<div className="flex items-center justify-end gap-2">
+										<Button variant="secondary" onClick={() => update(it.email, 'approved')}>Approve</Button>
+										<Button variant="ghost" onClick={() => update(it.email, 'rejected')}>Reject</Button>
+									</div>
+								</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
 			</div>
 		</div>
 	);
