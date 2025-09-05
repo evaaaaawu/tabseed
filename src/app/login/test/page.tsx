@@ -104,12 +104,20 @@ export default function TestLoginPage() {
             required
             aria-invalid={Boolean(error) || undefined}
             aria-describedby={error ? 'test-code-error' : 'test-code-hint'}
+            aria-busy={isLoading || undefined}
           />
           <p id="test-code-hint" className="text-xs text-muted-foreground">
             Use the code you received from TabSeed.
           </p>
-          <Button className="w-full" type="submit" disabled={isLoading || !code.trim()}>
-            {isLoading ? 'Logging in...' : 'Continue'}
+          <Button className="w-full" type="submit" disabled={isLoading || !code.trim()} aria-disabled={isLoading || !code.trim() || undefined} aria-busy={isLoading || undefined}>
+            {isLoading ? (
+              <span className="inline-flex items-center gap-2">
+                <span className="size-3 animate-pulse rounded-full bg-foreground/40" />
+                Logging in...
+              </span>
+            ) : (
+              'Continue'
+            )}
           </Button>
           {error ? (
             <div id="test-code-error" role="alert" className="text-sm text-destructive">
