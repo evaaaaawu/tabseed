@@ -79,7 +79,8 @@ export default function WaitlistPage() {
           };
           const json = JSON.parse(text) as unknown as ErrorPayload;
           if (json?.error?.code === 'validation_failed' && json.error.details) {
-            const fieldErrors = json.error.details.fieldErrors ?? {};
+            const details = json.error.details as { fieldErrors?: Record<string, string[]> } | null;
+            const fieldErrors = details?.fieldErrors ?? {};
             const emailErrArr = fieldErrors.email as string[] | undefined;
             const reasonErrArr = fieldErrors.reason as string[] | undefined;
             if (emailErrArr?.length) setEmailError(emailErrArr[0]);
