@@ -5,7 +5,7 @@ import { useState, type ReactElement } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { postTestLogin } from '@/lib/api/auth-client';
+import { postTestLogin, HttpError } from '@/lib/api/auth-client';
 import { cn } from '@/lib/utils';
 import { AlertTriangle, Info } from 'lucide-react';
 
@@ -40,11 +40,29 @@ export default function TestLoginPage() {
       await postTestLogin({ code });
       window.location.href = '/inbox';
     } catch (err) {
-      setError((err as Error).message);
+      const message = getReadableError(err);
+      setError(message);
     } finally {
       setIsLoading(false);
     }
   };
+
+  function getReadableError(err: unknown): string {
+    if (err instanceof HttpError) {
+      const status = err.status;
+      if (status === 400) return 'Invalid or expired test code. Please check and try again.';
+      if (status === 401) return 'This code is not authorized yet. Please join the waitlist or contact us.';
+      if (status === 429) return 'Too many attempts. Please wait a moment and try again.';
+      if (status >= 500) return 'Server error. Please try again later.';
+      // Fallback to server-provided message if present
+      const body = err.body as any;
+      if (body && typeof body === 'object' && typeof body.error?.message === 'string') {
+        return body.error.message as string;
+      }
+      return `Login failed (${status}). Please try again.`;
+    }
+    return (err as Error).message || 'Unexpected error. Please try again.';
+  }
 
   return (
     <div className="mx-auto flex min-h-[100dvh] max-w-lg flex-col justify-center px-6 py-8 sm:py-12">
