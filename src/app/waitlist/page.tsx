@@ -17,6 +17,7 @@ export default function WaitlistPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isGmail, setIsGmail] = useState<boolean>(true);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,11 +61,20 @@ export default function WaitlistPage() {
             type="email"
             placeholder="your.name@gmail.com"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              const next = e.target.value;
+              setEmail(next);
+              // Gmail-only validation (case-insensitive, trims spaces)
+              const normalized = next.trim().toLowerCase();
+              setIsGmail(/^[^@\s]+@gmail\.com$/.test(normalized));
+            }}
             required
-            aria-invalid={Boolean(error) || undefined}
+            aria-invalid={Boolean(error) || !isGmail || undefined}
             aria-busy={isLoading || undefined}
           />
+          <p className="text-xs text-muted-foreground">
+            TabSeed is in an early experimental phase and currently only accepts Google sign-in via Gmail. Sorry for the inconvenience.
+          </p>
           <Button className="w-full" type="submit" disabled={isLoading || !email.trim()} aria-busy={isLoading || undefined}>
             {isLoading ? (
               <span className="inline-flex items-center gap-2">
@@ -75,6 +85,11 @@ export default function WaitlistPage() {
               'Join waitlist'
             )}
           </Button>
+          {!isGmail ? (
+            <div role="alert" className="text-sm text-destructive">
+              Please use a Gmail address (example@gmail.com).
+            </div>
+          ) : null}
           {message ? <div className="text-sm text-green-600">{message}</div> : null}
           {error ? (
             <div role="alert" className="text-sm text-destructive">
