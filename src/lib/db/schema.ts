@@ -35,6 +35,7 @@ export const waitlistEntries = pgTable(
     id: text('id').primaryKey(),
     email: text('email').notNull(),
     name: text('name'),
+    reason: text('reason'),
     status: text('status').notNull().default('pending'), // pending | approved | rejected
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
