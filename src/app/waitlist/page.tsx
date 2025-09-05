@@ -18,6 +18,8 @@ export default function WaitlistPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isGmail, setIsGmail] = useState<boolean>(true);
+  const [reason, setReason] = useState('');
+  const isReasonValid = reason.trim().length >= 5 && reason.trim().length <= 1000;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,11 +30,12 @@ export default function WaitlistPage() {
       const res = await fetch('/api/waitlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, reason }),
       });
       if (res.ok) {
         setMessage("Thanks! We'll email you after approval.");
         setEmail('');
+        setReason('');
       } else if (res.status === 409) {
         setMessage("You're already on the waitlist.");
       } else {
@@ -75,7 +78,27 @@ export default function WaitlistPage() {
           <p className="text-xs text-muted-foreground">
             TabSeed is in an early experimental phase and currently only accepts Google sign-in via Gmail. Sorry for the inconvenience.
           </p>
-          <Button className="w-full" type="submit" disabled={isLoading || !email.trim()} aria-busy={isLoading || undefined}>
+          <div className="space-y-1">
+            <label htmlFor="waitlist-reason" className="block text-sm font-medium">
+              Why do you want to use TabSeed?
+            </label>
+            <textarea
+              id="waitlist-reason"
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              className="min-h-24 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              placeholder="Tell us about your workflow, problems you're facing, or what you'd like TabSeed to help with."
+              aria-invalid={!isReasonValid || undefined}
+              aria-busy={isLoading || undefined}
+            />
+            <p className="text-xs text-muted-foreground">5–1000 characters.</p>
+          </div>
+          <Button
+            className="w-full"
+            type="submit"
+            disabled={isLoading || !email.trim() || !isGmail || !isReasonValid}
+            aria-busy={isLoading || undefined}
+          >
             {isLoading ? (
               <span className="inline-flex items-center gap-2">
                 <span className="size-3 animate-pulse rounded-full bg-foreground/40" />
