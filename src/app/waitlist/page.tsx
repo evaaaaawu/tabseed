@@ -37,10 +37,23 @@ export default function WaitlistPage() {
         setEmail('');
         setReason('');
       } else if (res.status === 409) {
-        setMessage("You're already on the waitlist.");
+        const json = await res.json().catch(() => null);
+        const requestId = json?.error?.requestId ? ` (req: ${json.error.requestId})` : '';
+        if (json?.error?.code === 'conflict') {
+          setError(`This email is already on the waitlist${requestId}`);
+        } else {
+          setError(`You're already on the waitlist${requestId}`);
+        }
       } else {
         const text = await res.text();
-        setError(`Submit failed: ${res.status} ${text}`);
+        let msg = `Submit failed: ${res.status} ${text}`;
+        try {
+          const json = JSON.parse(text) as unknown as { error?: { message?: string; requestId?: string } };
+          if (json?.error?.message) {
+            msg = `${json.error.message}${json.error.requestId ? ` (req: ${json.error.requestId})` : ''}`;
+          }
+        } catch {}
+        setError(msg);
       }
     } finally {
       setIsLoading(false);
