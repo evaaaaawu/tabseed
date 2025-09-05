@@ -25,10 +25,6 @@ export default function NeedJoinPage() {
 						<a href={loginHref}>Back to login</a>
 					</Button>
 				</div>
-
-				<p className="mt-5 text-xs text-muted-foreground sm:mt-6">
-					We currently support Google sign-in and prioritize Gmail addresses during the early access phase.
-				</p>
 			</div>
 		</div>
 	);

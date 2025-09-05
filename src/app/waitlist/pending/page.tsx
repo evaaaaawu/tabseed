@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 export default function PendingWaitlistPage() {
 	const email = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('email') : null;
 	const loginHref = '/login';
-	const editHref = email ? `/waitlist?email=${encodeURIComponent(email)}` : '/waitlist';
 
 	return (
 		<div className="mx-auto flex min-h-[100dvh] max-w-lg flex-col justify-center px-6 py-8 sm:py-12">
@@ -20,9 +19,6 @@ export default function PendingWaitlistPage() {
 				<div className="space-y-3">
 					<Button asChild className="w-full">
 						<a href={loginHref}>Back to login</a>
-					</Button>
-					<Button asChild variant="ghost" className="w-full">
-						<a href={editHref}>Update email or reason</a>
 					</Button>
 				</div>
 
