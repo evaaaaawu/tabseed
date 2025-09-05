@@ -27,12 +27,11 @@ export default function WaitlistPage() {
       const res = await fetch('/api/waitlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, name: name || undefined }),
+        body: JSON.stringify({ email }),
       });
       if (res.ok) {
         setMessage("Thanks! We'll email you after approval.");
         setEmail('');
-        setName('');
       } else if (res.status === 409) {
         setMessage("You're already on the waitlist.");
       } else {
